@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TaskMan.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext: DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
