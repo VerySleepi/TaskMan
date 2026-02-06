@@ -1,7 +1,10 @@
-﻿namespace TaskMan.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TaskMan.Models
 {
     public class User
     {
+        [Key]
         public int User_ID { get; set; }
         public string Username { get; set; }
         public string Email { get; set; }

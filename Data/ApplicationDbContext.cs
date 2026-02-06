@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TaskMan.Data
 {
-    public class ApplicationDbContext: DbContext
+    public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
@@ -15,5 +15,12 @@ namespace TaskMan.Data
         }
 
         public DbSet<User> User { get; set; }
+        public DbSet<Models.Task> Task { get; set; }
+        public DbSet<UserTasks> UserTasks { get; set; }
+        public DbSet<Group> Group { get; set; }
+        public DbSet<GroupList> GroupList { get; set; }
+        public DbSet<GroupUsers> GroupUsers { get; set; }
+        public DbSet<GroupTask> GroupTask { get; set; }
+        public DbSet<GroupListTeam> GroupListTeam { get; set; }
     }
 }
