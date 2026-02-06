@@ -1,0 +1,12 @@
+﻿@model IEnumerable<TaskMan.Models.User>
+
+@{
+	ViewData["Title"] = "Index";
+}
+@Html.AntiForgeryToken()
+
+<h1>Profile</h1>
+<hr />
+<p>
+	<a class="btn btn-sm btn-danger" asp-action="Create">Add New</a>
+</p>
