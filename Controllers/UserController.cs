@@ -6,11 +6,11 @@ using System.Text.Encodings.Web;
 
 namespace TaskMan.Controllers
 {
-    public class UsersController : Controller
+    public class UserController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public UsersController(ApplicationDbContext context)
+        public UserController(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -18,14 +18,14 @@ namespace TaskMan.Controllers
         // GET: Users
         public async Task<IActionResult> Index()
         {
+            ViewData["Header"] = "Users";
             return View(await _context.User.ToListAsync());
-
         }
 
         // GET: User/Create
         public IActionResult Create()
         {
-            return View();
+            return View("SignUp");
         }
 
         // POST: User/Create
@@ -33,13 +33,14 @@ namespace TaskMan.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(User user)
         {
+            user.Creation_Date = DateOnly.FromDateTime(DateTime.Now);
             if (ModelState.IsValid)
             {
                 _context.User.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View("SignUp", user);
         }
 
         // GET: User/Edit/5
@@ -48,7 +49,7 @@ namespace TaskMan.Controllers
             var user = await _context.User.FindAsync(id);
             if (user == null) return NotFound();
 
-            return View(user);
+            return View("EditProfile", user);
 
         }
 
@@ -66,7 +67,7 @@ namespace TaskMan.Controllers
                 return RedirectToAction(nameof(Index));
 
             }
-            return View(user);
+            return View("EditProfile", user);
         }
 
         // GET: User/Details/5

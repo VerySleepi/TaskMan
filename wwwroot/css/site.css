@@ -6,6 +6,11 @@ html {
   html {
     font-size: 16px;
   }
+
+  .profile_pic {
+    width: 150px;
+    height: 150px;
+  }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
