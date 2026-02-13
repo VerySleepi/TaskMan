@@ -12,8 +12,8 @@ using TaskMan.Data;
 namespace TaskMan.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260210151158_UpdatingProgress1")]
-    partial class UpdatingProgress1
+    [Migration("20260213155256_Initial-Create")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

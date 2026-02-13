@@ -3,6 +3,7 @@ using TaskMan.Models;
 using TaskMan.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Encodings.Web;
+using System.Diagnostics;
 
 namespace TaskMan.Controllers
 {
@@ -25,7 +26,7 @@ namespace TaskMan.Controllers
         // GET: User/Create
         public IActionResult Create()
         {
-            return View("SignUp");
+            return View();
         }
 
         // POST: User/Create
@@ -40,7 +41,16 @@ namespace TaskMan.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View("SignUp", user);
+            if (!ModelState.IsValid)
+            {
+                // Log errors
+                var errors = ModelState.Values.SelectMany(v => v.Errors);
+                foreach (var error in errors)
+                {
+                    Debug.WriteLine(error.ErrorMessage);
+                }
+            }
+            return View(user);
         }
 
         // GET: User/Edit/5
@@ -54,20 +64,29 @@ namespace TaskMan.Controllers
         }
 
         // POST: User/Edit/5
-        [HttpPost]
+        [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, User user)
+        public async Task<IActionResult> Edit(int? id)
         {
-            if (id != user.User_ID) return NotFound();
+            if (id == null) return NotFound();
 
-            if (ModelState.IsValid)
+            var existingUser = await _context.User.FirstOrDefaultAsync(u => u.User_ID == id);
+
+            if (await TryUpdateModelAsync<User>(existingUser, "", u => u.Username, u => u.Email, u => u.Profile_Pic))
             {
-                _context.User.Update(user);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-
+                try
+                {
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Log the exception
+                    Debug.WriteLine(ex.Message);
+                    ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
+                }
             }
-            return View("EditProfile", user);
+            return View("EditProfile", existingUser);
         }
 
         // GET: User/Details/5
@@ -84,9 +103,9 @@ namespace TaskMan.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var user = await _context.User.FirstOrDefaultAsync(u => u.User_ID == id);
-            
+
             if (user == null) return NotFound();
-            
+
             return View(user);
         }
 
@@ -97,12 +116,22 @@ namespace TaskMan.Controllers
         {
             var user = await _context.User.FindAsync(id);
 
-            if (user != null)
+            if (user == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
             {
                 _context.User.Remove(user);
                 await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            return RedirectToAction(nameof(Index));
+            catch (DbUpdateException ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return RedirectToAction(nameof(Delete), new { id, saveChangesError = true });
+            }
         }
 
         [HttpPost]
@@ -114,7 +143,6 @@ namespace TaskMan.Controllers
             if (user == null)
             {
                 return NotFound(new { success = false, message = "User not found." });
-
             }
             _context.User.Remove(user);
             await _context.SaveChangesAsync();
