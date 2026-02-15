@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace TaskMan.Models
@@ -6,7 +7,10 @@ namespace TaskMan.Models
     [PrimaryKey(nameof(User_ID), nameof(Group_ID))]
     public class GroupUsers
     {
+        [ForeignKey("User")]
         public int User_ID { get; set; }
+
+        [ForeignKey("Group")]
         public int Group_ID { get; set; }
         public string Role { get; set; }
         public DateOnly Join_Date { get; set; }

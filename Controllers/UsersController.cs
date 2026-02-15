@@ -7,11 +7,11 @@ using System.Diagnostics;
 
 namespace TaskMan.Controllers
 {
-    public class UserController : Controller
+    public class UsersController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public UserController(ApplicationDbContext context)
+        public UsersController(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -132,7 +132,7 @@ namespace TaskMan.Controllers
             catch (DbUpdateException ex)
             {
                 Debug.WriteLine(ex.Message);
-                return RedirectToAction(nameof(Delete), new { id, saveChangesError = true });
+                return RedirectToAction(nameof(Delete));
             }
         }
 
@@ -144,12 +144,13 @@ namespace TaskMan.Controllers
 
             if (user == null)
             {
+                Debug.WriteLine($"User with ID {id} not found for deletion.");
                 return NotFound(new { success = false, message = "User not found." });
             }
             _context.User.Remove(user);
             await _context.SaveChangesAsync();
 
-            return Json(new { success = true, message = "User deleted successfully." });
+            return Json(new { success = true, message = $"{user.Username} deleted successfully." });
         }
     }
 }
