@@ -32,9 +32,11 @@ namespace TaskMan.Controllers
         // POST: User/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(User user)
+        public async Task<IActionResult> Create(
+            [Bind("Username,Email,Password,Profile_Pic")] User user)
         {
             user.Creation_Date = DateOnly.FromDateTime(DateTime.Now);
+            user.Profile_Pic ??= "user.png";
             if (ModelState.IsValid)
             {
                 _context.User.Add(user);
