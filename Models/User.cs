@@ -1,17 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace TaskMan.Models
 {
-    public class User
+    public class User : IdentityUser
     {
-        [Key]
-        public int User_ID { get; set; }
-        public string Username { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
         public string Profile_Pic { get; set; } = "user.png";
         public int Complete_Tasks { get; set; } = 0;
         public DateOnly Creation_Date { get; set; }
-        public int Two_Factor { get; set; } = 0;
     }
 }

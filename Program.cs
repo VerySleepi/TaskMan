@@ -1,5 +1,7 @@
 using TaskMan.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using TaskMan.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,20 @@ builder.Services.AddScoped<ApplicationDbContext>();
 string _GetConnStringName = builder.Configuration.GetConnectionString("DefaultConnectionMySQL");
 builder.Services.AddDbContext<ApplicationDbContext>(options=>options.UseMySql(_GetConnStringName, ServerVersion.AutoDetect(_GetConnStringName)));
 
+builder.Services.AddIdentity<User, IdentityRole>(options =>
+{
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 6;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+    options.User.RequireUniqueEmail = true;
+    options.SignIn.RequireConfirmedEmail = false;
+    options.SignIn.RequireConfirmedAccount = false;
+})
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -27,6 +43,8 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

@@ -8,7 +8,7 @@ namespace TaskMan.Models
     public class GroupUsers
     {
         [ForeignKey("User")]
-        public int User_ID { get; set; }
+        public string User_ID { get; set; }
 
         [ForeignKey("Group")]
         public int Group_ID { get; set; }
