@@ -12,12 +12,12 @@
         <form asp-action="Login" method="post">
             @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group mb-3">
+            <div class="mb-3">
                 <label asp-for="Email" class="form-label"></label>
                 <input asp-for="Email" class="form-control"/>
                 <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
-            <div class="form-group mb-3">
+            <div class="mb-3">
                 <label asp-for="Password" class="form-label"></label>
                 <input asp-for="Password" class="form-control" type="password" role="textbox"/>
                 <span asp-validation-for="Password" class="text-danger"></span>
@@ -28,17 +28,17 @@
                         Forgot Password?
                     </a>
                 </div>
-                <div class="form-group mb-3 form-check">
+                <div class="mb-3 form-check">
                     <label class="form-check-label">
                         <input asp-for="RememberMe" class="form-check-input" type="checkbox" role="checkbox"/>
-                        @Html.DisplayNameFor(m => m.RememberMe)
+                        @Html.DisplayNameFor(a => a.RememberMe)
                     </label>
                 </div>
             </div>
             <div class="form-group login-navigation">
                 <input type="submit" value="Login" class="btn btn-success w-100 p-2" role="button"/>
                 <p class="text-center mt-2">
-                    Don't have an account? <a asp-controller="Account" asp-action"Register" class="text-decoration-none">Register</a>
+                    Don't have an account? <a asp-controller="Account" asp-action="Register" class="text-decoration-none">Register</a>
                 </p>
                 <div class="text-center">
                     <a asp-controller="Home" asp-action="Index" class="text-decoration-none mt-3">Back</a>
@@ -50,6 +50,6 @@
 
 @section Scripts {
 	@{
-		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+		await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
 	}
 }

@@ -27,3 +27,4 @@ function toggleNavbar() {
 };
 
 window.addEventListener('resize', toggleNavbar);
+window.addEventListener('DOMContentLoaded', toggleNavbar);

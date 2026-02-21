@@ -11,7 +11,7 @@ namespace TaskMan.Services
             using var scope = serviceProvider.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Models.User>>();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<SeedService>>();
 
             try
