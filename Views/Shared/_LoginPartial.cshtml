@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Identity;
 @inject SignInManager<User> SignInManager;
 
-<ul class="navbar-nav ms auto align-items-center">
+<ul id="account-nav" class="navbar-nav ms-auto align-items-center">
     @if (SignInManager.IsSignedIn(User))
     {
         <li class="nav-item">
@@ -14,7 +14,7 @@
     else
     {
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
+            <a  class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
         </li>
         <li class="nav-item">
             <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Register</a>
@@ -22,4 +22,6 @@
     }
 
 </ul>
+
+
     

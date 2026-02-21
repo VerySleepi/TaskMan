@@ -20,6 +20,7 @@
     min-width: 340px;
     height: 75vh;
     flex-direction: column;
+    opacity: .9
 }
 
 .account-box > form{
@@ -35,7 +36,7 @@
 
 
 
-@media (min-width: 720px) {
+@media (min-width: 577px) {
     .account-container {
         align-items: center;
         padding: 2rem 2rem;
