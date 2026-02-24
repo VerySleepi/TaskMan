@@ -9,9 +9,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 
 // Add services to the container.
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<ApplicationDbContext>();
+
 
 // MySQL DB Connection
 string _GetConnStringName = builder.Configuration.GetConnectionString("DefaultConnectionMySQL");

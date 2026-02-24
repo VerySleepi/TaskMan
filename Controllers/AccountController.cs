@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using TaskMan.Models;
@@ -23,6 +24,10 @@ namespace TaskMan.Controllers
         [HttpGet]
         public IActionResult Login()
         {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home");
+            }
             return View();
         }
 
@@ -44,12 +49,14 @@ namespace TaskMan.Controllers
                 return View(model);
             }
 
+               
             var result = await signInManager.PasswordSignInAsync(userName: user.UserName, password: model.Password, isPersistent: model.RememberMe, lockoutOnFailure: false);
 
             Debug.WriteLine(result.ToString(), model.Email, model.Password, model.RememberMe);
 
             if (result.Succeeded)
             {
+
                 return RedirectToAction("Index", "Home");
             }
 
@@ -133,6 +140,8 @@ namespace TaskMan.Controllers
             }
             else
             {
+                // TODO: Implement a way to send an email to the user with a code
+                // to verify who they are, and then allow them to change their password after verifying the code.
                 return RedirectToAction("ChangePassword", "Account", new { user.Email });
             }
 
