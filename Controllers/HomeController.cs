@@ -10,21 +10,21 @@ namespace TaskMan.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IEmailSender _emailSender;
+        //private readonly IEmailSender _emailSender;
 
-        public HomeController(ILogger<HomeController> logger, IEmailSender emailSender)
+        public HomeController(ILogger<HomeController> logger /*IEmailSender emailSender*/)
         {
             _logger = logger;
-            _emailSender = emailSender;
+            //_emailSender = emailSender;
         }
 
         public async Task<IActionResult> Index()
         {
-            var recieverEmail = "George.O.Stead@student.shu.ac.uk";
-            var subject = "New Login Detected";
-            var message = $"A new login to your account was detected at {DateTime.Now}. If this was you, you can safely ignore this email. If this wasn't you, we recommend changing your password immediately.";
+            //var recieverEmail = "George.O.Stead@student.shu.ac.uk";
+            //var subject = "New Login Detected";
+            //var message = $"A new login to your account was detected at {DateTime.Now}. If this was you, you can safely ignore this email. If this wasn't you, we recommend changing your password immediately.";
 
-            await _emailSender.SendEmailAsync(recieverEmail, subject, message);
+            //await _emailSender.SendEmailAsync(recieverEmail, subject, message);
             return View();
         }
 
