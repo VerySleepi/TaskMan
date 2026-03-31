@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using TaskMan.Models;
 using TaskMan.Services;
+using TaskMan.ViewModels;
 
 namespace TaskMan.Controllers
 {
@@ -23,14 +24,11 @@ namespace TaskMan.Controllers
 
         public async Task<IActionResult> Index()
         {
-            ViewBag.userName = _userManager.GetUserName(HttpContext.User);
+            var userId = _userManager.GetUserId(HttpContext.User);
+            var user = await _userManager.FindByIdAsync(userId);
+            ViewBag.userName = user.UserName;
 
-            EmailSender email = new EmailSender();
-            //var recieverEmail = "George.O.Stead@student.shu.ac.uk";
-            //var subject = "New Login Detected";
-            //var message = $"A new login to your account was detected at {DateTime.Now}. If this was you, you can safely ignore this email. If this wasn't you, we recommend changing your password immediately.";
-
-            //await _emailSender.SendEmailAsync(recieverEmail, subject, message);
+            
             return View();
         }
 

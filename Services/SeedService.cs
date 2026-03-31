@@ -38,7 +38,7 @@ namespace TaskMan.Services
                         NormalizedEmail = adminEmail.ToUpper(),
                         EmailConfirmed = true,
                         SecurityStamp = Guid.NewGuid().ToString(),
-
+                        TwoFactorEnabled = true
                     };
 
                     var result = await userManager.CreateAsync(adminUser, "Admin123!");

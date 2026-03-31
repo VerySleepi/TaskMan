@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using TaskMan.Models;
 using TaskMan.Services;
 using TaskMan.ViewModels;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace TaskMan.Controllers
 {
@@ -13,12 +13,14 @@ namespace TaskMan.Controllers
         private readonly SignInManager<User> signInManager;
         private readonly UserManager<User> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
+        private readonly IEmailSender emailSender;
 
-        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IEmailSender emailSender)
         {
             this.signInManager = signInManager;
             this.userManager = userManager;
             this.roleManager = roleManager;
+            this.emailSender = emailSender;
         }
 
         // GET: Login
@@ -50,19 +52,77 @@ namespace TaskMan.Controllers
                 return View(model);
             }
 
-               
-            var result = await signInManager.PasswordSignInAsync(userName: user.UserName, password: model.Password, isPersistent: model.RememberMe, lockoutOnFailure: false);
+
+            var result = await signInManager.PasswordSignInAsync(userName: user.UserName, password: model.Password, isPersistent: model.RememberMe, lockoutOnFailure: true);
 
             Debug.WriteLine(result.ToString(), model.Email, model.Password, model.RememberMe);
 
+            if (result.RequiresTwoFactor)
+            {
+                return RedirectToAction("VerifyWith2fa", "Account", new { id = user.Id });
+            }
             if (result.Succeeded)
             {
-                await TestEmail(user.Email);
                 return RedirectToAction("Index", "Home");
             }
+            
 
             ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> VerifyWith2fa(string id)
+        {
+            var user = await userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var model = new TwoFactorAuthenticationViewModel { UserId = id };
+            var token = await userManager.GenerateTwoFactorTokenAsync(user, "Email");
+
+            var senderEmail = "taskMan@taskman.com";
+            var to = user.Email;
+            var subject = "New Login Detected";
+            var message = $"A new login to your account was detected at {DateTime.Now}. If this was you, please use the following code to complete the login process: {token}. If this wasn't you, we recommend changing your password immediately.";
+            await emailSender.SendEmailAsync(senderEmail, to, subject, message);
+
+            return View(new TwoFactorAuthenticationViewModel { UserId = id });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> VerifyWith2fa(TwoFactorAuthenticationViewModel model)
+        {
+
+            //Debug.WriteLine($"Email: {email}, RememberMe: {rememberMe}, TwoFactorCode: {code}");
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                var result = await signInManager.TwoFactorSignInAsync("Email", model.Code, isPersistent: false, rememberClient: false);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid code.");
+                    return View(model);
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
+                return View(model);
+            }
+
+            
         }
 
         [HttpGet]
@@ -99,7 +159,12 @@ namespace TaskMan.Controllers
                 NormalizedUserName = model.Username.ToUpper(),
                 Email = model.Email,
                 NormalizedEmail = model.Email.ToUpper(),
-                Creation_Date = DateOnly.FromDateTime(DateTime.Now)
+                // Needed to set this to true for now, as we don't have a way to send a verification email to the user,
+                // but it would be set to false in a real application, and then set to true after the user verifies their email address.
+                EmailConfirmed = true,
+                Creation_Date = DateOnly.FromDateTime(DateTime.Now),
+                // Will be set to a default image for now, but the user can change it in their profile settings
+                TwoFactorEnabled = true
             };
 
             var result = await userManager.CreateAsync(user, model.Password);
