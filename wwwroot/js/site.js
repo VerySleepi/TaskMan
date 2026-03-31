@@ -9,6 +9,10 @@ function toggleNavbar() {
     var width = window.innerWidth;
     const accountNav = document.getElementById('account-nav');
 
+    if (accountNav == null) {
+        return;
+    }
+
     if (width < 576 && (accountNav.classList.contains("ms-auto" && "align-items-center") == true)) {
         accountNav.classList.toggle('ms-auto');
         accountNav.classList.toggle('align-items-center');

@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 
 // Add services to the container.
-//builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddTransient<TaskMan.Services.IEmailSender, EmailSender>();
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<ApplicationDbContext>();
