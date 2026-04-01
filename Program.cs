@@ -39,7 +39,6 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 builder.Services.ConfigureApplicationCookie(options =>
 {
     // Cookie settings
-    options.Cookie.HttpOnly = true;
     options.ExpireTimeSpan = TimeSpan.FromSeconds(30);
 
     options.LoginPath = "/Account/Login";

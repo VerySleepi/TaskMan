@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using TaskMan.Models;
 using TaskMan.Services;
-using TaskMan.ViewModels;
+using TaskMan.ViewModels.Account;
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace TaskMan.Controllers
