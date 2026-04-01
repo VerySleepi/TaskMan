@@ -13,12 +13,10 @@ namespace TaskMan.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly ILogger<HomeController> _logger;
-        private readonly IEmailSender _emailSender;
 
-        public HomeController(ILogger<HomeController> logger, IEmailSender emailSender, UserManager<User> userManager)
+        public HomeController(ILogger<HomeController> logger, UserManager<User> userManager)
         {
             _logger = logger;
-            _emailSender = emailSender;
             _userManager = userManager;
         }
 

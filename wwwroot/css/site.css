@@ -1,37 +1,62 @@
 html {
-  font-size: 14px;
-}
-
-
-@media (min-width: 648px) {
-  html {
-    font-size: 16px;
-  }
-
-  .profile_pic {
-    width: 150px;
-    height: 150px;
-  }
+    font-size: 14px;
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
+#sidebar {
+    display: none;
 }
 
-body {
-  margin-bottom: 60px;
-}
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+    color: var(--bs-secondary-color);
+    text-align: end;
 }
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+    text-align: start;
 }
+
+
+
+
+@media (min-width: 576px) {
+    html {
+        font-size: 16px;
+    }
+
+    .profile_pic {
+        width: 150px;
+        height: 150px;
+    }
+
+
+    .navbar-expand-sm .navbar-nav {
+        flex-direction: column;
+    }
+
+    #sidebar {
+        display: block;
+        width: fit-content;
+        max-width: 35vw;
+    }
+
+    #menu {
+        flex: 1;
+    }
+    .nav-item > p {
+        margin-bottom: 0;
+    }
+
+    .nav-item > form > button {
+        border-color: AccentColorText;
+        padding: 6px 0px;
+    }
+}
+
+
+
+

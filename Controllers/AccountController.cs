@@ -4,7 +4,6 @@ using System.Diagnostics;
 using TaskMan.Models;
 using TaskMan.Services;
 using TaskMan.ViewModels.Account;
-using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace TaskMan.Controllers
 {
@@ -125,17 +124,17 @@ namespace TaskMan.Controllers
             
         }
 
-        [HttpGet]
-        public async Task<IActionResult> TestEmail(string userEmail)
-        {
-            var senderEmail = "George.O.Stead@student.shu.ac.uk";
-            var subject = "New Login Detected";
-            var message = $"A new login to your account was detected at {DateTime.Now}. If this was you, you can safely ignore this email. If this wasn't you, we recommend changing your password immediately.";
+        //[HttpGet]
+        //public async Task<IActionResult> TestEmail(string userEmail)
+        //{
+        //    var senderEmail = "George.O.Stead@student.shu.ac.uk";
+        //    var subject = "New Login Detected";
+        //    var message = $"A new login to your account was detected at {DateTime.Now}. If this was you, you can safely ignore this email. If this wasn't you, we recommend changing your password immediately.";
 
-            var emailSender = new EmailSender();
-            await emailSender.SendEmailAsync(senderEmail, userEmail, subject, message);
-            return Content("Email sent! Check your SMTP server.");
-        }
+        //    //var emailSender = new EmailSender();
+        //    //await emailSender.SendEmailAsync(senderEmail, userEmail, subject, message);
+        //    return Content("Email sent! Check your SMTP server.");
+        //}
 
         [HttpGet]
         public IActionResult Register()
