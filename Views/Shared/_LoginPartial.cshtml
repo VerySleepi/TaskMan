@@ -4,15 +4,15 @@
 
     @if (signInManager.IsSignedIn(User))
     {
-        <li class="nav-item mt-sm-auto">
-            <p class="nav-link align-middle px-0 text-white">
-                <i class="fs-4 bi bi-house-fill"></i><span class="ms-1 d-none d-sm-inline">Welcome @ViewBag.userName!</span>
+        <li class="nav-item">
+            <p class="nav-link align-middle px-0 text-dark">
+                <i class="fs-4 bi bi-house-fill"></i><span class="d-none d-sm-inline">@ViewBag.userName</span>
             </p>
         </li>
         <div id="logoutButton" class="nav-item">       
-            <form asp-controller="Account" asp-action="Logout" method="post" class="nav-link align-middle px-0 text-white">
+            <form asp-controller="Account" asp-action="Logout" method="post" class="nav-link align-middle px-0 text-dark">
                 @Html.AntiForgeryToken()
-                <i class="fs-4 bi bi-house-fill"></i><button type="submit" class="ms-1 d-none d-sm-inline btn nav-link text-white">Logout</button>
+                <i class="fs-4 bi bi-house-fill"></i><button type="submit" class="d-none d-sm-inline btn nav-link text-dark">Logout</button>
             </form>
         </div>
     }

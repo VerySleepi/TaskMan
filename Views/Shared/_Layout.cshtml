@@ -14,32 +14,32 @@
 </head>
 <body>
     <div class="container-fluid">
-        
+
         <div class="row flex-nowrap">
 
-            <div id="sidebar" class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
+            <div id="sidebar" class="col-auto col-md-3 col-xl-2 px-sm-2 px-0">
 
-                <div id="navsidebar" class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                <div id="navsidebar" class="d-flex flex-column align-items-center align-items-sm-start px-2 pt-2 text-dark min-vh-100">
 
-                    <a class="navbar-brand d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none" asp-area="" asp-controller="Home" asp-action="Index">
-                        <span class="fs-5 d-none d-sm-inline">TaskMan</span>
+                    <a class="navbar-brand d-flex align-items-center pb-3 mb-md-0 me-md-auto text-dark text-decoration-none" asp-area="" asp-controller="Home" asp-action="Index">
+                        <span class="fs-2 d-none d-sm-inline">TaskMan</span>
                     </a>
 
                     <ul id="menu" class="nav nav-pills flex-column align-items-center align-items-sm-start">
                         <li class="nav-item">
-                            <a class="nav-link align-middle px-0 text-white" asp-area="" asp-controller="Home" asp-action="Index">
+                            <a class="nav-link align-middle px-0 text-dark" asp-area="" asp-controller="Home" asp-action="Index">
                                 <i class="fs-4 bi bi-house-fill"></i><span class="ms-1 d-none d-sm-inline">Home</span>
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link align-middle px-0 text-white" asp-area="" asp-controller="Tasks" asp-action="Index">
+                            <a class="nav-link align-middle px-0 text-dark" asp-area="" asp-controller="Tasks" asp-action="Index">
                                 <i class="fs-4 bi bi-house-fill"></i><span class="ms-1 d-none d-sm-inline">Tasks</span>
                             </a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link align-middle px-0 text-white" asp-area="" asp-controller="Projects" asp-action="Index">
+                        <li id="projectNav" class="nav-item mb-auto">
+                            <a class="nav-link align-middle px-0 text-dark" asp-area="" asp-controller="Projects" asp-action="Index">
                                 <i class="fs-4 bi bi-house-fill"></i><span class="ms-1 d-none d-sm-inline">Projects</span>
                             </a>
                         </li>
@@ -47,16 +47,19 @@
                         <partial name="_LoginPartial" />
 
                     </ul>
-                </div>
-                <footer class="border-top footer text-muted text-white justify-items-center">
+                <footer class="border-top footer text-muted text-dark justify-items-center">
                     <div class="container">
                         &copy; @date - TaskMan - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                     </div>
                 </footer>
+                </div>
             </div>
-            <main role="main" class="col py-3">
-                <header></header>
-                @RenderBody()
+            <main role="main" class="py-2 px-2">
+                <header>@ViewData["Title"]</header>
+                <div class="content">
+
+                    @RenderBody()
+                </div>
             </main>
         </div>
     </div>

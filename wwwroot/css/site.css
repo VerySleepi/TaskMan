@@ -2,6 +2,27 @@ html {
     font-size: 14px;
 }
 
+main {
+    flex-shrink: 1 !important;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "header"
+        "content";
+    max-width: 100%;
+    min-width: 50%;
+    row-gap: 4px;
+}
+
+header {
+    grid-area: header;
+    font-size: 26px;
+    font-weight: 600;
+}
+
+.content {
+    grid-area: content;
+}
+
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
     box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
@@ -23,7 +44,7 @@ html {
 
 
 
-@media (min-width: 576px) {
+@media (min-width: 720px) {
     html {
         font-size: 16px;
     }
@@ -41,22 +62,31 @@ html {
     #sidebar {
         display: block;
         width: fit-content;
-        max-width: 35vw;
+        max-height: 100%;
+        background-color: #c9ffd3;
     }
 
     #menu {
         flex: 1;
-    }
-    .nav-item > p {
-        margin-bottom: 0;
+        width: 100%;
     }
 
-    .nav-item > form > button {
-        border-color: AccentColorText;
-        padding: 6px 0px;
+    .navbar-brand {
+        width: 100%;
+        font-weight: 900;
     }
+
+    .nav-item {
+        font-size: 19px;
+        font-weight: 500;
+    }
+
+        .nav-item > p {
+            margin-bottom: 0;
+            min-width: fit-content;
+        }
+
+        .nav-item > form > button {
+            padding: 6px 0px;
+        }
 }
-
-
-
-
