@@ -1,0 +1,7 @@
+﻿.task-card {
+    background-color: var(--bg-col) !important;
+}
+
+.card-title {
+    margin-bottom: 0;
+}

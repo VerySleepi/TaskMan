@@ -13,7 +13,7 @@ builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.Services.AddTransient<TaskMan.Services.IEmailSender, EmailSender>();
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddScoped<ApplicationDbContext>();
+
 
 
 // MySQL DB Connection

@@ -24,7 +24,7 @@ namespace TaskMan.Controllers
         {
             var userId = _userManager.GetUserId(HttpContext.User);
             var user = await _userManager.FindByIdAsync(userId);
-            ViewBag.userName = user.UserName;
+            ViewData["Username"] = user.UserName;
 
             
             return View();

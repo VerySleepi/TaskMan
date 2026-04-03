@@ -1,8 +1,38 @@
-﻿@{
+﻿@using TaskMan.ViewModels.Tasks;
+@using Microsoft.AspNetCore.Html;
+@model DashboardViewModel;
+
+@{
     ViewData["Title"] = "Tasks";
+    Layout = "~/Views/Shared/_TaskLayout.cshtml";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div>
+    @foreach (var usertasks in Model.structuredUserTasks)
+    {
+        <div class="card mb-3 task-card" style="--bg-col: @usertasks.UserTask.BckGr_Col;">
+            <div class="card-header border-bottom-0" >
+                <h5 class="card-title">@usertasks.UserTask.Title</h5>
+            </div>
+            <div class="card-body">
+                <ul>
+                    @foreach (var task in usertasks.Tasks)
+                    {
+                        <li>
+                            <h6>@task.Title</h6>
+                            <p><strong>Due Date:</strong> @task.Due_Date.ToString("yyyy-MM-dd")</p>
+                            <p><strong>Status:</strong> @task.Status</p>
+                           
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
+}

@@ -1,18 +1,52 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using TaskMan.Data;
+using TaskMan.Models;
+using TaskMan.ViewModels.Tasks;
 
 namespace TaskMan.Controllers
 {
     public class TasksController : Controller
     {
-        // GET: TasksController
-        public ActionResult Dashboard()
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> userManager;
+
+        public TasksController(ApplicationDbContext context, UserManager<User> userManager)
         {
-            return View();
+            this.userManager = userManager;
+            _context = context;
+        }
+
+        // GET: TasksController
+        public async Task<IActionResult> Dashboard()
+        {
+            ViewData["userName"] = userManager.GetUserName(User);
+            var userId = userManager.GetUserId(HttpContext.User);
+            var userTasksList = await _context.UserTasks
+                .Where(t => t.User_ID == userId)
+                .ToListAsync();
+
+            var userListIds = userTasksList.Select(ut => ut.User_List_ID).ToList();
+
+            var tasksList = await _context.Task
+                .Where(t => userListIds.Contains(t.User_List_ID))
+                .ToListAsync();
+
+            var model = new DashboardViewModel
+            {
+                structuredUserTasks = userTasksList.Select(ut => new UserTasksViewModel
+                {
+                    UserTask = ut,
+                    Tasks = tasksList.Where(t => t.User_List_ID == ut.User_List_ID).ToList()
+                }).ToList()
+            };
+            return View(model);
         }
 
         // GET: TasksController/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(int taskid)
         {
             return View();
         }

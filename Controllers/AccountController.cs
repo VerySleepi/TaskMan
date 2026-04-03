@@ -70,6 +70,7 @@ namespace TaskMan.Controllers
             return View(model);
         }
 
+        // GET: Account/VerifyWith2fa
         [HttpGet]
         public async Task<IActionResult> VerifyWith2fa(string id)
         {
@@ -91,6 +92,7 @@ namespace TaskMan.Controllers
             return View(new TwoFactorAuthenticationViewModel { UserId = id });
         }
 
+        // POST: Account/VerifyWith2fa
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> VerifyWith2fa(TwoFactorAuthenticationViewModel model)
@@ -136,12 +138,14 @@ namespace TaskMan.Controllers
         //    return Content("Email sent! Check your SMTP server.");
         //}
 
+        // GET: Account/Register
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
 
+        // POST: Account/Register
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
@@ -192,6 +196,7 @@ namespace TaskMan.Controllers
             return View(model);
         }
 
+        // GET: Account/VerifyEmail
         [HttpGet]
         public IActionResult VerifyEmail()
         {
@@ -199,6 +204,7 @@ namespace TaskMan.Controllers
 
         }
 
+        // POST: Account/VerifyEmail
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> VerifyEmail(VerifyEmailViewModel model)
@@ -224,6 +230,7 @@ namespace TaskMan.Controllers
 
         }
 
+        // GET: Account/ChangePassword
         [HttpGet]
         public IActionResult ChangePassword(string email)
         {
@@ -235,6 +242,7 @@ namespace TaskMan.Controllers
             return View(new ChangePasswordViewModel { Email = email });
         }
 
+        //POST: Account/ChangePassword
         [HttpPost]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
@@ -269,7 +277,7 @@ namespace TaskMan.Controllers
             }
         }
 
-
+        // POST: Account/Logout
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
