@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -24,9 +25,10 @@ namespace TaskMan.Controllers
         {
             var userId = _userManager.GetUserId(HttpContext.User);
             var user = await _userManager.FindByIdAsync(userId);
-            ViewData["Username"] = user.UserName;
+            ViewData["userName"] = user.UserName;
+            ViewData["profilePic"] =  Url.Content($"~/images/{user.Profile_Pic}");
 
-            
+
             return View();
         }
 

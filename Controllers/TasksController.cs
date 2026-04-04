@@ -22,25 +22,39 @@ namespace TaskMan.Controllers
         // GET: TasksController
         public async Task<IActionResult> Dashboard()
         {
-            ViewData["userName"] = userManager.GetUserName(User);
             var userId = userManager.GetUserId(HttpContext.User);
+            var user = await userManager.FindByIdAsync(userId);
+            // Pass user information to the view using ViewData
+            ViewData["userName"] = user.UserName;
+            ViewData["profilePic"] = Url.Content($"~/images/{user.Profile_Pic}");
+
+
+            // Fetch UserTasks for the current user
             var userTasksList = await _context.UserTasks
                 .Where(t => t.User_ID == userId)
                 .ToListAsync();
 
+            userTasksList.Reverse();
+
+            // Extract User_List_IDs from the fetched UserTasks
             var userListIds = userTasksList.Select(ut => ut.User_List_ID).ToList();
 
+
+            // Fetch Tasks that match the extracted User_List_IDs
             var tasksList = await _context.Task
                 .Where(t => userListIds.Contains(t.User_List_ID))
                 .ToListAsync();
 
+            // Structure the data into the DashboardViewModel
             var model = new DashboardViewModel
             {
+                // For each UserTasks, find the corresponding Tasks and create a UserTasksViewModel
+                // and add it to the structuredUserTasks list
                 structuredUserTasks = userTasksList.Select(ut => new UserTasksViewModel
                 {
                     UserTask = ut,
                     Tasks = tasksList.Where(t => t.User_List_ID == ut.User_List_ID).ToList()
-                }).ToList()
+                }).ToList(),
             };
             return View(model);
         }
@@ -52,7 +66,7 @@ namespace TaskMan.Controllers
         }
 
         // GET: TasksController/Create
-        public ActionResult Create()
+        public ActionResult CreateTask()
         {
             return View();
         }

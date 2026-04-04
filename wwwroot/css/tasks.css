@@ -1,7 +1,26 @@
-﻿.task-card {
+﻿
+.task-card {
+    min-height: 100%;
     background-color: var(--bg-col) !important;
 }
 
+.card-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+}
+
 .card-title {
+    display: inline-block;
     margin-bottom: 0;
+}
+
+#addTaskButton > form {
+    display: inline;
+}
+
+.card-body {
+    overflow-y: scroll hidden;
 }

@@ -35,6 +35,13 @@
 }
 
 
+.profile_pic {
+    width: 150px;
+    height: 150px;
+}
+
+
+
 
 @media (min-width: 577px) {
     .account-container {

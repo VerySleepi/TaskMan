@@ -1,26 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+
 html {
     font-size: 14px;
 }
 
 main {
-    flex-shrink: 1 !important;
     display: grid;
     grid-template-rows: auto 1fr;
     grid-template-areas: "header"
         "content";
     max-width: 100%;
     min-width: 50%;
+    max-height: 100vh;
     row-gap: 4px;
+    font-family: "Nunito", sans-serif;
+    grid-auto-flow: row;
 }
 
 header {
+    display: flex;
     grid-area: header;
     font-size: 26px;
     font-weight: 600;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
 }
 
+    header > #currentProfile {
+        font-size: 20px;
+    }
+
 .content {
+    display: grid;
     grid-area: content;
+    padding: 10px;
+    grid-template-rows: none;
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "cards description";
+    overflow-y: scroll hidden;
+    justify-content: space-evenly;
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
@@ -41,7 +60,10 @@ header {
     text-align: start;
 }
 
-
+.profile_pic {
+    width: 40px;
+    height: 40px;
+}
 
 
 @media (min-width: 720px) {
@@ -49,21 +71,32 @@ header {
         font-size: 16px;
     }
 
-    .profile_pic {
-        width: 150px;
-        height: 150px;
-    }
-
-
-    .navbar-expand-sm .navbar-nav {
-        flex-direction: column;
+    main {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        grid-template-columns: auto 1fr;
+        grid-template-areas: "sidebar header"
+            "sidebar content";
+        max-width: 100%;
+        min-width: 50%;
+        max-height: 100vh;
+        row-gap: 4px;
+        font-family: "Nunito", sans-serif;
+        grid-auto-flow: column dense;
+        overflow: hidden auto;
     }
 
     #sidebar {
         display: block;
+        grid-area: sidebar;
         width: fit-content;
         max-height: 100%;
         background-color: #c9ffd3;
+        font-family: "Nunito", sans-serif;
+        grid-area: sidebar;
+        grid-row-start: 1;
+        grid-row-end: 3;
+        overflow:clip;
     }
 
     #menu {
@@ -77,8 +110,12 @@ header {
     }
 
     .nav-item {
-        font-size: 19px;
-        font-weight: 500;
+        font-size: 17px;
+        font-weight: 600;
+        width: 100%;
+        margin-bottom: 5px;
+        text-align: center;
+        justify-content: center;
     }
 
         .nav-item > p {
@@ -86,7 +123,16 @@ header {
             min-width: fit-content;
         }
 
-        .nav-item > form > button {
-            padding: 6px 0px;
+        .nav-item > form {
+            padding: 0px;
         }
+
+            .nav-item > form > button {
+                width: 100%;
+                margin: 4px 0px;
+            }
+
+    .nav-link {
+        background-color: #77df88
+    }
 }

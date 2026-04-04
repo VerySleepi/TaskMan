@@ -13,56 +13,57 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
-    <div class="container-fluid">
+    <main>
+        <div id="sidebar" class="col-auto col-md-3 col-xl-2 px-sm-2 px-0">
 
-        <div class="row flex-nowrap">
+            <div id="navsidebar" class="d-flex flex-column align-items-center align-items-sm-start px-2 pt-2 text-dark min-vh-100">
 
-            <div id="sidebar" class="col-auto col-md-3 col-xl-2 px-sm-2 px-0">
+                <a class="navbar-brand d-flex align-items-center pb-3 mb-md-0 me-md-auto text-dark text-decoration-none" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="fs-2 d-none d-sm-inline">TaskMan</span>
+                </a>
 
-                <div id="navsidebar" class="d-flex flex-column align-items-center align-items-sm-start px-2 pt-2 text-dark min-vh-100">
+                <ul id="menu" class="nav nav-pills flex-column align-items-center align-items-sm-start">
+                    <li class="nav-item">
+                        <a class="nav-link align-middle px-0 text-dark" asp-area="" asp-controller="Home" asp-action="Index">
+                            <i class="fs-4 bi bi-house-fill"></i><span class="ms-0 d-none d-sm-block">Home</span>
+                        </a>
+                    </li>
 
-                    <a class="navbar-brand d-flex align-items-center pb-3 mb-md-0 me-md-auto text-dark text-decoration-none" asp-area="" asp-controller="Home" asp-action="Index">
-                        <span class="fs-2 d-none d-sm-inline">TaskMan</span>
-                    </a>
+                    <li class="nav-item">
+                        <a class="nav-link align-middle px-0 text-dark" asp-area="" asp-controller="Tasks" asp-action="Dashboard">
+                            <i class="fs-4 bi bi-house-fill"></i><span class="ms-0 d-none d-sm-block">Tasks</span>
+                        </a>
+                    </li>
 
-                    <ul id="menu" class="nav nav-pills flex-column align-items-center align-items-sm-start">
-                        <li class="nav-item">
-                            <a class="nav-link align-middle px-0 text-dark" asp-area="" asp-controller="Home" asp-action="Index">
-                                <i class="fs-4 bi bi-house-fill"></i><span class="ms-1 d-none d-sm-inline">Home</span>
-                            </a>
-                        </li>
+                    <li id="projectNav" class="nav-item mb-auto">
+                        <a class="nav-link align-middle px-0 text-dark" asp-area="" asp-controller="Projects" asp-action="Index">
+                            <i class="fs-4 bi bi-house-fill"></i><span class="ms-0 d-none d-sm-block">Projects</span>
+                        </a>
+                    </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link align-middle px-0 text-dark" asp-area="" asp-controller="Tasks" asp-action="Dashboard">
-                                <i class="fs-4 bi bi-house-fill"></i><span class="ms-1 d-none d-sm-inline">Tasks</span>
-                            </a>
-                        </li>
+                    <partial name="_LoginPartial" />
 
-                        <li id="projectNav" class="nav-item mb-auto">
-                            <a class="nav-link align-middle px-0 text-dark" asp-area="" asp-controller="Projects" asp-action="Index">
-                                <i class="fs-4 bi bi-house-fill"></i><span class="ms-1 d-none d-sm-inline">Projects</span>
-                            </a>
-                        </li>
-
-                        <partial name="_LoginPartial" />
-
-                    </ul>
+                </ul>
                 <footer class="border-top footer text-muted text-dark justify-items-center">
                     <div class="container">
                         &copy; @date - TaskMan - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                     </div>
                 </footer>
-                </div>
             </div>
-            <main role="main" class="py-2 px-2">
-                <header>@ViewData["Title"]</header>
-                <div class="content">
-
-                    @RenderBody()
-                </div>
-            </main>
         </div>
-    </div>
+        <div id="stickyHeader">
+            <header>
+                <span>@ViewData["Title"]</span>
+                <div id="currentProfile"><span id="currentUsername">@ViewData["userName"]</span> <img src="@ViewData["profilePic"]" class="profile_pic" /> </div>
+            </header>
+
+        </div>
+        <br />
+        <div class="content">
+            @RenderBody()
+        </div>
+
+    </main>
 
     @* <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
         <div class="container-fluid">
