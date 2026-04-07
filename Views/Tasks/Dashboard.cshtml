@@ -13,32 +13,40 @@
         <div class="card mb-3 task-card" style="--bg-col: @usertasks.UserTask.BckGr_Col;">
             <div class="card-header border-bottom-0">
                 <h5 class="card-title">@usertasks.UserTask.Title</h5>
-                <div id="addTaskButton" class="d-inline-block">
-                    <form asp-area="" asp-controller="Tasks" asp-action="CreateTask" method="post" class="align-middle px-0 text-dark">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-primary">
-                        Add
-                    </button>
-                </form>
+                @if (usertasks.UserTask.Title != "Completed Tasks")
+                {
+                    <div id="addTaskButton" class="d-inline-block">
+                        <form asp-area="" asp-controller="Tasks" asp-action="CreateTask" method="post" class="align-middle px-0 text-dark">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="newTaskBtn btn btn-primary">
+                                Add
+                            </button>
+                        </form>
+                    </div>
+                    
+                }
+            </div>
+            <div class="card-body">
+                <ul>
+                    @foreach (var task in usertasks.Tasks)
+                    {
+                        <li>
+                            <h6>@task.Title</h6>
+                            <p><strong>Due Date:</strong> @task.Due_Date.ToString("yyyy-MM-dd")</p>
+                            <p><strong>Status:</strong> @task.Status</p>
+                        </li>
+                    }
+                </ul>
             </div>
         </div>
-        <div class="card-body">
-            <ul>
-                @foreach (var task in usertasks.Tasks)
-                {
-                    <li>
-                        <h6>@task.Title</h6>
-                        <p><strong>Due Date:</strong> @task.Due_Date.ToString("yyyy-MM-dd")</p>
-                        <p><strong>Status:</strong> @task.Status</p>
-                    </li>
-                }
-            </ul>
-        </div>
-    </div>
-}
+    }
 </div>
 
 @section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/tasks.js" asp-append-version="true"></script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
     }
