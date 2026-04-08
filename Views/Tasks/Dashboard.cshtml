@@ -8,23 +8,16 @@
 }
 
 <div class="cardContainer">
+    <div id="addTaskButton" class="d-inline-block">
+        <button id="newTaskBtn" class="btn btn-primary"> 
+            Add
+        </button>
+    </div>
     @foreach (var usertasks in Model.structuredUserTasks)
     {
         <div class="card mb-3 task-card" style="--bg-col: @usertasks.UserTask.BckGr_Col;">
             <div class="card-header border-bottom-0">
                 <h5 class="card-title">@usertasks.UserTask.Title</h5>
-                @if (usertasks.UserTask.Title != "Completed Tasks")
-                {
-                    <div id="addTaskButton" class="d-inline-block">
-                        <form asp-area="" asp-controller="Tasks" asp-action="CreateTask" method="post" class="align-middle px-0 text-dark">
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="newTaskBtn btn btn-primary">
-                                Add
-                            </button>
-                        </form>
-                    </div>
-                    
-                }
             </div>
             <div class="card-body">
                 <ul>
@@ -41,6 +34,8 @@
         </div>
     }
 </div>
+
+@await Html.PartialAsync("_NewTaskPopUp")
 
 @section Scripts {
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

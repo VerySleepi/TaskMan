@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -8,6 +9,7 @@ using TaskMan.ViewModels.Tasks;
 
 namespace TaskMan.Controllers
 {
+    [Authorize]
     public class TasksController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -66,23 +68,86 @@ namespace TaskMan.Controllers
         }
 
         // GET: TasksController/Create
-        public ActionResult CreateTask()
+        [HttpGet]
+        public async Task<IActionResult> CreateTask()
         {
-            return View();
+            var userId = userManager.GetUserId(HttpContext.User);
+
+            var userTaskLists = await _context.UserTasks
+                .Where(ut => ut.User_ID == userId && ut.Title != "Completed Tasks")
+                .ToListAsync();
+
+            userTaskLists.Reverse();
+
+            var model = new NewTaskViewModel
+            {
+                Due_Date = DateOnly.FromDateTime(DateTime.Now),
+                Status = 0,
+                UserTaskLists = userTaskLists
+            };
+
+            return PartialView("_CreateTask", model);
         }
 
         // POST: TasksController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> CreateTask(NewTaskViewModel model)
         {
+
+            // Fetch Tasks that match the extracted User_List_IDs
+            var tasksList = await _context.Task
+                .Where(t => t.User_List_ID == model.User_List_ID && t.Title.StartsWith("New Task"))
+                .ToListAsync();
+
+
             try
             {
-                return RedirectToAction(nameof(Index));
+                if (model.Title == null || model.Title == string.Empty)
+                {
+                    if (tasksList.Count > 0)
+                    {
+                        model.Title = $"New Task ({tasksList.Count})";
+
+                    }
+                    else
+                    {
+                        model.Title = "New Task";
+
+                    }
+                }
+                if (model.Description == null)
+                {
+                    model.Description = "No Description";
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    Debug.WriteLine(model.Title);
+                    Debug.WriteLine(model.Description);
+                    foreach (var entry in ModelState)
+                    {
+                        Debug.WriteLine($"{entry.Key}: {string.Join(", ", entry.Value.Errors.Select(e => e.ErrorMessage))}");
+                    }
+                }
+
+                var task = new TaskMan.Models.Task
+                {
+                    Title = model.Title,
+                    Description = model.Description,
+                    Due_Date = model.Due_Date,
+                    Status = 0,
+                    User_List_ID = model.User_List_ID
+                };
+
+                _context.Task.Add(task);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Dashboard");
             }
             catch
             {
-                return View();
+                return RedirectToAction("Dashboard");
             }
         }
 

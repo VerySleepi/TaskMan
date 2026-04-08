@@ -38,7 +38,7 @@ header {
     grid-template-rows: none;
     grid-template-columns: 1fr auto;
     grid-template-areas: "cards description";
-    overflow-y: scroll hidden;
+    overflow-y: hidden;
     justify-content: space-evenly;
 }
 
