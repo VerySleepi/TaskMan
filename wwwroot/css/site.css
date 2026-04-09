@@ -38,7 +38,8 @@ header {
     grid-template-rows: none;
     grid-template-columns: 1fr auto;
     grid-template-areas: "cards description";
-    overflow-y: hidden;
+    overflow-y: scroll;
+    scrollbar-width: none;
     justify-content: space-evenly;
 }
 
@@ -86,6 +87,11 @@ header {
         overflow: hidden auto;
     }
 
+    footer {
+        border-top: 1px solid #dee2e6;
+        color: #212529bf;
+    }
+
     #sidebar {
         display: block;
         grid-area: sidebar;
@@ -96,17 +102,36 @@ header {
         grid-area: sidebar;
         grid-row-start: 1;
         grid-row-end: 3;
-        overflow:clip;
+        overflow: clip;
+    }
+
+    #navsidebar {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        align-items: flex-start;
+        padding: 8px 8px 0px 8px;
+        color: #212529;
     }
 
     #menu {
+        display: flex;
         flex: 1;
+        flex-direction: column;
         width: 100%;
+        align-items: flex-start;
+        padding-left: 0px;
+        margin-bottom: 0px;
     }
 
-    .navbar-brand {
+    #appTitle {
+        display: flex;
         width: 100%;
         font-weight: 900;
+        text-decoration: none;
+        padding-bottom: 16px;
+        font-size: 32px;
+        color: #212529;
     }
 
     .nav-item {
@@ -115,7 +140,10 @@ header {
         width: 100%;
         margin-bottom: 5px;
         text-align: center;
-        justify-content: center;
+        list-style: none;
+        background-color: #77df88;
+        border-radius: 6px;
+
     }
 
         .nav-item > p {
@@ -129,10 +157,14 @@ header {
 
             .nav-item > form > button {
                 width: 100%;
-                margin: 4px 0px;
             }
 
     .nav-link {
-        background-color: #77df88
+        padding: 8px 0px 8px 0px;
+        text-decoration: none;
+    }
+
+    #projectNav {
+        margin-bottom: auto;
     }
 }

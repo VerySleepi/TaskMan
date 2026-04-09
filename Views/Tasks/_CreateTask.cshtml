@@ -1,6 +1,6 @@
 ﻿@model TaskMan.ViewModels.Tasks.NewTaskViewModel
 
-<form asp-controller="Tasks" asp-action="CreateTask" method="post">
+<form class="taskForm" asp-controller="Tasks" asp-action="CreateTask" method="post">
     <div class="form-group">
         <label for="taskTitle">Title</label>
         <input id="taskTitle" asp-for="Title" class="task-input" />
@@ -8,7 +8,7 @@
 
     <div class="form-group">
         <label for="taskDescription">Description</label>
-        <textarea id="taskDescription" asp-for="Description" class="task-textarea"></textarea>
+        <textarea id="taskDescription" asp-for="Description" class="task-input"></textarea>
     </div>
 
     <div class="form-group">
@@ -16,9 +16,9 @@
         <input id="taskDueDate"
                asp-for="Due_Date"
                type="date"
-               class="task-input"
+               class="task-select"
                min="@DateTime.Now.ToString("yyyy-MM-dd")"
-               max="@DateTime.Now.AddYears(1).ToString("yyyy-MM-dd")"/>
+               max="@DateTime.Now.AddYears(1).ToString("yyyy-MM-dd")" /> 
     </div>
 
     <div class="form-group">
@@ -32,4 +32,5 @@
     </div>
 
     <button id="createTaskBtn" type="submit">Create Task</button>
+
 </form>

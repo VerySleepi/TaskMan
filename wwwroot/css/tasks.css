@@ -1,10 +1,11 @@
-﻿.card-container {
+﻿.cardContainer {
     display: flex;
+    flex-direction: column;
+    min-height: 100%;
 }
 
 
 .task-card {
-    min-height: 100%;
     background-color: var(--bg-col) !important;
 }
 
@@ -22,16 +23,22 @@
 }
 
 #addTaskButton {
-
+    display: flex;
+    justify-content: end;
     margin-bottom: 14px;
 }
 
-#addTaskButton > form {
-    display: inline;
+.card-body {
+    overflow-y: hidden;
+    scrollbar-width: none;
 }
 
-.card-body {
-    overflow-y: scroll hidden;
+.card-body > ul {
+    padding-left: 10px;
+}
+
+.card-body > ul > li {
+    list-style: none;
 }
 
 .overlay {
@@ -52,9 +59,94 @@
 }
 
 .popup {
+    display: grid;
+    grid-template-rows: 1fr;
     background: white;
     padding: 20px;
     border-radius: 9px;
-    min-width: 300px;
-    max-width: 600px;
+    min-width: 60%;
+    min-height: fit-content;
+    width: 80%;
 }
+
+input,
+select,
+textarea {
+    font: inherit;
+    height: 2lh;
+    border-radius: 5px;
+}
+
+form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    height: 100%;
+}
+
+.form-group {
+    display: grid;
+    gap: 0.5em;
+    align-content: start;
+}
+
+label { 
+    font-size: 1rem;
+}
+
+input {
+    background: var(--accent);
+    color: var(--text-col);
+    border: 1px solid;
+    border-radius: 6px;
+    padding: 1ex 2ex;
+    width: 100%;
+}
+
+.form-group:has(.task-input) {
+    grid-column: 1 / -1;
+}
+
+.taskForm button[type="submit"] {
+    grid-column: 1 / -1;
+    align-self: end;
+    justify-self: start;
+    height: fit-content;
+    width: 25%;
+}
+
+#newTask_close {
+    width: 17%;
+    position: fixed;
+    align-self: end;
+    justify-self: end;
+}
+/*#createTaskBtn {
+    min-width: fit-content;
+    margin-bottom: 5px;
+    border-radius: 6px;
+    border: 2px solid #30cf58;
+    background-color: #77df88;
+}
+
+.close-btn {
+    border-radius: 6px;
+    border: 2px solid #30cf58;
+    background-color: #77df88;
+}
+
+form {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr 1fr;
+}
+
+form > input, button, select, textarea {
+    font: inherit;
+}
+
+.form-group {
+    display: grid;
+    gap: 0.5em;
+}
+*/
