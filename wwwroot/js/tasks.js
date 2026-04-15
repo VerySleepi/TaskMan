@@ -17,6 +17,8 @@ function toggleCreateTaskPopup() {
     const overlay = document.getElementById('newTask-overlay');
     const content = document.getElementById('newTask-content');
 
+    console.log(overlay)
+
     if (overlay.classList.contains('hidden')) {
         fetch("/Tasks/CreateTask")
             .then(response => response.text())
@@ -30,6 +32,25 @@ function toggleCreateTaskPopup() {
         content.innerHTML = '';
     }
 }
+
+function toggleCreateListPopup() {
+    const overlay = document.getElementById('newList-overlay');
+    const content = document.getElementById('newList-content');
+
+    if (overlay.classList.contains('hidden')) {
+        fetch("/Tasks/CreateList")
+            .then(response => response.text())
+            .then(html => {
+                content.innerHTML = html;
+                overlay.classList.remove('hidden');
+            })
+            .catch(err => console.error("Error loading CreateList form:", err))
+    } else {
+        overlay.classList.add('hidden');
+        content.innerHTML = '';
+    }
+}
+
 function taskCardSize() {
     let cardObjects = document.getElementsByClassName("cardObjectList");
 
@@ -55,6 +76,22 @@ document.addEventListener('DOMContentLoaded', () => {
             event.preventDefault();
             toggleCreateTaskPopup();
         })
+    }
+
+    const newListBtn = document.getElementById('newListBtn');
+    if (newListBtn) {
+        newListBtn.addEventListener('click', () => {
+            console.log("Button clicked!");
+            toggleCreateListPopup();
+        })
+    }
+
+    const listCloseBtn = document.getElementById('newList_close');
+    if (listCloseBtn) {
+        listCloseBtn.addEventListener('click', () => {
+            console.log("Button clicked!");
+            toggleCreateListPopup();
+        });
     }
 
     const closeBtn = document.getElementById('newTask_close');

@@ -67,7 +67,7 @@ namespace TaskMan.Controllers
             return View();
         }
 
-        // GET: TasksController/Create
+        // GET: TasksController/CreateTask
         [HttpGet]
         public async Task<IActionResult> CreateTask()
         {
@@ -89,18 +89,15 @@ namespace TaskMan.Controllers
             return PartialView("_CreateTask", model);
         }
 
-        // POST: TasksController/Create
+        // POST: TasksController/CreateTask
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateTask(NewTaskViewModel model)
         {
-
             // Fetch Tasks that match the extracted User_List_IDs
             var tasksList = await _context.Task
                 .Where(t => t.User_List_ID == model.User_List_ID && t.Title.StartsWith("New Task"))
                 .ToListAsync();
-
-
             try
             {
                 if (model.Title == null || model.Title == string.Empty)
@@ -149,6 +146,17 @@ namespace TaskMan.Controllers
             {
                 return RedirectToAction("Dashboard");
             }
+        }
+
+
+        // GET: TasksController/CreateList
+        [HttpGet]
+        public async Task<IActionResult> CreateList()
+        {
+            var model = new NewListViewModel();
+
+            return PartialView("_CreateList", model);
+
         }
 
         // GET: TasksController/Edit/5

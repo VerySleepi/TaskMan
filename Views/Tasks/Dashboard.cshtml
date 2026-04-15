@@ -8,11 +8,15 @@
 }
 
 <div class="cardContainer">
-    <div id="addTaskButton">
-        <button id="newTaskBtn" class="btn btn-primary"> 
-            Add
+    <div class="addButtons">
+        <button id="newListBtn" class="addBtn">
+            New List
+        </button>
+        <button id="newTaskBtn" class="addBtn">
+            Add Task
         </button>
     </div>
+
     @foreach (var usertasks in Model.structuredUserTasks)
     {
         <div class="card mb-3 task-card" style="--bg-col: @usertasks.UserTask.BckGr_Col;">
@@ -36,6 +40,7 @@
 </div>
 
 @await Html.PartialAsync("_NewTaskPopUp")
+@await Html.PartialAsync("_NewTaskListPopUp")
 
 @section Scripts {
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
