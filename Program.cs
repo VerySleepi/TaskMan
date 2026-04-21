@@ -13,9 +13,6 @@ builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.Services.AddTransient<TaskMan.Services.IEmailSender, EmailSender>();
 builder.Services.AddControllersWithViews();
 
-
-
-
 // MySQL DB Connection
 string _GetConnStringName = builder.Configuration.GetConnectionString("DefaultConnectionMySQL");
 builder.Services.AddDbContext<ApplicationDbContext>(options=>options.UseMySql(_GetConnStringName, ServerVersion.AutoDetect(_GetConnStringName)));
@@ -40,7 +37,6 @@ builder.Services.ConfigureApplicationCookie(options =>
 {
     // Cookie settings
     options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
-
     options.LoginPath = "/Account/Login";
     options.SlidingExpiration = true;
 });

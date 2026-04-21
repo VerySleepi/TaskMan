@@ -196,7 +196,7 @@ button {
         margin: 0px 10px;
     }
 
-        #bg-list li button {
+        #bg-list li input {
             width: 20px;
             height: 20px;
             border-radius: 50%;

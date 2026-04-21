@@ -25,6 +25,12 @@ namespace TaskMan.Controllers
         {
             var userId = _userManager.GetUserId(HttpContext.User);
             var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                Debug.WriteLine($"User with ID {userId} not found.");
+                return RedirectToAction("Login", "Account");
+            }
+            Debug.WriteLine($"User ID: {userId}, User Name: {user.UserName}, Profile Pic: {user.Profile_Pic}");
             ViewData["userName"] = user.UserName;
             ViewData["profilePic"] =  Url.Content($"~/images/{user.Profile_Pic}");
 

@@ -62,7 +62,7 @@ namespace TaskMan.Controllers
         }
 
         // GET: TasksController/Details/5
-        public ActionResult Details(int taskid)
+        public ActionResult Details()
         {
             return View();
         }
@@ -154,7 +154,6 @@ namespace TaskMan.Controllers
         public async Task<IActionResult> CreateList()
         {
             var model = new NewListViewModel();
-
             return PartialView("_CreateList", model);
 
         }

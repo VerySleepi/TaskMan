@@ -87,9 +87,10 @@ namespace TaskMan.Controllers
             var to = user.Email;
             var subject = "New Login Detected";
             var message = $"A new login to your account was detected at {DateTime.Now}. If this was you, please use the following code to complete the login process: {token}. If this wasn't you, we recommend changing your password immediately.";
+            Debug.WriteLine($"Sending email to {to} with token: {token}");
             await emailSender.SendEmailAsync(senderEmail, to, subject, message);
 
-            return View(new TwoFactorAuthenticationViewModel { UserId = id });
+            return View(model);
         }
 
         // POST: Account/VerifyWith2fa

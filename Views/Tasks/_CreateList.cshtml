@@ -17,12 +17,12 @@
             @foreach (var bg in Model.BackgroundColors)
             {
                 <li>
-                    <button type="button" name="listBackground" style="--fillCol: @bg" />
+                    <input type="button" name="listBackground" style="--fillCol: @bg" asp-for="BckGr_Col" />
                 </li>
             }
         </ul>
     </div>
 
-    <button id="" type="submit">Create Task</button>
+    <button id="" type="submit">Create List</button>
 
 </form>

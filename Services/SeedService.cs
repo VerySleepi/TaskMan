@@ -8,7 +8,9 @@ namespace TaskMan.Services
     {
         public static async System.Threading.Tasks.Task SeedDatabase(IServiceProvider serviceProvider)
         {
+            // Create a scope to get the required services
             using var scope = serviceProvider.CreateScope();
+            // Get the required services from the scope
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
