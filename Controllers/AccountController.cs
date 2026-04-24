@@ -30,7 +30,11 @@ namespace TaskMan.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-            return View();
+            var model = new LoginViewModel()
+            {
+                RememberMe = false
+            };
+            return View(model);
         }
 
         // POST: Account/Login
@@ -50,29 +54,39 @@ namespace TaskMan.Controllers
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                 return View(model);
             }
-
-
             var result = await signInManager.PasswordSignInAsync(userName: user.UserName, password: model.Password, isPersistent: model.RememberMe, lockoutOnFailure: true);
 
             Debug.WriteLine(result.ToString(), model.Email, model.Password, model.RememberMe);
-
             if (result.RequiresTwoFactor)
             {
-                return RedirectToAction("VerifyWith2fa", "Account", new { id = user.Id });
+                return RedirectToAction("VerifyWith2fa", "Account", new { id = user.Id, remember = model.RememberMe });
             }
             if (result.Succeeded)
             {
-                return RedirectToAction("Index", "Home");
+                // If the user has previously chosen to be remembered, skip the 2FA step and log in directly.
+                if (user.Remembered == true)
+                {
+                    await signInManager.SignInAsync(user, isPersistent: model.RememberMe);
+                    user.Remembered = model.RememberMe;
+                    return RedirectToAction("Index", "Home");
+                }
+                else if (user.TwoFactorEnabled)
+                {
+                    return RedirectToAction("VerifyWith2fa", "Account", new { id = user.Id, remember = model.RememberMe });
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Home");
+                }
             }
             
-
-            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            Debug.WriteLine($"Login failed for user {model.Email}. Result: {result}");
             return View(model);
         }
 
         // GET: Account/VerifyWith2fa
         [HttpGet]
-        public async Task<IActionResult> VerifyWith2fa(string id)
+        public async Task<IActionResult> VerifyWith2fa(string id, bool rememberMe)
         {
             var user = await userManager.FindByIdAsync(id);
             if (user == null)
@@ -80,7 +94,7 @@ namespace TaskMan.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var model = new TwoFactorAuthenticationViewModel { UserId = id };
+            var model = new TwoFactorAuthenticationViewModel { UserId = id, RememberMe = rememberMe };
             var token = await userManager.GenerateTwoFactorTokenAsync(user, "Email");
 
             var senderEmail = "taskMan@taskman.com";
@@ -98,7 +112,7 @@ namespace TaskMan.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> VerifyWith2fa(TwoFactorAuthenticationViewModel model)
         {
-
+            var user = await userManager.FindByIdAsync(model.UserId);
             //Debug.WriteLine($"Email: {email}, RememberMe: {rememberMe}, TwoFactorCode: {code}");
             if (!ModelState.IsValid)
             {
@@ -107,15 +121,16 @@ namespace TaskMan.Controllers
 
             try
             {
-                var result = await signInManager.TwoFactorSignInAsync("Email", model.Code, isPersistent: false, rememberClient: false);
+                var result = await signInManager.TwoFactorSignInAsync("Email", model.Code, isPersistent: model.RememberMe, rememberClient: false);
                 if (result.Succeeded)
                 {
+                    user.Remembered = model.RememberMe;
                     return RedirectToAction("Index", "Home");
                 }
                 else
                 {
                     ModelState.AddModelError(string.Empty, "Invalid code.");
-                    return View(model);
+                    return RedirectToAction("Login", "Account");
                 }
             }
             catch (Exception ex)
@@ -283,6 +298,8 @@ namespace TaskMan.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
+            // Set the Remembered property to false when the user logs out, so that they will be prompted for 2FA the next time they log in.
+            // Need to prevent user from navigating back to any pages after logging out, so that they can't access any pages without logging in again, even if they have previously chosen to be remembered.
             await signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
         }

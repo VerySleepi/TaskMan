@@ -351,6 +351,9 @@ namespace TaskMan.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<bool>("Remembered")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("longtext");
 

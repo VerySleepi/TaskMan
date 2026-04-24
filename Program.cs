@@ -33,14 +33,6 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
     .AddDefaultTokenProviders()
     .AddTokenProvider<EmailTokenProvider<User>>("Email");
 
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    // Cookie settings
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
-    options.LoginPath = "/Account/Login";
-    options.SlidingExpiration = true;
-});
-
 var app = builder.Build();
 
 await SeedService.SeedDatabase(app.Services);
