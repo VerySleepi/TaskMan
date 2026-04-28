@@ -16,8 +16,7 @@ namespace TaskMan.Migrations
                 FOR EACH ROW
                 BEGIN
                     INSERT INTO taskman.usertasks (User_ID, Title, Description, Progress, BckGr_Col)
-                    VALUES (new.Id, 'Completed Tasks', 'Tasks previously completed', 100, '#f5f5f5'), 
-                (new.Id, 'To-do', 'Tasks left to complete', 100, '#ababab');
+                    VALUES (new.Id, 'To-do', 'Tasks left to complete', 100, '#ababab');
                 END;
             ");
 

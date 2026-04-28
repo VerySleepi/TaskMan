@@ -1,18 +1,4 @@
-﻿(() => {
-    checkFunctionality();
-}
-)();
-
-function checkFunctionality() {
-    var buttons = document.getElementsByClassName('newTaskBtn');
-
-    for (var i = 0; i < buttons.length; i++) {
-        buttons[i].addEventListener("click", function () {
-            console.log("Button Clicked!");
-        })
-    }
-}
-
+﻿let selectedTaskId = null;
 function toggleCreateTaskPopup() {
     const overlay = document.getElementById('newTask-overlay');
     const content = document.getElementById('newTask-content');
@@ -25,6 +11,7 @@ function toggleCreateTaskPopup() {
             .then(html => {
                 content.innerHTML = html;
                 overlay.classList.remove('hidden');
+                taskListDropdown();
             })
             .catch(err => console.error("Error loading CreateTask form:", err))
     } else {
@@ -37,11 +24,13 @@ function toggleCreateListPopup() {
     const overlay = document.getElementById('newList-overlay');
     const content = document.getElementById('newList-content');
 
+    console.log(overlay)
+
     if (overlay.classList.contains('hidden')) {
         fetch("/Tasks/CreateList")
             .then(response => response.text())
             .then(html => {
-                content.innerHTML = html;
+                content.innerHTML = html;            
                 overlay.classList.remove('hidden');
             })
             .catch(err => console.error("Error loading CreateList form:", err))
@@ -54,6 +43,7 @@ function toggleCreateListPopup() {
 function taskCardSize() {
     let cardObjects = document.getElementsByClassName("cardObjectList");
 
+    // Set max heigh of card objects to the sum of the heights of the title and description elements of the tasks
     if (cardObjects) {
         console.log("Card objects found: " + cardObjects.length);
         for (let i = 0; i < cardObjects.length; i++) {
@@ -66,6 +56,80 @@ function taskCardSize() {
 
         }
     }
+}
+
+function toggleTaskDetailPanel() {
+    const overlay = document.getElementById('newTask-overlay');
+    const content = document.getElementById('newTask-content');
+    let sidePanel = document.getElementById('taskDetailsPanel');
+
+    document.querySelectorAll('.taskObject').forEach(card => {
+        card.addEventListener('click', () => {
+
+            const taskId = card.dataset.taskId;
+            const title = card.dataset.taskTitle;
+            const description = card.dataset.taskDescription;
+            const dueDate = card.dataset.taskDueDate;
+            const status = card.dataset.taskStatus;
+
+            document.getElementById('taskTitle').textContent = title;
+            document.getElementById('taskDescription').textContent = description;
+            document.getElementById('taskDueDate').textContent = dueDate;
+            document.getElementById('taskStatus').textContent = status;
+
+            document.getElementById('taskCompletedId').value = taskId;
+
+            selectedTaskId = taskId;
+
+            if (sidePanel.classList.contains('hidden')) {
+                sidePanel.classList.remove('hidden');
+            }
+
+        });
+    });
+
+    document.getElementById('taskEditBtn').addEventListener('click', () => {
+        // Fetch pre-filled edit form from EditTask GET action
+        fetch(`/Tasks/EditTask?taskId=${selectedTaskId}`)
+            .then(response => response.text())
+            .then(html => {
+                content.innerHTML = html;
+                overlay.classList.remove('hidden');
+            })
+            .catch(err => console.error("Error loading EditTask form:", err));
+
+    });
+
+
+}
+
+function taskListDropdown() {
+    const dropdown = document.getElementById("taskListDropdown");
+    const toggle = document.getElementById("taskListToggle");
+    const dropdownList = document.querySelector(".list-dropdown-list");
+    const listInput = document.getElementById("taskListID");
+    const selectedList = document.getElementById("taskListSelected");
+    const dropdownItems = dropdownList.querySelectorAll(".list-dropdown-item");
+
+    toggle.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        dropdownList.classList.toggle("hidden");
+    });
+
+    dropdownItems.forEach(item => {
+        item.addEventListener("click", (ev) => {
+            ev.preventDefault();
+            listInput.value = item.value;
+            selectedList.textContent = item.textContent;
+            dropdownList.classList.add("hidden");
+        });
+    });
+
+    document.addEventListener("click", (ev) => {
+        if (!dropdown.contains(ev.target)) {
+            dropdownList.classList.add("hidden");
+        }
+    });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -82,6 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (newListBtn) {
         newListBtn.addEventListener('click', () => {
             console.log("Button clicked!");
+            event.preventDefault();
             toggleCreateListPopup();
         })
     }
@@ -102,6 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     taskCardSize();
+    toggleTaskDetailPanel();
 })
 
 

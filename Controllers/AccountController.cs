@@ -24,6 +24,7 @@ namespace TaskMan.Controllers
 
         // GET: Login
         [HttpGet]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Login()
         {
             if (User.Identity != null && User.Identity.IsAuthenticated)
@@ -86,8 +87,15 @@ namespace TaskMan.Controllers
 
         // GET: Account/VerifyWith2fa
         [HttpGet]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<IActionResult> VerifyWith2fa(string id, bool rememberMe)
         {
+            var twoFactorUser = await signInManager.GetTwoFactorAuthenticationUserAsync();
+            if (twoFactorUser == null)
+            {       
+                return RedirectToAction("Login", "Account");
+            }
+
             var user = await userManager.FindByIdAsync(id);
             if (user == null)
             {
@@ -110,6 +118,7 @@ namespace TaskMan.Controllers
         // POST: Account/VerifyWith2fa
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<IActionResult> VerifyWith2fa(TwoFactorAuthenticationViewModel model)
         {
             var user = await userManager.FindByIdAsync(model.UserId);
@@ -122,6 +131,7 @@ namespace TaskMan.Controllers
             try
             {
                 var result = await signInManager.TwoFactorSignInAsync("Email", model.Code, isPersistent: model.RememberMe, rememberClient: false);
+                await userManager.RemoveAuthenticationTokenAsync(user, "Email", "TwoFactorCode");
                 if (result.Succeeded)
                 {
                     user.Remembered = model.RememberMe;

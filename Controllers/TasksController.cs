@@ -86,6 +86,8 @@ namespace TaskMan.Controllers
                 UserTaskLists = userTaskLists
             };
 
+            ViewData["Context"] = "Create";
+
             return PartialView("_CreateTask", model);
         }
 
@@ -105,12 +107,10 @@ namespace TaskMan.Controllers
                     if (tasksList.Count > 0)
                     {
                         model.Title = $"New Task ({tasksList.Count})";
-
                     }
                     else
                     {
                         model.Title = "New Task";
-
                     }
                 }
                 if (model.Description == null)
@@ -128,7 +128,7 @@ namespace TaskMan.Controllers
                     }
                 }
 
-                var task = new TaskMan.Models.Task
+                var task = new Models.Task
                 {
                     Title = model.Title,
                     Description = model.Description,
@@ -153,51 +153,277 @@ namespace TaskMan.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateList()
         {
-            var model = new NewListViewModel();
+            var userID = userManager.GetUserId(HttpContext.User);
+            if (userID == null)
+            {
+                return RedirectToAction("Dashboard");
+            }
+
+            var model = new NewListViewModel
+            {
+                Progress = 100,
+                BckGr_Col = "#E67E75"
+            };
             return PartialView("_CreateList", model);
-
         }
 
-        // GET: TasksController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: TasksController/Edit/5
+        // POST: TaskListController/CreateList
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<IActionResult> CreateList(NewListViewModel listViewModel)
+        {
+            var userID = userManager.GetUserId(HttpContext.User);
+            var userTaskLists = await _context.UserTasks.Where(t => t.User_ID == userID && t.Title.StartsWith("Task List")).ToListAsync();
+            try
+            {
+                //if (!ModelState.IsValid)
+                //{
+                //    return PartialView("_CreateList", listViewModel);
+                //}
+
+                if (listViewModel.Title == null)
+                {
+                    if (userTaskLists.Count > 0)
+                    {
+                        listViewModel.Title = $"Task List {userTaskLists.Count}";
+                    }
+                    else
+                    {
+                        listViewModel.Title = "Task List";
+                    }
+                }
+                if (listViewModel.Description == null)
+                {
+                    listViewModel.Description = "No Description";
+                }
+
+
+                var taskList = new Models.UserTasks
+                {
+                    User_ID = userID,
+                    Title = listViewModel.Title,
+                    Description = listViewModel.Description,
+                    Progress = listViewModel.Progress,
+                    BckGr_Col = listViewModel.BckGr_Col
+                };
+                _context.UserTasks.Add(taskList);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Dashboard", "Tasks");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return RedirectToAction("Dashboard", "Tasks");
+            }
+        }
+
+        // GET: TasksController/EditTask/5
+        [HttpGet]
+        public async Task<IActionResult> EditTask(int taskId)
+        {
+            var userId = userManager.GetUserId(HttpContext.User);
+
+            var task = await _context.Task.FindAsync(taskId);
+            if (task == null)
+            {
+                Debug.WriteLine($"Task with ID {taskId} not found.");
+                return NotFound();
+            }
+
+            // Fetch task parent UserTasks by task.User_List_ID
+            var taskList = await _context.UserTasks.FindAsync(task.User_List_ID);
+            if (taskList == null)
+            {
+                Debug.WriteLine($"UserTasks with ID {task.User_List_ID} not found.");
+                return NotFound();
+            }
+            // Ownership check: Ensure the current user owns the task list that the task belongs to
+            if (taskList.User_ID != userId)
+            {
+                Debug.WriteLine($"Unauthorized attempt to edit task with ID {taskId} by user {userId}.");
+                return Forbid();
+            }
+
+
+            var userTaskLists = await _context.UserTasks
+                .Where(ut => ut.User_ID == userId && ut.Title != "Completed Tasks")
+                .ToListAsync();
+
+            userTaskLists.Reverse();
+
+            var model = new NewTaskViewModel
+            {
+                Task_ID = task.Task_ID,
+                Title = task.Title,
+                Description = task.Description,
+                Due_Date = task.Due_Date,
+                Status = task.Status,
+                User_List_ID = task.User_List_ID,
+                UserTaskLists = userTaskLists
+            };
+
+            ViewData["Context"] = "Edit";
+
+
+            return PartialView("_CreateTask", model);
+        }
+
+        // POST: TasksController/EditTask/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditTask(int taskId, NewTaskViewModel model)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var userId = userManager.GetUserId(HttpContext.User);
+
+                var task = await _context.Task.FindAsync(taskId);
+                if (task == null)
+                {
+                    Debug.WriteLine($"Task with ID {taskId} not found.");
+                    return NotFound();
+                }
+
+                // Fetch parent UserTasks by task.User_List_ID
+                var taskList = await _context.UserTasks.FindAsync(task.User_List_ID);
+
+                if (taskList == null)
+                {
+                    Debug.WriteLine($"UserTasks with ID {task.User_List_ID} not found.");
+                    return NotFound();
+                }
+                // Ownership check: Ensure the current user owns the task list that the task belongs to
+                if (taskList.User_ID != userId)
+                {
+                    Debug.WriteLine($"Unauthorized attempt to delete task with ID {taskId} by user {userId}.");
+                    return Forbid();
+                }
+
+                task.Title = model.Title;
+                task.Description = model.Description;
+                task.Due_Date = model.Due_Date;
+
+                var changedTaskList = await _context.UserTasks.FindAsync(model.User_List_ID);
+                if (changedTaskList == null)
+                {
+                    Debug.WriteLine($"UserTasks with ID {model.User_List_ID} not found.");
+                    return NotFound();
+                }
+                if (changedTaskList.User_ID != userId)
+                {
+                    Debug.WriteLine($"Unauthorized attempt to change task list to ID {model.User_List_ID} for task with ID {taskId} by user {userId}.");
+                    return Forbid();
+                }
+                else
+                {
+                    Debug.WriteLine($"User {userId} is authorized to change task list to ID {model.User_List_ID} for task with ID {taskId}.");
+                    task.User_List_ID = model.User_List_ID;
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Dashboard", "Tasks");
             }
             catch
             {
-                return View();
+                Debug.WriteLine($"An error occurred while trying to edit task with ID {taskId}.");
+                return RedirectToAction("Dashboard", "Tasks");
             }
         }
 
-        // GET: TasksController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: TasksController/Delete/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> TaskCompletion(int taskId)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var userId = userManager.GetUserId(HttpContext.User);
+
+                var task = await _context.Task.FindAsync(taskId);
+                if (task == null)
+                {
+                    Debug.WriteLine($"Task with ID {taskId} not found.");
+                    return NotFound();
+                }
+                // Fetch task parent UserTasks by task.User_List_ID
+                var taskList = await _context.UserTasks.FindAsync(task.User_List_ID);
+                if (taskList == null)
+                {
+                    Debug.WriteLine($"UserTasks with ID {task.User_List_ID} not found.");
+                    return NotFound();
+                }
+                // Ownership check: Ensure the current user owns the task list that the task belongs to
+                if (taskList.User_ID != userId)
+                {
+                    Debug.WriteLine($"Unauthorized attempt to change completion status of task with ID {taskId} by user {userId}.");
+                    return Forbid();
+                }
+                // Toggle task completion status => Update list progress if task is being marked as completed
+                task.Status = task.Status == 0 ? 1 : 0;
+
+                // Count total number of tasks for this task list
+                var totalTasks = await _context.Task.Where(t => t.User_List_ID == task.User_List_ID).CountAsync();
+                // Count number of completed tasks for this task list
+                var completedTasks = await _context.Task.Where(t => t.User_List_ID == task.User_List_ID && t.Status == 1).CountAsync();
+                // Update task list progress based on the number of completed tasks
+                taskList.Progress = totalTasks > 0 ? Convert.ToInt32(Math.Round(100.0 * (completedTasks / totalTasks))) : 100;
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Dashboard", "Tasks");
+
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                Debug.WriteLine($"An error occurred while trying to change completion status of task with ID {taskId}.", ex);
+                return RedirectToAction("Dashboard", "Tasks");
             }
         }
+
+        // POST: TasksController/DeleteTask/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteTask(int id)
+        {
+            try
+            {
+                var userId = userManager.GetUserId(HttpContext.User);
+
+                // Fetch task by id
+                var task = await _context.Task.FindAsync(id);
+                if (task == null)
+                {
+                    Debug.WriteLine($"Task with ID {id} not found.");
+                    return NotFound();
+                }
+
+                // Fetch parent UserTasks by task.User_List_ID
+                var taskList = await _context.UserTasks.FindAsync(task.User_List_ID);
+
+                if (taskList == null)
+                {
+                    Debug.WriteLine($"UserTasks with ID {task.User_List_ID} not found.");
+                    return NotFound();
+                }
+                // Ownership check: Ensure the current user owns the task list that the task belongs to
+                if (taskList.User_ID != userId)
+                {
+                    Debug.WriteLine($"Unauthorized attempt to delete task with ID {id} by user {userId}.");
+                    return Forbid();
+                }
+
+                Debug.WriteLine($"User {userId} is authorized to delete task with ID {id}.");
+                _context.Task.Remove(task);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Dashboard", "Tasks");
+            }
+            catch (Exception ex)
+            {
+                {
+                    Debug.WriteLine($"An error occurred while trying to delete task with ID {id}.", ex);
+                    return RedirectToAction("Dashboard", "Tasks");
+                }
+            }
+        }
+
+       
     }
 }

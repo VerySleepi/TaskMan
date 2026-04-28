@@ -7,6 +7,7 @@ namespace TaskMan.ViewModels.Tasks
     public class NewTaskViewModel
     {
         // Fields for new Task
+        public int Task_ID { get; set; } = 0;
         public string Title { get; set; }
         public string Description { get; set; }
         public DateOnly Due_Date { get; set; }

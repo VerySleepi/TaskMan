@@ -65,6 +65,12 @@ header {
     height: 40px;
 }
 
+button {
+    border: none;
+    background-color: #77df88;
+    border-radius: 6px;
+}
+
 
 
 

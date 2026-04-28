@@ -1,12 +1,35 @@
 ﻿.cardContainer {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1rem;
     min-height: 100%;
+}
+.cardList {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.task-detail-panel {
+    width: 30%;
+    flex-shrink: 0;
+    position: sticky;
+    top: 1rem;
+    background-color: #ffffff;
+    border-radius: 6px;
+    padding: 1rem;
+    border: 1px solid #ddd;
 }
 
 
 .task-card {
     background-color: var(--bg-col) !important;
+}
+
+.taskObject {
+    max-height: 100px;
+    overflow-y: auto;
 }
 
 .card-header {
@@ -37,13 +60,13 @@
     scrollbar-width: none;
 }
 
-.card-body > ul {
-    padding-left: 10px;
-}
+    .card-body > ul {
+        padding-left: 10px;
+    }
 
-.card-body > ul > li {
-    list-style: none;
-}
+        .card-body > ul > li {
+            list-style: none;
+        }
 
 .overlay {
     position: fixed;
@@ -75,7 +98,7 @@
 }
 
 input,
-select, 
+select,
 textarea {
     font: inherit;
     height: 2lh;
@@ -99,7 +122,7 @@ form {
     align-content: start;
 }
 
-label { 
+label {
     font-size: 1rem;
 }
 
@@ -114,6 +137,8 @@ input {
 
 textarea {
     height: 150px;
+    resize: none;
+    overflow-y: scroll;
 }
 
 .form-group:has(.list-input) {
@@ -122,7 +147,7 @@ textarea {
 
 .form-group:has(.bg-list) {
     display: inline;
-    grid-column: 1 / -1;   
+    grid-column: 1 / -1;
 }
 
 .form-group p {
@@ -179,26 +204,61 @@ button {
     }
 
 .bg-group {
-    display:inline;
-    align-content: center;
+    grid-column: 1 / -1;
 }
 
 #bg-list {
-    display: inline;
-    align-content: center;
-    padding-left: 0;
+    display: flex;
+    gap: 10px;
+    padding-left: 0px;
+    margin: 0;
     width: fit-content;
 }
 
     #bg-list li {
-        display: inline-block;
         list-style: none;
-        margin: 0px 10px;
+        position: relative;
     }
 
-        #bg-list li input {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: var(--fillCol)
-        }
+.bg-radio {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.bg-label {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: var(--fillCol);
+    border: 2px solid hidden;
+    cursor: pointer;
+}
+
+.bg-radio:checked + .bg-label {
+    outline: 2px solid #222;
+    outline-offset: 2px;
+}
+
+#selectTaskList {
+    height: 2lh;
+    border-radius: 6px;
+    width: 100%;
+    border: 1px solid;
+    margin-bottom: 0px;
+    padding-left: 0;
+}
+
+    #selectTaskList option {
+        list-style: none;
+        height: 100%;
+        width: 100%;
+        border-bottom: 2px solid #77df88;
+    }
+
+    #selectTaskList li button {
+        background-color: white;
+        width: 100%;
+        height: 100%;
+    }

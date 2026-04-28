@@ -1,6 +1,8 @@
 ﻿@model TaskMan.ViewModels.Tasks.NewListViewModel
 
 <form class="taskForm" asp-controller="Tasks" asp-action="CreateList" method="post">
+    @Html.AntiForgeryToken()
+
     <div class="form-group">
         <label for="listTitle">Title</label>
         <input id="listTitle" asp-for="Title" class="list-input" />
@@ -16,13 +18,16 @@
         <ul id="bg-list">
             @foreach (var bg in Model.BackgroundColors)
             {
+                var colorId = $"bg-{bg.TrimStart('#')}";
+
                 <li>
-                    <input type="button" name="listBackground" style="--fillCol: @bg" asp-for="BckGr_Col" />
+                    <input id="@colorId" class="bg-radio" type="radio" aria-label="List Background" asp-for="BckGr_Col" value="@bg" />
+                    <label for="@colorId" class="bg-label" style="--fillCol: @bg;"></label>
                 </li>
             }
         </ul>
     </div>
 
-    <button id="" type="submit">Create List</button>
+    <button id="createListBtn" type="submit">Create List</button>
 
 </form>

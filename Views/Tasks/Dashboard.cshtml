@@ -8,6 +8,8 @@
 }
 
 <div class="cardContainer">
+
+    <div class="cardList">
     <div class="addButtons">
         <button id="newListBtn" class="addBtn">
             New List
@@ -17,6 +19,7 @@
         </button>
     </div>
 
+    @* Goes through each UserTask and its associated Tasks to create a card for each UserTask, displaying the tasks within it. *@
     @foreach (var usertasks in Model.structuredUserTasks)
     {
         <div class="card mb-3 task-card" style="--bg-col: @usertasks.UserTask.BckGr_Col;">
@@ -27,16 +30,42 @@
                 <ul class="cardObjectList">
                     @foreach (var task in usertasks.Tasks)
                     {
-                        <li class="taskObject">
+                        @* Each list item uses data attributes to store tasks information to be used in JavaScript *@
+                        <li class="taskObject"
+                            data-task-id="@task.Task_ID"
+                            data-title="@task.Title"
+                            data-description="@task.Description"
+                            data-due-date="@task.Due_Date.ToString("yyyy-MM-dd")"
+                            data-status="@task.Status"
+                            data-list-id="@task.User_List_ID">
                             <h6>@task.Title</h6>
+
                             <p><strong>Due Date:</strong> @task.Due_Date.ToString("yyyy-MM-dd")</p>
-                            <p><strong>Status:</strong> @task.Status</p>
                         </li>
                     }
                 </ul>
             </div>
         </div>
     }
+    </div>
+    
+
+    <div id="taskDetailsPanel" class="task-detail-panel hidden">
+        <h4 id="taskTitle"></h4>
+        <p id="taskDescription"></p>
+        <p id="taskDueDate"></p>
+        <p id="taskStatus"></p>
+
+        <form method="post"
+              asp-action="TaskCompletion"
+              asp-controller="Tasks">
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="taskCompletedId" name="taskId" value="" />
+            <button type="submit">Mark as Complete</button>
+        </form>
+
+        <button id="taskEditBtn">Edit Task</button>
+    </div>
 </div>
 
 @await Html.PartialAsync("_NewTaskPopUp")

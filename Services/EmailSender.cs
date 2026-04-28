@@ -12,6 +12,7 @@ namespace TaskMan.Services
         {
             try
             {
+                
                 var mailMessage = new MimeMessage();
 
                 var from = new MailboxAddress("TaskMan", sender);
