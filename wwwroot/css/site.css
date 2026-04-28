@@ -69,6 +69,15 @@ button {
     border: none;
     background-color: #77df88;
     border-radius: 6px;
+    width: 100%;
+}
+
+.form-group > div > button {
+    grid-column: 1 / -1;
+}
+
+.completeBtn {
+    grid-column: 1 / -1;
 }
 
 

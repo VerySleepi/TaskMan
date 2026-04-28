@@ -10,43 +10,42 @@
 <div class="cardContainer">
 
     <div class="cardList">
-    <div class="addButtons">
-        <button id="newListBtn" class="addBtn">
-            New List
-        </button>
-        <button id="newTaskBtn" class="addBtn">
-            Add Task
-        </button>
-    </div>
-
-    @* Goes through each UserTask and its associated Tasks to create a card for each UserTask, displaying the tasks within it. *@
-    @foreach (var usertasks in Model.structuredUserTasks)
-    {
-        <div class="card mb-3 task-card" style="--bg-col: @usertasks.UserTask.BckGr_Col;">
-            <div class="card-header border-bottom-0">
-                <h5 class="card-title">@usertasks.UserTask.Title</h5>
-            </div>
-            <div class="card-body">
-                <ul class="cardObjectList">
-                    @foreach (var task in usertasks.Tasks)
-                    {
-                        @* Each list item uses data attributes to store tasks information to be used in JavaScript *@
-                        <li class="taskObject"
-                            data-task-id="@task.Task_ID"
-                            data-title="@task.Title"
-                            data-description="@task.Description"
-                            data-due-date="@task.Due_Date.ToString("yyyy-MM-dd")"
-                            data-status="@task.Status"
-                            data-list-id="@task.User_List_ID">
-                            <h6>@task.Title</h6>
-
-                            <p><strong>Due Date:</strong> @task.Due_Date.ToString("yyyy-MM-dd")</p>
-                        </li>
-                    }
-                </ul>
-            </div>
+        <div class="addButtons">
+            <button id="newListBtn" class="addBtn">
+                New List
+            </button>
+            <button id="newTaskBtn" class="addBtn">
+                Add Task
+            </button>
         </div>
-    }
+
+        @* Goes through each UserTask and its associated Tasks to create a card for each UserTask, displaying the tasks within it. *@
+        @foreach (var usertasks in Model.structuredUserTasks)
+        {
+            <div class="card mb-3 task-card" style="--bg-col: @usertasks.UserTask.BckGr_Col;">
+                <div class="card-header border-bottom-0">
+                    <h5 class="card-title">@usertasks.UserTask.Title</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="cardObjectList">
+                        @foreach (var task in usertasks.Tasks)
+                        {
+                            @* Each list item uses data attributes to store tasks information to be used in JavaScript *@
+                            <li class="taskObject"
+                                data-task-id="@task.Task_ID"
+                                data-task-title="@task.Title"
+                                data-task-description="@task.Description"
+                                data-task-due-date="@task.Due_Date.ToString("yyyy-MM-dd")"
+                                data-task-status="@task.Status"
+                                data-task-list-id="@task.User_List_ID">
+                                <h6>@task.Title</h6>
+                                <p><strong>Due Date:</strong> @task.Due_Date.ToString("yyyy-MM-dd")</p>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
     </div>
     
 
@@ -61,10 +60,16 @@
               asp-controller="Tasks">
             @Html.AntiForgeryToken()
             <input type="hidden" id="taskCompletedId" name="taskId" value="" />
-            <button type="submit">Mark as Complete</button>
+            <button class="completeBtn" type="submit">Mark as Complete</button>
         </form>
 
         <button id="taskEditBtn">Edit Task</button>
+
+        <form id="deleteTaskForm" asp-action="DeleteTask" asp-controller="Tasks" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="taskDeleteId" name="taskId" value="" />
+        </form>
+        <button id="taskDeleteBtn" class="danger-btn">Delete Task</button>
     </div>
 </div>
 

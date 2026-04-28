@@ -72,10 +72,18 @@ function toggleTaskDetailPanel() {
             const dueDate = card.dataset.taskDueDate;
             const status = card.dataset.taskStatus;
 
+            console.log("Task ID: " + taskId);
+            console.log("Title: " + title);
+            console.log("Description: " + description);
+
             document.getElementById('taskTitle').textContent = title;
+            console.log("Title: " + title);
             document.getElementById('taskDescription').textContent = description;
+            console.log("Description: " + description);
             document.getElementById('taskDueDate').textContent = dueDate;
+            console.log("Due Date: " + dueDate);
             document.getElementById('taskStatus').textContent = status;
+            console.log("Status: " + status);
 
             document.getElementById('taskCompletedId').value = taskId;
 

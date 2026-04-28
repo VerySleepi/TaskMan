@@ -262,6 +262,8 @@ namespace TaskMan.Controllers
                 UserTaskLists = userTaskLists
             };
 
+            Debug.WriteLine($"Task ID: {model.Task_ID}, Title: {model.Title}, Description: {model.Description}, Due Date: {model.Due_Date}, Status: {model.Status}, User List ID: {model.User_List_ID}");
+
             ViewData["Context"] = "Edit";
 
 
@@ -380,17 +382,17 @@ namespace TaskMan.Controllers
         // POST: TasksController/DeleteTask/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteTask(int id)
+        public async Task<IActionResult> DeleteTask(int taskId)
         {
             try
             {
                 var userId = userManager.GetUserId(HttpContext.User);
 
                 // Fetch task by id
-                var task = await _context.Task.FindAsync(id);
+                var task = await _context.Task.FindAsync(taskId);
                 if (task == null)
                 {
-                    Debug.WriteLine($"Task with ID {id} not found.");
+                    Debug.WriteLine($"Task with ID {taskId} not found.");
                     return NotFound();
                 }
 
@@ -405,11 +407,11 @@ namespace TaskMan.Controllers
                 // Ownership check: Ensure the current user owns the task list that the task belongs to
                 if (taskList.User_ID != userId)
                 {
-                    Debug.WriteLine($"Unauthorized attempt to delete task with ID {id} by user {userId}.");
+                    Debug.WriteLine($"Unauthorized attempt to delete task with ID {taskId} by user {userId}.");
                     return Forbid();
                 }
 
-                Debug.WriteLine($"User {userId} is authorized to delete task with ID {id}.");
+                Debug.WriteLine($"User {userId} is authorized to delete task with ID {taskId}.");
                 _context.Task.Remove(task);
                 await _context.SaveChangesAsync();
 
@@ -418,7 +420,7 @@ namespace TaskMan.Controllers
             catch (Exception ex)
             {
                 {
-                    Debug.WriteLine($"An error occurred while trying to delete task with ID {id}.", ex);
+                    Debug.WriteLine($"An error occurred while trying to delete task with ID {taskId}.", ex);
                     return RedirectToAction("Dashboard", "Tasks");
                 }
             }
