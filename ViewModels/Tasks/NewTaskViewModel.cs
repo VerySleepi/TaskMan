@@ -7,7 +7,7 @@ namespace TaskMan.ViewModels.Tasks
     public class NewTaskViewModel
     {
         // Fields for new Task
-        public int Task_ID { get; set; } = 0;
+        public int Task_ID { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public DateOnly Due_Date { get; set; }
@@ -16,6 +16,6 @@ namespace TaskMan.ViewModels.Tasks
 
         // The user's task lists (for the dropdown)
         [BindNever]
-        public List<UserTasks> UserTaskLists { get; set; }
+        public List<UserTasks>? UserTaskLists { get; set; }
     }
 }

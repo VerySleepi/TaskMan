@@ -1,6 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+
 html {
     font-size: 16px;
+    height: 100%;
+}
+
+body {
+    height: 100%;
 }
 
 main {
@@ -10,7 +16,9 @@ main {
         "content";
     max-width: 100%;
     min-width: 50%;
-    max-height: 100vh;
+    min-height: 0;
+    height: 100%;
+    max-height: 100%;
     row-gap: 4px;
     font-family: "Nunito", sans-serif;
     grid-auto-flow: row;
@@ -18,7 +26,6 @@ main {
 
 header {
     display: flex;
-    grid-area: header;
     font-size: 26px;
     font-weight: 600;
     justify-content: space-between;
@@ -30,16 +37,45 @@ header {
         font-size: 20px;
     }
 
+#stickyHeader {
+    position: sticky;
+    grid-area: header;
+}
+
 .content {
     display: grid;
+    min-height: 0;
+    height: 100%;
     grid-area: content;
     padding: 10px;
     grid-template-rows: none;
-    grid-template-columns: 1fr auto;
-    grid-template-areas: "cards description";
-    overflow-y: scroll;
-    scrollbar-width: none;
+    grid-template-columns: 1fr;
+    grid-template-areas: "cards";
     justify-content: space-evenly;
+    gap: 5px;
+}
+
+.content.panel-visible {
+    grid-template-columns: 1fr minmax(25%, 45%);
+    grid-template-areas: "cards description";
+}
+
+.popup-content {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    row-gap: 15px;
+    text-align: center;
+    height: fit-content;
+    min-height: 300px;
+    width: fit-content;
+    min-width: 350px;
+    background-color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 6px;
+}
+
+.confirm-msg {
+    align-content: end;
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
@@ -65,10 +101,50 @@ header {
     height: 40px;
 }
 
+.deleteIcon {
+    width: 20px;
+    height: 20px;
+}
+
+.editIcon {
+    width: 20px;
+    height: 20px;
+}
+
 button {
     border: none;
-    background-color: #77df88;
+    padding: 6px 12px;
     border-radius: 6px;
+    background-color: #77df88;
+    width: 100%;
+}
+
+    button:hover {
+        transition: all 0.5s;
+        box-shadow: inset 0px 0px 50px 50px #00000012;
+    }
+
+    button:active {
+        transition: all 0.1s;
+        box-shadow: inset 0px 0px 50px 50px #ffffff76;
+    }
+
+.button-group-vertical {
+    display: grid;
+    grid-template-rows: repeat(3, min-content);
+    gap: 5px;
+    min-width: 155px;
+}
+
+.button-group-horizontal {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 0px 20px;
+    align-content: space-between;
+}
+
+.button-group-horizontal > .cancel-btn {
+    position: unset;
     width: 100%;
 }
 
@@ -76,26 +152,61 @@ button {
     grid-column: 1 / -1;
 }
 
+#deleteListConfirmBtn {
+    width: 100%;
+}
+
+#deleteTaskConfirmBtn {
+    width: 100%;
+}
+
+.danger-btn {
+    width: fit-content;
+    color: #ffffff;
+    background-color: #d85757;
+    height: fit-content;
+}
+
+    .danger-btn:has(.deleteIcon) {
+        border: 0.5px outset;
+        border-radius: 25%;
+        padding: 2px 4px;
+        background-color: #dcdcdc;
+    }
+
+.edit-btn {
+    width: fit-content;
+    height: fit-content;
+}
+
+    .edit-btn:has(.editIcon) {
+        border: 0.5px outset;
+        border-radius: 25%;
+        padding: 2px 4px;
+        background-color: #dcdcdc;
+    }
+
 .completeBtn {
     grid-column: 1 / -1;
 }
 
+button.close-btn {
+    display: inline-block;
+    align-self: end;
+    width: fit-content;
+    height: fit-content;
+    background-color: #e67e75;
+    padding: 0px 6px;
+    color: #ffffff;
+}
 
 
 
-
-@media (min-width: 720px) {
+@media (min-width: 805px) {
     main {
-        display: grid;
-        grid-template-rows: auto 1fr;
         grid-template-columns: auto 1fr;
         grid-template-areas: "sidebar header"
             "sidebar content";
-        max-width: 100%;
-        min-width: 50%;
-        max-height: 100vh;
-        row-gap: 4px;
-        font-family: "Nunito", sans-serif;
         grid-auto-flow: column dense;
         overflow: hidden auto;
     }
@@ -156,7 +267,6 @@ button {
         list-style: none;
         background-color: #77df88;
         border-radius: 6px;
-
     }
 
         .nav-item > p {
@@ -173,6 +283,9 @@ button {
             }
 
     .nav-link {
+        display: block;
+        font-weight: 600;
+        font-size: inherit;
         padding: 8px 0px 8px 0px;
         text-decoration: none;
     }

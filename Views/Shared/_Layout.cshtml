@@ -14,6 +14,10 @@
 </head>
 <body>
     <main>
+    <header id="stickyHeader">
+        <span>@ViewData["Title"]</span>
+        <div id="currentProfile"><span id="currentUsername">@ViewData["userName"]</span> <img src="@ViewData["profilePic"]" class="profile_pic" /> </div>
+    </header>
         <div id="sidebar">
 
             <div id="navsidebar">
@@ -24,21 +28,21 @@
 
                 <ul id="menu">
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
-                            <span>Home</span>
-                        </a>
+                        <form asp-controller="Home" asp-action="Index" method="get" class="nav-link">
+                            <button type="submit" class="nav-link">Home</button>
+                        </form>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Tasks" asp-action="Dashboard">
-                            <span>Tasks</span>
-                        </a>
+                        <form asp-controller="Tasks" asp-action="Dashboard" method="get" class="nav-link">
+                            <button type="submit" class="nav-link">Tasks</button>
+                        </form>
                     </li>
 
                     <li id="projectNav" class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Projects" asp-action="Index">
-                            <span>Projects</span>
-                        </a>
+                        <form asp-controller="Group" asp-action="Index" method="get" class="nav-link">
+                            <button type="submit" class="nav-link">Projects</button>
+                        </form>
                     </li>
 
                     <partial name="_LoginPartial" />
@@ -51,13 +55,8 @@
                 </footer>
             </div>
         </div>
-        <div id="stickyHeader">
-            <header>
-                <span>@ViewData["Title"]</span>
-                <div id="currentProfile"><span id="currentUsername">@ViewData["userName"]</span> <img src="@ViewData["profilePic"]" class="profile_pic" /> </div>
-            </header>
 
-        </div>
+
         <br />
         <div class="content">
             @RenderBody()

@@ -6,7 +6,6 @@
     ViewData["Title"] = "Tasks";
     Layout = "~/Views/Shared/_TaskLayout.cshtml";
 }
-
 <div class="cardContainer">
 
     <div class="cardList">
@@ -25,6 +24,13 @@
             <div class="card mb-3 task-card" style="--bg-col: @usertasks.UserTask.BckGr_Col;">
                 <div class="card-header border-bottom-0">
                     <h5 class="card-title">@usertasks.UserTask.Title</h5>
+                    @if (usertasks.UserTask.Title != "To-do")
+                    {
+                        <button type="button" class="listDeleteBtn danger-btn" data-list-id="@usertasks.UserTask.User_List_ID" data-list-title="@usertasks.UserTask.Title">
+                            Delete
+                        </button>
+                    }
+                    
                 </div>
                 <div class="card-body">
                     <ul class="cardObjectList">
@@ -38,23 +44,33 @@
                                 data-task-due-date="@task.Due_Date.ToString("yyyy-MM-dd")"
                                 data-task-status="@task.Status"
                                 data-task-list-id="@task.User_List_ID">
-                                <h6>@task.Title</h6>
-                                <p><strong>Due Date:</strong> @task.Due_Date.ToString("yyyy-MM-dd")</p>
+                                <div class="taskObject-content">
+                                    <h6>@task.Title</h6>
+                                    <p><strong>Due Date:</strong> @task.Due_Date.ToString("yyyy-MM-dd")</p>
+                                </div>
+                                <div class="button-group-horizontal">
+                                    <button type="button" class="taskDeleteBtn danger-btn"><img src="@ViewData["trashIcon"]" alt="Delete" class="deleteIcon" /></button>
+                                    <button type="button" class="taskEditBtn edit-btn"><img src="@ViewData["editIcon"]" alt="Edit" class="editIcon" /></button>
+                                </div>
                             </li>
                         }
                     </ul>
+                    <div>
+                    </div>
                 </div>
             </div>
         }
     </div>
-    
+</div>
+<div id="taskDetailsPanel" class="task-detail-panel hidden">
+    <button type="button" id="panelCloseBtn" class="close-btn"><strong>✕</strong></button>
 
-    <div id="taskDetailsPanel" class="task-detail-panel hidden">
-        <h4 id="taskTitle"></h4>
-        <p id="taskDescription"></p>
-        <p id="taskDueDate"></p>
-        <p id="taskStatus"></p>
+    <h4 id="taskTitle"></h4>
+    <p id="taskDescription"></p>
+    <p id="taskDueDate"></p>
+    <p id="taskStatus"></p>
 
+    <div class="button-group-vertical">
         <form method="post"
               asp-action="TaskCompletion"
               asp-controller="Tasks">
@@ -62,16 +78,38 @@
             <input type="hidden" id="taskCompletedId" name="taskId" value="" />
             <button class="completeBtn" type="submit">Mark as Complete</button>
         </form>
-
-        <button id="taskEditBtn">Edit Task</button>
-
-        <form id="deleteTaskForm" asp-action="DeleteTask" asp-controller="Tasks" method="post">
-            @Html.AntiForgeryToken()
-            <input type="hidden" id="taskDeleteId" name="taskId" value="" />
-        </form>
-        <button id="taskDeleteBtn" class="danger-btn">Delete Task</button>
     </div>
 </div>
+
+<div id="deleteTaskOverlay" class="overlay hidden">
+    <div id="deleteTaskContent" class="popup-content">
+        <p class="confirm-msg">Are you sure you want to delete this task?</p>
+        <div class="button-group-horizontal">
+            <button type="button" id="deleteTaskConfirmBtn" class="danger-btn">Delete</button>
+            <button type="button" id="deleteTaskCancelBtn" class="cancel-btn">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div id="deleteListOverlay" class="overlay hidden">
+    <div class="popup-content">
+        <p class="confirm-msg">Are you sure you want to delete this list and all its tasks?</p>
+        <div class="button-group-horizontal">
+            <button type="button" id="deleteListConfirmBtn" class="danger-btn">Delete</button>
+            <button type="button" id="deleteListCancelBtn" class="cancel-btn">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<form id="deleteTaskForm" class="hidden" asp-action="DeleteTask" asp-controller="Tasks" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" id="taskDeleteId" name="taskId" value="" />
+</form>
+
+<form id="deleteListForm" class="hidden" asp-action="DeleteList" asp-controller="Tasks" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" id="listDeleteId" name="listId" value="" />
+</form>
 
 @await Html.PartialAsync("_NewTaskPopUp")
 @await Html.PartialAsync("_NewTaskListPopUp")

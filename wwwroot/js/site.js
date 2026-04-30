@@ -9,7 +9,7 @@ function toggleUsername() {
     let currentUsername = document.getElementById("currentUsername");
     let windowSize = window.innerWidth;
 
-    if (windowSize < 720) {
+    if (windowSize < 805) {
         currentUsername.style.display = "none";
     }
     else {

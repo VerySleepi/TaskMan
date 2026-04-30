@@ -5,6 +5,7 @@ function toggleCreateTaskPopup() {
 
     console.log(overlay)
 
+    // Call CreateTask action to get form HTML and insert it into the popup content, then show the popup
     if (overlay.classList.contains('hidden')) {
         fetch("/Tasks/CreateTask")
             .then(response => response.text())
@@ -30,7 +31,7 @@ function toggleCreateListPopup() {
         fetch("/Tasks/CreateList")
             .then(response => response.text())
             .then(html => {
-                content.innerHTML = html;            
+                content.innerHTML = html;
                 overlay.classList.remove('hidden');
             })
             .catch(err => console.error("Error loading CreateList form:", err))
@@ -72,43 +73,27 @@ function toggleTaskDetailPanel() {
             const dueDate = card.dataset.taskDueDate;
             const status = card.dataset.taskStatus;
 
-            console.log("Task ID: " + taskId);
-            console.log("Title: " + title);
-            console.log("Description: " + description);
-
             document.getElementById('taskTitle').textContent = title;
-            console.log("Title: " + title);
             document.getElementById('taskDescription').textContent = description;
-            console.log("Description: " + description);
             document.getElementById('taskDueDate').textContent = dueDate;
-            console.log("Due Date: " + dueDate);
             document.getElementById('taskStatus').textContent = status;
-            console.log("Status: " + status);
-
             document.getElementById('taskCompletedId').value = taskId;
 
             selectedTaskId = taskId;
 
+            if (status === 1) {
+                var completeBtn = document.querySelector('.completeBtn');
+                completeBtn.classList.add('hidden');
+            }
             if (sidePanel.classList.contains('hidden')) {
                 sidePanel.classList.remove('hidden');
+                document.querySelector('.content').classList.add('panel-visible');
             }
-
         });
+        if (card.dataset.taskStatus === "1") {
+            card.classList.add('completed');
+        }
     });
-
-    document.getElementById('taskEditBtn').addEventListener('click', () => {
-        // Fetch pre-filled edit form from EditTask GET action
-        fetch(`/Tasks/EditTask?taskId=${selectedTaskId}`)
-            .then(response => response.text())
-            .then(html => {
-                content.innerHTML = html;
-                overlay.classList.remove('hidden');
-            })
-            .catch(err => console.error("Error loading EditTask form:", err));
-
-    });
-
-
 }
 
 function taskListDropdown() {
@@ -117,18 +102,18 @@ function taskListDropdown() {
     const dropdownList = document.querySelector(".list-dropdown-list");
     const listInput = document.getElementById("taskListID");
     const selectedList = document.getElementById("taskListSelected");
-    const dropdownItems = dropdownList.querySelectorAll(".list-dropdown-item");
+    const dropdownItems = dropdownList.querySelectorAll(".list-dropdown-item button");
 
     toggle.addEventListener("click", (ev) => {
         ev.preventDefault();
         dropdownList.classList.toggle("hidden");
     });
 
-    dropdownItems.forEach(item => {
-        item.addEventListener("click", (ev) => {
+    dropdownItems.forEach(button => {
+        button.addEventListener("click", (ev) => {
             ev.preventDefault();
-            listInput.value = item.value;
-            selectedList.textContent = item.textContent;
+            listInput.value = button.value;
+            selectedList.textContent = button.textContent;
             dropdownList.classList.add("hidden");
         });
     });
@@ -140,8 +125,69 @@ function taskListDropdown() {
     });
 }
 
+function deleteTask() {
+    var taskDeleteBtn = document.querySelectorAll('.taskDeleteBtn');
+
+    taskDeleteBtn.forEach(btn => {
+        btn.addEventListener('click', () => {
+            console.log("Delete btn clicked");
+            document.getElementById('taskDeleteId').value = selectedTaskId;
+
+            document.getElementById('deleteTaskOverlay').classList.remove('hidden');
+        });
+    });
+
+}
+
+function deleteTaskOverlay() {
+    const deleteTaskConfirmBtn = document.getElementById('deleteTaskConfirmBtn');
+    if (deleteTaskConfirmBtn) {
+        deleteTaskConfirmBtn.addEventListener('click', () => {
+            document.getElementById('deleteTaskForm').submit();
+        })
+    }
+
+    const deleteTaskCancelBtn = document.getElementById('deleteTaskCancelBtn');
+    if (deleteTaskCancelBtn) {
+        deleteTaskCancelBtn.addEventListener('click', () => {
+            document.getElementById('deleteTaskOverlay').classList.add('hidden');
+        })
+    }
+}
+
+function deleteList() {
+    var listDeleteBtn = document.querySelectorAll('.listDeleteBtn');
+
+    listDeleteBtn.forEach(btn => {
+        btn.addEventListener('click', () => {
+            console.log("Delete list btn clicked");
+            const selectedListId = btn.dataset.listId;
+            const selectedListName = btn.dataset.listName;
+            document.getElementById('listDeleteId').value = selectedListId;
+
+            document.getElementById('deleteListOverlay').classList.remove('hidden');
+        });
+    });
+}
+
+function deleteListOverlay() {
+    const deleteListConfirmBtn = document.getElementById('deleteListConfirmBtn');
+    if (deleteListConfirmBtn) {
+        deleteListConfirmBtn.addEventListener('click', () => {
+            document.getElementById('deleteListForm').submit();
+        })
+    }
+
+    const deleteListCancelBtn = document.getElementById('deleteListCancelBtn');
+    if (deleteListCancelBtn) {
+        deleteListCancelBtn.addEventListener('click', () => {
+            document.getElementById('deleteListOverlay').classList.add('hidden');
+        });
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    
+
     const newTaskBtn = document.getElementById('newTaskBtn');
     if (newTaskBtn) {
         newTaskBtn.addEventListener('click', () => {
@@ -159,6 +205,22 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     }
 
+    const taskEditButtons = document.querySelectorAll('.taskEditBtn');
+    taskEditButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Fetch pre-filled edit form from EditTask GET action
+            fetch(`/Tasks/EditTask?taskId=${selectedTaskId}`)
+                .then(response => response.text())
+                .then(html => {
+                    content.innerHTML = html;
+                    overlay.classList.remove('hidden');
+                })
+                .catch(err => console.error("Error loading EditTask form:", err));
+
+
+        });
+    });
+
     const listCloseBtn = document.getElementById('newList_close');
     if (listCloseBtn) {
         listCloseBtn.addEventListener('click', () => {
@@ -174,8 +236,24 @@ document.addEventListener('DOMContentLoaded', () => {
             toggleCreateTaskPopup();
         });
     }
+
+    const panelCloseBtn = document.getElementById('panelCloseBtn');
+    if (panelCloseBtn) {
+        panelCloseBtn.addEventListener('click', () => {
+            const sidePanel = document.getElementById('taskDetailsPanel');
+            const content = document.querySelector('.content');
+            sidePanel.classList.add('hidden');
+            content.classList.remove('panel-visible');
+        });
+    }
+
+
     taskCardSize();
     toggleTaskDetailPanel();
+    deleteTask();
+    deleteList();
+    deleteTaskOverlay();
+    deleteListOverlay();
 })
 
 

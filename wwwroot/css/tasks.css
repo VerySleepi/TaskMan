@@ -1,8 +1,11 @@
 ﻿.cardContainer {
+    grid-area: cards;
     display: flex;
     flex-direction: row;
     gap: 1rem;
     min-height: 100%;
+    overflow-y: scroll;
+    scrollbar-width: none;
 }
 
 .cardList {
@@ -12,8 +15,10 @@
 }
 
 .task-detail-panel {
-    width: 30%;
-    flex-shrink: 0;
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    grid-area: description;
     position: sticky;
     top: 1rem;
     background-color: #ffffff;
@@ -26,19 +31,42 @@
 
 .task-card {
     background-color: var(--bg-col) !important;
+    min-width: 300px;
 }
 
 .taskObject {
-    max-height: 100px;
-    overflow-y: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 10px 0px 10px;
+    max-height: 150px;
+    border-bottom: 1px solid;
 }
+
+.taskObject-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.taskObject-content p {
+    margin-bottom: 10px;
+}
+
+    .taskObject > .button-group-horizontal {
+        display: flex;
+        align-items: center;
+        padding-top: 5px;
+        margin-bottom: 5px;
+        gap: 0.5rem;
+    }
 
 .card-header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 5px;
+    padding: 0.5rem 1rem 0.5rem 0.5rem;
 }
 
 .card-title {
@@ -53,18 +81,16 @@
 }
 
 .cardObjectList {
+    padding-left: 0;
     margin-bottom: 10px;
 }
 
 .card-body {
-    overflow-y: hidden;
+    flex: 1 1 auto;
+    overflow-y: scroll;
     scrollbar-width: none;
+    padding: 1rem;
 }
-
-    .card-body > ul {
-        padding-left: 10px;
-    }
-
         .card-body > ul > li {
             list-style: none;
         }
@@ -83,7 +109,11 @@
 }
 
 .hidden {
-    display: none;
+    display: none !important;
+}
+
+.completed {
+    text-decoration: line-through;
 }
 
 .popup {
@@ -114,6 +144,14 @@ form {
     @media (width < 535px) {
         grid-template-columns: 1fr;
     }
+}
+
+.taskDeleteBtn {
+    display: block;
+}
+
+.taskEditBtn {
+    display: block;
 }
 
 .form-group {
@@ -155,22 +193,20 @@ textarea {
     width: fit-content;
 }
 
-button {
-    padding: 5px;
-    border: 0px;
-}
 
 .taskForm button[type="submit"] {
     grid-column: 1 / -1;
     align-self: end;
     justify-self: start;
     height: fit-content;
+    min-width: 90px;
     width: fit-content;
     background-color: #77df88;
     border-radius: 6px;
 }
 
-.close-btn {
+
+.cancel-btn {
     width: 90px;
     position: fixed;
     align-self: end;
@@ -193,15 +229,8 @@ button {
     min-width: 95px;
     width: 20%;
     max-width: 150px;
-    padding: 6px 12px;
-    border-radius: 6px;
-    background-color: #77df88;
 }
 
-    .addBtn:hover {
-        transition: ease-in-out 0.5s;
-        background-color: #4bb55c;
-    }
 
 .bg-group {
     grid-column: 1 / -1;
@@ -241,7 +270,7 @@ button {
     outline-offset: 2px;
 }
 
-#selectTaskList {
+.list-dropdown {
     height: 2lh;
     border-radius: 6px;
     width: 100%;
@@ -250,15 +279,45 @@ button {
     padding-left: 0;
 }
 
-    #selectTaskList option {
-        list-style: none;
-        height: 100%;
+.list-dropdown-btn {
+    list-style: none;
+    height: 100%;
+    width: 100%;
+    background-color: #FFFFFF;
+}
+
+.list-dropdown-list {
+    position: relative;
+    width: 98%;
+    z-index: 100;
+    margin-bottom: 0;
+    padding-left: 0;
+    max-height: 4lh;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    border: 1px solid black;
+    background-color: #ffffff;
+    justify-self: center;
+}
+
+
+.list-dropdown-item {
+    display: flex;
+    list-style: none;
+    width: 100%;
+    justify-content: center;
+    height: 2lh;
+}
+
+
+    .list-dropdown-item button {
+        display: block;
+        border-radius: 0;
+        border-bottom: 1px solid black;
+        background-color: #ffffff;
         width: 100%;
-        border-bottom: 2px solid #77df88;
     }
 
-    #selectTaskList li button {
-        background-color: white;
-        width: 100%;
-        height: 100%;
+    .list-dropdown-item:nth-last-child(1) button {
+        border-bottom: none;
     }

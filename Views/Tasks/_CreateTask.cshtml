@@ -1,5 +1,9 @@
 ﻿@model TaskMan.ViewModels.Tasks.NewTaskViewModel
 
+<h3>
+    @(ViewData["Context"]?.ToString() == "Edit" ? "Edit Task" : "New Task")
+</h3>
+
 <form class="taskForm" asp-controller="Tasks" asp-action="@(ViewData["Context"]?.ToString() == "Edit" ? "EditTask" : "CreateTask")"
       method="post">
 
@@ -7,6 +11,7 @@
     {
         <input type="hidden" value="@Model.Task_ID" name="taskId" />
     }
+   
 
     <div class="form-group">
         <label for="taskTitle">Title</label>
@@ -30,38 +35,50 @@
 
     <div class="form-group">
         <label for="taskListDropdown">Task List</label>
-        <div id="taskListDropdown" class="task-list-dropdown">
+        <div id="taskListDropdown" class="list-dropdown">
 
             <button type="button" class="list-dropdown-btn" id="taskListToggle">
                 <span id="taskListSelected">
-                    @(Model.UserTaskLists?.FirstOrDefault(list => list.Title == "To-do")?.Title ?? "Select Task List")
+                    @(Model.UserTaskLists.FirstOrDefault(list => list.User_List_ID == Model.User_List_ID).Title ?? "Select Task List")
                 </span>
             </button>
 
 
             @* Input hold selected list ID, defaulting to "To-do" list if it exists *@
-            <input asp-for="User_List_ID"
-                   type="hidden"
-                   id="taskListID"
-                   value="@Model.UserTaskLists?.FirstOrDefault(list => list.Title == "To-do")?.User_List_ID" />
+            @if (ViewData["Context"]?.ToString() == "Edit")
+            {
+                <input asp-for="User_List_ID"
+                       type="hidden"
+                       id="taskListID"
+                       value="@Model.User_List_ID" />
+            }
+            else
+            {
+                <input asp-for="User_List_ID"
+                       type="hidden"
+                       id="taskListID"
+                       value="@Model.UserTaskLists?.FirstOrDefault(list => list.Title == "To-do")?.User_List_ID" />
+            }
 
-            <div class="list-dropdown-list hidden">
+            <ul class="list-dropdown-list hidden">
                 @foreach (var list in Model.UserTaskLists)
                 {
-                    <button type="button" class="list-dropdown-item" value="@list.User_List_ID">
-                        @list.Title
-                    </button>
+                    <li class="list-dropdown-item">
+                        <button type="button" value="@list.User_List_ID">
+                            @list.Title
+                        </button>
+                    </li>
                 }
-            </div>
+            </ul>
         </div>
     </div>
-        @if (ViewData["Context"]?.ToString() == "Edit")
-        {
-            <button type="submit">Apply</button>
-        }
-        else
-        {
-            <button id="createTaskBtn" type="submit">Create Task</button>              
-        }
+    @if (ViewData["Context"]?.ToString() == "Edit")
+    {
+        <button type="submit">Apply</button>
+    }
+    else
+    {
+        <button id="createTaskBtn" type="submit">Create Task</button>
+    }
 
 </form>

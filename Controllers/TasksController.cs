@@ -29,6 +29,8 @@ namespace TaskMan.Controllers
             // Pass user information to the view using ViewData
             ViewData["userName"] = user.UserName;
             ViewData["profilePic"] = Url.Content($"~/images/{user.Profile_Pic}");
+            ViewData["trashIcon"] = Url.Content("~/images/trash-can-solid.png");
+            ViewData["editIcon"] = Url.Content("~/images/pencil-solid.png");
 
 
             // Fetch UserTasks for the current user
@@ -55,7 +57,9 @@ namespace TaskMan.Controllers
                 structuredUserTasks = userTasksList.Select(ut => new UserTasksViewModel
                 {
                     UserTask = ut,
-                    Tasks = tasksList.Where(t => t.User_List_ID == ut.User_List_ID).ToList()
+                    Tasks = tasksList.Where(t => t.User_List_ID == ut.User_List_ID)
+                    .OrderBy(t => t.Status)
+                    .ToList()
                 }).ToList(),
             };
             return View(model);
@@ -74,15 +78,15 @@ namespace TaskMan.Controllers
             var userId = userManager.GetUserId(HttpContext.User);
 
             var userTaskLists = await _context.UserTasks
-                .Where(ut => ut.User_ID == userId && ut.Title != "Completed Tasks")
+                .Where(ut => ut.User_ID == userId)
                 .ToListAsync();
 
-            userTaskLists.Reverse();
 
             var model = new NewTaskViewModel
             {
                 Due_Date = DateOnly.FromDateTime(DateTime.Now),
                 Status = 0,
+                User_List_ID = userTaskLists[0].User_List_ID,
                 UserTaskLists = userTaskLists
             };
 
@@ -137,9 +141,14 @@ namespace TaskMan.Controllers
                     User_List_ID = model.User_List_ID
                 };
 
+                Debug.WriteLine(task.Title);
+                Debug.WriteLine(task.Description);
+                Debug.WriteLine(task.Due_Date);
+                Debug.WriteLine(task.Status);
+                Debug.WriteLine(task.User_List_ID);
+
                 _context.Task.Add(task);
                 await _context.SaveChangesAsync();
-
                 return RedirectToAction("Dashboard");
             }
             catch
@@ -149,73 +158,6 @@ namespace TaskMan.Controllers
         }
 
 
-        // GET: TasksController/CreateList
-        [HttpGet]
-        public async Task<IActionResult> CreateList()
-        {
-            var userID = userManager.GetUserId(HttpContext.User);
-            if (userID == null)
-            {
-                return RedirectToAction("Dashboard");
-            }
-
-            var model = new NewListViewModel
-            {
-                Progress = 100,
-                BckGr_Col = "#E67E75"
-            };
-            return PartialView("_CreateList", model);
-        }
-
-        // POST: TaskListController/CreateList
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateList(NewListViewModel listViewModel)
-        {
-            var userID = userManager.GetUserId(HttpContext.User);
-            var userTaskLists = await _context.UserTasks.Where(t => t.User_ID == userID && t.Title.StartsWith("Task List")).ToListAsync();
-            try
-            {
-                //if (!ModelState.IsValid)
-                //{
-                //    return PartialView("_CreateList", listViewModel);
-                //}
-
-                if (listViewModel.Title == null)
-                {
-                    if (userTaskLists.Count > 0)
-                    {
-                        listViewModel.Title = $"Task List {userTaskLists.Count}";
-                    }
-                    else
-                    {
-                        listViewModel.Title = "Task List";
-                    }
-                }
-                if (listViewModel.Description == null)
-                {
-                    listViewModel.Description = "No Description";
-                }
-
-
-                var taskList = new Models.UserTasks
-                {
-                    User_ID = userID,
-                    Title = listViewModel.Title,
-                    Description = listViewModel.Description,
-                    Progress = listViewModel.Progress,
-                    BckGr_Col = listViewModel.BckGr_Col
-                };
-                _context.UserTasks.Add(taskList);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Dashboard", "Tasks");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-                return RedirectToAction("Dashboard", "Tasks");
-            }
-        }
 
         // GET: TasksController/EditTask/5
         [HttpGet]
@@ -249,7 +191,6 @@ namespace TaskMan.Controllers
                 .Where(ut => ut.User_ID == userId && ut.Title != "Completed Tasks")
                 .ToListAsync();
 
-            userTaskLists.Reverse();
 
             var model = new NewTaskViewModel
             {
@@ -265,8 +206,6 @@ namespace TaskMan.Controllers
             Debug.WriteLine($"Task ID: {model.Task_ID}, Title: {model.Title}, Description: {model.Description}, Due Date: {model.Due_Date}, Status: {model.Status}, User List ID: {model.User_List_ID}");
 
             ViewData["Context"] = "Edit";
-
-
             return PartialView("_CreateTask", model);
         }
 
@@ -426,6 +365,113 @@ namespace TaskMan.Controllers
             }
         }
 
-       
+        // Task List CRUD Operations
+
+        // GET: TasksController/CreateList
+        [HttpGet]
+        public async Task<IActionResult> CreateList()
+        {
+            var userID = userManager.GetUserId(HttpContext.User);
+            if (userID == null)
+            {
+                return RedirectToAction("Dashboard");
+            }
+
+            var model = new NewListViewModel
+            {
+                Progress = 100,
+                BckGr_Col = "#E67E75"
+            };
+            return PartialView("_CreateList", model);
+        }
+
+        // POST: TasksController/CreateList
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateList(NewListViewModel listViewModel)
+        {
+            var userID = userManager.GetUserId(HttpContext.User);
+            var userTaskLists = await _context.UserTasks.Where(t => t.User_ID == userID && t.Title.StartsWith("Task List")).ToListAsync();
+            try
+            {
+                //if (!ModelState.IsValid)
+                //{
+                //    return PartialView("_CreateList", listViewModel);
+                //}
+
+                if (listViewModel.Title == null)
+                {
+                    if (userTaskLists.Count > 0)
+                    {
+                        listViewModel.Title = $"Task List {userTaskLists.Count}";
+                    }
+                    else
+                    {
+                        listViewModel.Title = "Task List";
+                    }
+                }
+                if (listViewModel.Description == null)
+                {
+                    listViewModel.Description = "No Description";
+                }
+
+
+                var taskList = new Models.UserTasks
+                {
+                    User_ID = userID,
+                    Title = listViewModel.Title,
+                    Description = listViewModel.Description,
+                    Progress = listViewModel.Progress,
+                    BckGr_Col = listViewModel.BckGr_Col
+                };
+                _context.UserTasks.Add(taskList);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Dashboard", "Tasks");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return RedirectToAction("Dashboard", "Tasks");
+            }
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteList(int listId)
+        {
+            try
+            {
+                var userId = userManager.GetUserId(HttpContext.User);
+
+                // Fetch task list by id
+                var taskList = await _context.UserTasks.FindAsync(listId);
+                if (taskList == null)
+                {
+                    Debug.WriteLine($"UserTasks with ID {listId} not found.");
+                    return NotFound();
+                }
+
+                // Ownership check: Ensure the current user owns the task list
+                if (taskList.User_ID != userId)
+                {
+                    Debug.WriteLine($"Unauthorized attempt to delete task list with ID {listId} by user {userId}.");
+                    return Forbid();
+                }
+
+                var tasks = await _context.Task.Where(t => t.User_List_ID == listId).ToListAsync();
+
+                _context.Task.RemoveRange(tasks);
+                _context.UserTasks.Remove(taskList);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Dashboard", "Tasks");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return RedirectToAction("Dashboard", "Tasks");
+            }
+        }
     }
 }
