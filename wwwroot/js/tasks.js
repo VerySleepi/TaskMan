@@ -1,4 +1,5 @@
 ﻿let selectedTaskId = null;
+let panelOpen = false;
 function toggleCreateTaskPopup() {
     const overlay = document.getElementById('newTask-overlay');
     const content = document.getElementById('newTask-content');
@@ -59,40 +60,70 @@ function taskCardSize() {
     }
 }
 
+function openPanel() {
+    const sidePanel = document.getElementById('taskDetailsPanel');
+    const content = document.querySelector('.content');
+        if (window.innerWidth <= 805) {
+            sidePanel.classList.add('panel-open');
+            content.classList.remove('panel-visible');
+        }
+        else {
+            content.classList.add('panel-visible');
+            sidePanel.classList.remove('panel-open');
+            sidePanel.classList.remove('hidden');
+        }
+    panelOpen = true;
+}
+
+function closePanel() {
+    const sidePanel = document.getElementById('taskDetailsPanel');
+    const content = document.querySelector('.content');
+
+    if (window.innerWidth <= 805) {
+        sidePanel.classList.remove('panel-open');
+    }
+    else {
+        sidePanel.classList.add('hidden');
+        content.classList.remove('panel-visible');
+    }
+    panelOpen = false;
+
+}
+
 function toggleTaskDetailPanel() {
     const overlay = document.getElementById('newTask-overlay');
     const content = document.getElementById('newTask-content');
     let sidePanel = document.getElementById('taskDetailsPanel');
 
     document.querySelectorAll('.taskObject').forEach(card => {
-        card.addEventListener('click', () => {
+        const taskId = card.dataset.taskId;
+        const title = card.dataset.taskTitle;
+        const description = card.dataset.taskDescription;
+        const dueDate = card.dataset.taskDueDate;
+        const status = card.dataset.taskStatus;
 
-            const taskId = card.dataset.taskId;
-            const title = card.dataset.taskTitle;
-            const description = card.dataset.taskDescription;
-            const dueDate = card.dataset.taskDueDate;
-            const status = card.dataset.taskStatus;
+        console.log(`Task ID: ${taskId}, Title: ${title}, Status: ${status}`);
 
-            document.getElementById('taskTitle').textContent = title;
-            document.getElementById('taskDescription').textContent = description;
-            document.getElementById('taskDueDate').textContent = dueDate;
-            document.getElementById('taskStatus').textContent = status;
-            document.getElementById('taskCompletedId').value = taskId;
+        if (status === "0") {
+            card.addEventListener('click', () => {
 
-            selectedTaskId = taskId;
+                document.getElementById('panelTitle').textContent = title;
+                document.getElementById('panelDescription').textContent = description;
+                document.getElementById('panelDueDate').textContent = "Due-Date: " + dueDate;
+                document.getElementById('panelStatus').textContent = "Not Completed";
+                document.getElementById('taskCompletedId').value = taskId;
 
-            if (status === 1) {
-                var completeBtn = document.querySelector('.completeBtn');
-                completeBtn.classList.add('hidden');
-            }
-            if (sidePanel.classList.contains('hidden')) {
-                sidePanel.classList.remove('hidden');
-                document.querySelector('.content').classList.add('panel-visible');
-            }
-        });
-        if (card.dataset.taskStatus === "1") {
-            card.classList.add('completed');
+                selectedTaskId = taskId;
+
+                openPanel();
+            });
         }
+        else {
+            card.removeEventListener('click', () => { });
+            card.classList.add('completed');
+            document.getElementById('panelStatus').textContent = "Completed";
+        }
+
     });
 }
 
@@ -129,7 +160,9 @@ function deleteTask() {
     var taskDeleteBtn = document.querySelectorAll('.taskDeleteBtn');
 
     taskDeleteBtn.forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+
             console.log("Delete btn clicked");
             document.getElementById('taskDeleteId').value = selectedTaskId;
 
@@ -187,6 +220,26 @@ function deleteListOverlay() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    if (window.innerWidth <= 805) {
+        document.getElementById('taskDetailsPanel').classList.remove('hidden');
+    }
+
+    window.addEventListener('resize', () => {
+        const sidePanel = document.getElementById('taskDetailsPanel');
+
+        if (panelOpen) {
+            closePanel();
+            openPanel();
+        }
+        else {
+            if (window.innerWidth > 805) {
+                sidePanel.classList.add('hidden');
+            }
+            else {
+                sidePanel.classList.remove('hidden');
+            }
+        }
+    });
 
     const newTaskBtn = document.getElementById('newTaskBtn');
     if (newTaskBtn) {
@@ -207,11 +260,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const taskEditButtons = document.querySelectorAll('.taskEditBtn');
     taskEditButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            const taskId = btn.dataset.taskId;
+            const overlay = document.getElementById('newTask-overlay');
+            const content = document.getElementById('newTask-content');
             // Fetch pre-filled edit form from EditTask GET action
-            fetch(`/Tasks/EditTask?taskId=${selectedTaskId}`)
+            fetch(`/Tasks/EditTask?taskId=${taskId}`)
                 .then(response => response.text())
                 .then(html => {
+                    console.log(content);
                     content.innerHTML = html;
                     overlay.classList.remove('hidden');
                 })
@@ -221,7 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    const listCloseBtn = document.getElementById('newList_close');
+    const listCloseBtn = document.getElementById('newList-close');
     if (listCloseBtn) {
         listCloseBtn.addEventListener('click', () => {
             console.log("Button clicked!");
@@ -229,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const closeBtn = document.getElementById('newTask_close');
+    const closeBtn = document.getElementById('newTask-close');
     if (closeBtn) {
         closeBtn.addEventListener('click', () => {
             console.log("Button clicked!");
@@ -240,10 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const panelCloseBtn = document.getElementById('panelCloseBtn');
     if (panelCloseBtn) {
         panelCloseBtn.addEventListener('click', () => {
-            const sidePanel = document.getElementById('taskDetailsPanel');
-            const content = document.querySelector('.content');
-            sidePanel.classList.add('hidden');
-            content.classList.remove('panel-visible');
+            closePanel();
         });
     }
 

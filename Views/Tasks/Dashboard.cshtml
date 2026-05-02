@@ -50,7 +50,7 @@
                                 </div>
                                 <div class="button-group-horizontal">
                                     <button type="button" class="taskDeleteBtn danger-btn"><img src="@ViewData["trashIcon"]" alt="Delete" class="deleteIcon" /></button>
-                                    <button type="button" class="taskEditBtn edit-btn"><img src="@ViewData["editIcon"]" alt="Edit" class="editIcon" /></button>
+                                    <button type="button" class="taskEditBtn edit-btn" data-task-id="@task.Task_ID"><img src="@ViewData["editIcon"]" alt="Edit" class="editIcon" /></button>
                                 </div>
                             </li>
                         }
@@ -64,11 +64,10 @@
 </div>
 <div id="taskDetailsPanel" class="task-detail-panel hidden">
     <button type="button" id="panelCloseBtn" class="close-btn"><strong>✕</strong></button>
-
-    <h4 id="taskTitle"></h4>
-    <p id="taskDescription"></p>
-    <p id="taskDueDate"></p>
-    <p id="taskStatus"></p>
+    <h4 id="panelTitle"></h4>
+    <p id="panelDescription"></p>
+    <p id="panelDueDate"></p>
+    <p id="panelStatus"></p>
 
     <div class="button-group-vertical">
         <form method="post"
@@ -76,7 +75,7 @@
               asp-controller="Tasks">
             @Html.AntiForgeryToken()
             <input type="hidden" id="taskCompletedId" name="taskId" value="" />
-            <button class="completeBtn" type="submit">Mark as Complete</button>
+            <button class="completeBtn" type="submit">Complete</button>
         </form>
     </div>
 </div>

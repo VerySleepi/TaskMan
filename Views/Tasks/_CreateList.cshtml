@@ -1,16 +1,16 @@
 ﻿@model TaskMan.ViewModels.Tasks.NewListViewModel
 
-<form class="taskForm" asp-controller="Tasks" asp-action="CreateList" method="post">
+<form asp-controller="Tasks" asp-action="CreateList" method="post">
     @Html.AntiForgeryToken()
 
     <div class="form-group">
         <label for="listTitle">Title</label>
-        <input id="listTitle" asp-for="Title" class="list-input" />
+        <input id="listTitle" asp-for="Title" class="list-input" placeholder="Enter List Title"/>
     </div>
 
     <div class="form-group">
         <label for="listDescription">Description</label>
-        <textarea id="listDescription" asp-for="Description" class="list-input"></textarea>
+        <textarea id="listDescription" asp-for="Description" class="list-input" placeholder="Enter List Description"></textarea>
     </div>
 
     <div class="form-group bg-group">
@@ -28,6 +28,6 @@
         </ul>
     </div>
 
-    <button id="createListBtn" type="submit">Create List</button>
+    <button type="submit">Create List</button>
 
 </form>

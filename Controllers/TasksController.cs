@@ -198,7 +198,7 @@ namespace TaskMan.Controllers
                 Title = task.Title,
                 Description = task.Description,
                 Due_Date = task.Due_Date,
-                Status = task.Status,
+                Status = 0,
                 User_List_ID = task.User_List_ID,
                 UserTaskLists = userTaskLists
             };
@@ -243,7 +243,7 @@ namespace TaskMan.Controllers
                 task.Title = model.Title;
                 task.Description = model.Description;
                 task.Due_Date = model.Due_Date;
-
+                task.Status = model.Status;
                 var changedTaskList = await _context.UserTasks.FindAsync(model.User_List_ID);
                 if (changedTaskList == null)
                 {

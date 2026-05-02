@@ -4,7 +4,7 @@
     @(ViewData["Context"]?.ToString() == "Edit" ? "Edit Task" : "New Task")
 </h3>
 
-<form class="taskForm" asp-controller="Tasks" asp-action="@(ViewData["Context"]?.ToString() == "Edit" ? "EditTask" : "CreateTask")"
+<form asp-controller="Tasks" asp-action="@(ViewData["Context"]?.ToString() == "Edit" ? "EditTask" : "CreateTask")"
       method="post">
 
     @if (ViewData["Context"]?.ToString() == "Edit")
@@ -14,17 +14,17 @@
    
 
     <div class="form-group">
-        <label for="taskTitle">Title</label>
-        <input id="taskTitle" asp-for="Title" class="list-input" />
+        <label asp-for="Title">Title</label>
+        <input id="taskTitle" asp-for="Title" class="list-input" placeholder="Enter Task Title"/>
     </div>
 
     <div class="form-group">
-        <label for="taskDescription">Description</label>
-        <textarea id="taskDescription" asp-for="Description" class="list-input"></textarea>
+        <label asp-for="Description">Description</label>
+        <textarea id="taskDescription" asp-for="Description" class="list-input" placeholder="Enter Task Description"></textarea>
     </div>
 
     <div class="form-group">
-        <label for="taskDueDate">Due Date</label>
+        <label asp-for="Due_Date">Due Date</label>
         <input id="taskDueDate"
                asp-for="Due_Date"
                type="date"
@@ -34,7 +34,7 @@
     </div>
 
     <div class="form-group">
-        <label for="taskListDropdown">Task List</label>
+        <label asp-for="User_List_ID">Task List</label>
         <div id="taskListDropdown" class="list-dropdown">
 
             <button type="button" class="list-dropdown-btn" id="taskListToggle">
@@ -44,8 +44,8 @@
             </button>
 
 
-            @* Input hold selected list ID, defaulting to "To-do" list if it exists *@
-            @if (ViewData["Context"]?.ToString() == "Edit")
+            @* Input for task edit with pre-selected list or default to "To-do" list for new tasks *@
+            @if (ViewData["Context"].ToString() == "Edit")
             {
                 <input asp-for="User_List_ID"
                        type="hidden"
@@ -78,7 +78,7 @@
     }
     else
     {
-        <button id="createTaskBtn" type="submit">Create Task</button>
+        <button type="submit">Create Task</button>
     }
 
 </form>

@@ -16,8 +16,7 @@
                 <input asp-for="UserId" class="form-check-input" hidden/>
             </div>
             <div class="mb-3">
-                <label asp-for="Code" class="form-label"></label>
-                <input asp-for="Code" class="form-control"/>
+                <input asp-for="Code" class="form-control" autocomplete="off"/>
                 <span asp-validation-for="Code" class="text-danger"></span>
             </div>
             <input type="submit" value="Submit" class="btn btn-success w-100 p-2" />
