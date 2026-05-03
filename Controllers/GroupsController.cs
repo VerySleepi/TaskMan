@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using TaskMan.Data;
 using TaskMan.Models;
@@ -21,15 +22,86 @@ namespace TaskMan.Controllers
         }
 
         // GET: GroupsController
-        public ActionResult Index()
+        public async Task<IActionResult> GroupDashboard()
         {
-            return View();
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            var members = await _context.GroupUsers
+                .Where(m => m.User_ID == currentUser.Id)
+                .ToListAsync();
+
+            var groupIds = members.Select(m => m.Group_ID).ToList();
+
+            var groups = await _context.Group
+                .Where(g => groupIds.Contains(g.Group_ID))
+                .ToListAsync();
+
+            var model = new GroupsViewModel
+            {
+                Groups = groups,
+                Members = members
+            };
+
+            ViewData["userName"] = currentUser.UserName;
+            ViewData["profilePic"] = Url.Content($"~/images/{currentUser.Profile_Pic}");
+            ViewData["trashIcon"] = Url.Content("~/images/trash-can-solid.png");
+            ViewData["editIcon"] = Url.Content("~/images/pencil-solid.png");
+
+            return View("GroupDashboard", model);
         }
 
         // GET: GroupsController/Details/5
-        public ActionResult Details(int id)
+        [HttpGet]
+        public async Task<IActionResult> Details(int groupId)
         {
-            return View();
+            // Check if user exists
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
+            {
+                return RedirectToAction("GroupDashboard");
+            }
+
+            // Check if user is a member of the group
+            var membership = await _context.GroupUsers
+                .FirstOrDefaultAsync(m => m.User_ID == currentUser.Id && m.Group_ID == groupId);
+            if (membership == null)
+            {
+                return RedirectToAction("GroupDashboard");
+            }
+
+            // Get group details for the current group
+            var group = await _context.Group
+                .FirstOrDefaultAsync(g => g.Group_ID == groupId);
+
+            // Get all lists of tasks for the group
+            var groupLists = await _context.GroupList
+                .Where(gl => gl.Group_ID == groupId)
+                .ToListAsync();
+
+            // Extract Group_List_IDs from the GroupLists
+            var listIds = groupLists.Select(gl => gl.Group_List_ID).ToList();
+
+            // Fetch tasks that belong to the lists of the current group
+            var groupTasks = await _context.GroupTask
+                .Where(gt => listIds.Contains(gt.Group_List_ID))
+                .ToListAsync();
+
+            // Organise tasks into dictionary with key of listId
+            // so the view can do TasksByList[Group_List_ID] to get the tasks for that list
+            var tasksByList = groupTasks
+                .GroupBy(gt => gt.Group_List_ID)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            var model = new GroupDetailViewModel
+            {
+                Group = group,
+                GroupLists = groupLists,
+                TasksByList = tasksByList,
+                UserRole = membership.Role,
+                User_ID = currentUser.Id
+            };
+
+            return View("GroupDetail", model);
         }
 
         // GET: GroupsController/Create
@@ -69,12 +141,12 @@ namespace TaskMan.Controllers
                 await _context.SaveChangesAsync();
 
                 // Temporary redirect to tasks dashboard, should be to group dashboard once implemented
-                return RedirectToAction("Dashboard", "Tasks");
+                return RedirectToAction("GroupDashboard");
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Error creating group: " + ex.Message);
-                return RedirectToAction("Dashboard", "Tasks");
+                return RedirectToAction("GroupDashboard");
             }
         }
 

@@ -120,9 +120,6 @@
     z-index: 3;
 }
 
-.hidden {
-    display: none !important;
-}
 
 .completed {
     text-decoration: line-through;
@@ -135,7 +132,6 @@
     padding: 20px;
     border-radius: 9px;
     min-height: fit-content;
-    height: 50%;
     width: 70%;
     max-width: 600px;
 }

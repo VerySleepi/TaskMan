@@ -74,6 +74,11 @@ header {
     border-radius: 6px;
 }
 
+
+.hidden {
+    display: none !important;
+}
+
 .confirm-msg {
     align-content: end;
 }

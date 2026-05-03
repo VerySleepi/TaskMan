@@ -9,6 +9,7 @@
 <div class="cardContainer">
 
     <div class="cardList">
+
         <div class="addButtons">
             <button id="newListBtn" class="addBtn">
                 New List
@@ -19,7 +20,8 @@
         </div>
 
         @* Goes through each UserTask and its associated Tasks to create a card for each UserTask, displaying the tasks within it. *@
-        @foreach (var usertasks in Model.structuredUserTasks)
+
+        @foreach (var usertasks in Model.StructuredUserTasks)
         {
             <div class="card mb-3 task-card" style="--bg-col: @usertasks.UserTask.BckGr_Col;">
                 <div class="card-header border-bottom-0">
@@ -55,8 +57,6 @@
                             </li>
                         }
                     </ul>
-                    <div>
-                    </div>
                 </div>
             </div>
         }
@@ -110,13 +110,12 @@
     <input type="hidden" id="listDeleteId" name="listId" value="" />
 </form>
 
-@await Html.PartialAsync("_NewTaskPopUp")
-@await Html.PartialAsync("_NewTaskListPopUp")
+@await Html.PartialAsync("~/Views/Shared/Popups/_NewTaskPopUp.cshtml")
+@await Html.PartialAsync("~/Views/Shared/Popups/_NewTaskListPopUp.cshtml")
 
 @section Scripts {
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/tasks.js" asp-append-version="true"></script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");

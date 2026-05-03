@@ -1,7 +1,11 @@
 ﻿@model TaskMan.ViewModels.Tasks.NewTaskViewModel
 
+@{
+    ViewData["Title"] = ViewData["Context"]?.ToString() == "Edit" ? "Edit Task" : "New Task";
+}
+
 <h3>
-    @(ViewData["Context"]?.ToString() == "Edit" ? "Edit Task" : "New Task")
+    @ViewData["Title"]
 </h3>
 
 <form asp-controller="Tasks" asp-action="@(ViewData["Context"]?.ToString() == "Edit" ? "EditTask" : "CreateTask")"

@@ -1,0 +1,64 @@
+﻿@model TaskMan.ViewModels.Group.GroupDetailViewModel
+
+@{
+    ViewData["Title"] = Model.Group.Title;
+    Layout = "~/Views/Shared/_GroupLayout.cshtml";
+}
+
+<p>@Model.Group.Description</p>
+
+<div class="cardContainer">
+    <div class="cardList">
+        <div class="addButtons">
+            <button id="newGroupListBtn" class="addBtn">
+                New List
+            </button>
+            <button id="newGroupTaskBtn" class="addBtn">
+                Add Task
+            </button>
+        </div>
+    </div>
+
+    @foreach (var list in Model.GroupLists)
+    {
+        <div class="card group-list-card">
+            <div class="card-header">
+                <h5>@list.Title</h5>
+            </div>
+
+            <div class="card-body">
+                <ul class="cardObjectList">
+                    @if (Model.TasksByList.ContainsKey(list.Group_List_ID))
+                    {
+                        @foreach (var task in Model.TasksByList[list.Group_List_ID])
+                        {
+                            <li class="taskObject"
+                                data-task-id="@task.Group_Task_ID"
+                                data-task-title="@task.Title"
+                                data-task-description="@task.Description"
+                                data-task-due-date="@task.Due_Date.ToString("yyyy-MM-dd")"
+                                data-task-status="@task.Status"
+                                data-task-list-id="@task.Group_List_ID">
+                                <div class="taskObject-content">
+                                    <h6>@task.Title</h6>
+                                    <p><strong>Due Date:</strong> @task.Due_Date.ToString("yyyy-MM-dd")</p>
+                                </div>
+                                <div class="button-group-horizontal">
+                                    <button type="button" class="taskDeleteBtn danger-btn"><img src="@ViewData["trashIcon"]" alt="Delete" class="deleteIcon" /></button>
+                                    <button type="button" class="taskEditBtn edit-btn" data-task-id="@task.Group_Task_ID"><img src="@ViewData["editIcon"]" alt="Edit" class="editIcon" /></button>
+                                </div>
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+            @* Admin controls — Edit/Delete list goes here (Day 7) *@
+        </div>
+    }
+
+</div>
+
+
+
+@* Admin controls — Edit/Delete task goes here (Day 7) *@
+@* Add member form goes here (Day 6) *@

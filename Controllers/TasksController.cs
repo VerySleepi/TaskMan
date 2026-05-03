@@ -52,9 +52,9 @@ namespace TaskMan.Controllers
             // Structure the data into the DashboardViewModel
             var model = new DashboardViewModel
             {
-                // For each UserTasks, find the corresponding Tasks and create a UserTasksViewModel
+                // For each UserTasks, find the corresponding Tasks and create UserTasksGrouped objects, then order the tasks by status (incomplete first)
                 // and add it to the structuredUserTasks list
-                structuredUserTasks = userTasksList.Select(ut => new UserTasksViewModel
+                StructuredUserTasks = userTasksList.Select(ut => new UserTasksGrouped
                 {
                     UserTask = ut,
                     Tasks = tasksList.Where(t => t.User_List_ID == ut.User_List_ID)

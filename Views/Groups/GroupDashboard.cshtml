@@ -1,0 +1,38 @@
+﻿@model TaskMan.ViewModels.Group.GroupsViewModel
+
+@{
+    ViewData["Title"] = "Groups";
+    Layout = "~/Views/Shared/_GroupLayout.cshtml";
+}
+
+<div class="groups-container">
+    <button id="createGroupBtn">Create Group</button>
+
+    @foreach (var group in Model.Groups)
+    {
+        var membership = Model.Members.FirstOrDefault(m => m.Group_ID == group.Group_ID);
+        <a asp-controller="Groups" asp-action="Details" asp-route-groupId="@group.Group_ID">
+            <div class="card group-card">
+                <div class="group-header border-bottom-0">
+                    <h5 class="group-title">@group.Title</h5>
+                </div>
+                <p>@group.Description</p>
+                <span>Role: @membership?.Role</span>
+
+                @* Admin controls — Edit/Delete go here (Day 8) *@
+
+            </div>
+        </a>
+    }
+</div>
+
+@await Html.PartialAsync("~/Views/Shared/Popups/_NewGroupPopup.cshtml")
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/groups.js" asp-append-version="true"></script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
+}
