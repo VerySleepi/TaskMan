@@ -191,9 +191,7 @@ button {
         background-color: #dcdcdc;
     }
 
-.completeBtn {
-    grid-column: 1 / -1;
-}
+
 
 button.close-btn {
     display: inline-block;

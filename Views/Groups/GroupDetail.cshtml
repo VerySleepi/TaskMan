@@ -2,10 +2,27 @@
 
 @{
     ViewData["Title"] = Model.Group.Title;
-    Layout = "~/Views/Shared/_GroupLayout.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<p>@Model.Group.Description</p>
+@section Styles {
+    <link rel="stylesheet" href="~/css/tasks.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/groups.css" asp-append-version="true" />
+}
+
+@if (Model.UserRole == "Admin")
+{
+    <div class="addButtons">
+        <button id="addMemberBtn" class="addBtn" data-group-id="@Model.Group.Group_ID">
+            Add Member
+        </button>
+        <button id="removeMemberBtn" class="danger-btn" data-group-id="@Model.Group.Group_ID">
+            Remove Member
+        </button>
+    </div> 
+}
+
+<p class="pageDescription">@Model.Group.Description</p>
 
 <div class="cardContainer">
     <div class="cardList">
@@ -59,6 +76,11 @@
 </div>
 
 
-
 @* Admin controls — Edit/Delete task goes here (Day 7) *@
+
 @* Add member form goes here (Day 6) *@
+@await Html.PartialAsync("~/Views/Groups/Popups/_MemberPopup.cshtml")
+
+@section Scripts {
+    <script src="~/js/groups.js" asp-append-version="true"></script>
+}

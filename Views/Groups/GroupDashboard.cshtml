@@ -2,11 +2,17 @@
 
 @{
     ViewData["Title"] = "Groups";
-    Layout = "~/Views/Shared/_GroupLayout.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/groups.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/groups.css" asp-append-version="true" />
+}
 <div class="groups-container">
-    <button id="createGroupBtn">Create Group</button>
+    <div class="addButtons">
+        <button id="createGroupBtn" class="addBtn">Create Group</button>
+    </div>
 
     @foreach (var group in Model.Groups)
     {
@@ -26,7 +32,7 @@
     }
 </div>
 
-@await Html.PartialAsync("~/Views/Shared/Popups/_NewGroupPopup.cshtml")
+@await Html.PartialAsync("~/Views/Groups/Popups/_NewGroupPopup.cshtml")
 
 @section Scripts {
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

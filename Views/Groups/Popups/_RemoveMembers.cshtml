@@ -1,0 +1,23 @@
+﻿@model TaskMan.ViewModels.Group.GroupDetailViewModel
+
+<form asp-controller="Groups" asp-action="RemoveMembers" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="groupId" value="@Model.Group.Group_ID" />
+
+    <div class="member-panel-grid">
+        @foreach (var user in Model.Members)
+        {
+            @if (user.Role != "Admin")
+            {
+                <div class="member-panel" data-user-id="@user.User.Id">
+                    <p>@user.User.UserName</p>
+                    <p>@user.User.Email</p>
+                </div>
+            }
+        }
+    </div>
+
+    <div id="removeSelectedIds"></div>
+
+    <button type="submit">Remove Members</button>
+</form>

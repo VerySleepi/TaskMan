@@ -14,6 +14,8 @@
     flex-direction: column;
 }
 
+.
+
 #taskDetailsPanel {
     display: flex;
     height: 100%;
@@ -83,6 +85,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 0.5rem 1rem 0.5rem 0.5rem;
+    height: 50px;
 }
 
 .card-title {
@@ -208,9 +211,14 @@ form button[type="submit"] {
     justify-self: start;
     height: fit-content;
     min-width: 90px;
-    width: fit-content;
+    width: 100%;
     background-color: #77df88;
     border-radius: 6px;
+}
+
+.completeBtn {
+    grid-column: 1 / -1;
+    max-width: fit-content;
 }
 
 
@@ -234,7 +242,7 @@ form button[type="submit"] {
     }
 
 .addBtn {
-    min-width: 95px;
+    min-width: 120px;
     width: 20%;
     max-width: 150px;
 }

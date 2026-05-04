@@ -1,0 +1,27 @@
+﻿.content {
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas: "members""description""cards"
+}
+
+.pageDescription {
+    grid-area: description;
+}
+
+.member-panel.selected {
+    border: 1px solid black;
+}
+
+#addMemberBtn {
+    width: 145px;
+}
+
+.addButtons:has(#addMemberBtn) {
+    grid-area: members;
+    justify-content: start;
+    min-width: 292px;
+}
+
+.addButtons > #newGroupListBtn {
+    margin-right: 5px;
+}
+

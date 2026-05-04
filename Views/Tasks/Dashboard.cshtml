@@ -4,8 +4,13 @@
 
 @{
     ViewData["Title"] = "Tasks";
-    Layout = "~/Views/Shared/_TaskLayout.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/tasks.css" asp-append-version="true" />
+}
+
 <div class="cardContainer">
 
     <div class="cardList">
