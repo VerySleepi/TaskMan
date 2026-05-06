@@ -1,0 +1,35 @@
+﻿@model TaskMan.ViewModels.Group.NewGroupListViewModel
+
+<form asp-controller="Groups" asp-action="CreateGroupList" method="post">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="Group_ID" />
+
+    <div class="form-group">
+        <label asp-for="Title">Title</label>
+        <input id="listTitle" asp-for="Title" class="list-input" placeholder="Enter List Title" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description">Description</label>
+        <textarea id="listDescription" asp-for="Description" class="list-input" placeholder="Enter List Description"></textarea>
+    </div>
+
+    <div class="form-group bg-group">
+        <p>Background</p>
+        <ul id="bg-list">
+            @foreach (var bg in Model.BackgroundColors)
+            {
+                var colorId = $"bg-{bg.TrimStart('#')}";
+
+                <li>
+                    <input id="@colorId" class="bg-radio" type="radio" aria-label="List Background" asp-for="BckGr_Col" value="@bg" />
+                    <label for="@colorId" class="bg-label" style="--fillCol: @bg;"></label>
+                </li>
+            }
+        </ul>
+    </div>
+
+    <button type="submit" class="submissionBtn">Create List</button>
+
+</form>

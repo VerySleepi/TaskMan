@@ -16,17 +16,12 @@ function toggleUsername() {
         currentUsername.style.display = "inline";
     }
 }
-function limitDropdownHeight() {
-    var selectTaskList = document.getElementById("selectTaskList");
-
-
-    
-
-}
 
 
 
 window.addEventListener("resize", toggleUsername);
-window.addEventListener("DOMContentLoaded", toggleUsername);
+document.addEventListener("DOMContentLoaded", () => {
+    toggleUsername();
+});
 
 

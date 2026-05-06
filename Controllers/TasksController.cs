@@ -301,11 +301,11 @@ namespace TaskMan.Controllers
                 task.Status = task.Status == 0 ? 1 : 0;
 
                 // Count total number of tasks for this task list
-                var totalTasks = await _context.Task.Where(t => t.User_List_ID == task.User_List_ID).CountAsync();
+                var totalTasks = Convert.ToDouble(await _context.Task.Where(t => t.User_List_ID == task.User_List_ID).CountAsync());
                 // Count number of completed tasks for this task list
-                var completedTasks = await _context.Task.Where(t => t.User_List_ID == task.User_List_ID && t.Status == 1).CountAsync();
+                var completedTasks = Convert.ToDouble(await _context.Task.Where(t => t.User_List_ID == task.User_List_ID && t.Status == 1).CountAsync());
                 // Update task list progress based on the number of completed tasks
-                taskList.Progress = totalTasks > 0 ? Convert.ToInt32(Math.Round(100.0 * (completedTasks / totalTasks))) : 100;
+                taskList.Progress = totalTasks > 0 ? Convert.ToInt32(Math.Round(100.0 * (completedTasks / totalTasks))) : 0;
 
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Dashboard", "Tasks");
@@ -380,7 +380,16 @@ namespace TaskMan.Controllers
             var model = new NewListViewModel
             {
                 Progress = 100,
-                BckGr_Col = "#E67E75"
+                BckGr_Col = "#E67E75",
+                BackgroundColors = new List<string>
+                {
+                    "#E67E75", // Red
+                    "#75E67E", // Green
+                    "#7581E6", // Blue
+                    "#E6E275", // Yellow
+                    "#E675E6", // Pink
+                    "#75E6E6"  // Cyan
+                }
             };
             return PartialView("_CreateList", model);
         }
@@ -465,12 +474,12 @@ namespace TaskMan.Controllers
                 _context.UserTasks.Remove(taskList);
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction("Dashboard", "Tasks");
+                return RedirectToAction("Dashboard");
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                return RedirectToAction("Dashboard", "Tasks");
+                return RedirectToAction("Dashboard");
             }
         }
     }

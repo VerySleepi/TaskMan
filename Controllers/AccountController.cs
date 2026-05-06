@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using TaskMan.Data;
 using TaskMan.Models;
 using TaskMan.Services;
 using TaskMan.ViewModels.Account;
@@ -13,24 +14,24 @@ namespace TaskMan.Controllers
         private readonly UserManager<User> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly IEmailSender emailSender;
+        private readonly ApplicationDbContext _context;
 
-        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IEmailSender emailSender)
+        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IEmailSender emailSender, ApplicationDbContext context)
         {
             this.signInManager = signInManager;
             this.userManager = userManager;
             this.roleManager = roleManager;
             this.emailSender = emailSender;
+            _context = context;
         }
 
         // GET: Login
         [HttpGet]
+        // Attribute to prevent caching the login page so that the data is cleared when navigating to
+        // the login page
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Login()
         {
-            if (User.Identity != null && User.Identity.IsAuthenticated)
-            {
-                return RedirectToAction("Index", "Home");
-            }
             var model = new LoginViewModel()
             {
                 RememberMe = false

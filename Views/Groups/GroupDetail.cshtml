@@ -19,67 +19,130 @@
         <button id="removeMemberBtn" class="danger-btn" data-group-id="@Model.Group.Group_ID">
             Remove Member
         </button>
-    </div> 
+    </div>
 }
 
 <p class="pageDescription">@Model.Group.Description</p>
 
 <div class="cardContainer">
+
+
     <div class="cardList">
-        <div class="addButtons">
-            <button id="newGroupListBtn" class="addBtn">
-                New List
-            </button>
-            <button id="newGroupTaskBtn" class="addBtn">
-                Add Task
-            </button>
+
+        @if (Model.UserRole == "Admin")
+        {
+            <div class="addButtons">
+                <button id="newGroupListBtn" class="addBtn" data-group-id="@Model.Group.Group_ID">
+                    New List
+                </button>
+                @* Checking if there are any lists to determine whether to allow task creation *@
+                <button id="newGroupTaskBtn" class="addBtn" data-group-id="@Model.Group.Group_ID" data-has-lists="@(Model.GroupLists.Any() ? "true" : "false")">
+                    Add Task
+                </button>
+            </div>
+        }
+
+
+        @foreach (var list in Model.GroupLists)
+        {
+            <div class="task-card" style="--bg-col: @list.BckGr_Col;">
+                <div class="card-header">
+                    <h5>@list.Title</h5>
+                    @if (Model.UserRole == "Admin")
+                    {
+                        <form class="deleteListForm" method="post" asp-action="DeleteGroupList" asp-controller="Groups">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="groupListId" value="@list.Group_List_ID" />
+                            <button type="button" class="listDeleteBtn danger-btn" aria-label="Delete List">Delete</button>
+                        </form>
+                    }
+                </div>
+
+                <div class="card-body">
+                    <ul class="cardObjectList">
+                        @if (Model.TasksByList.ContainsKey(list.Group_List_ID))
+                        {
+                            @foreach (var task in Model.TasksByList[list.Group_List_ID])
+                            {
+                                <li class="taskObject"
+                                    data-task-id="@task.Group_Task_ID"
+                                    data-task-title="@task.Title"
+                                    data-task-description="@task.Description"
+                                    data-task-due-date="@task.Due_Date.ToString("yyyy-MM-dd")"
+                                    data-task-status="@task.Status"
+                                    data-task-list-id="@task.Group_List_ID">
+                                    <div class="taskObject-content">
+                                        <h6>@task.Title</h6>
+                                        <p><strong>Due Date:</strong> @task.Due_Date.ToString("yyyy-MM-dd")</p>
+                                    </div>
+                                    <div class="button-group-horizontal">
+                                        @if (Model.UserRole == "Admin")
+                                        {
+                                            <form class="deleteTaskForm" asp-action="DeleteGroupTask" asp-controller="Groups" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="taskId" value="@task.Group_Task_ID" />
+                                                <button type="button" class="groupTaskDeleteBtn danger-btn" aria-label="Delete Group Task"><img src="@ViewData["trashIcon"]" alt="Delete" class="deleteIcon" /></button>
+                                            </form>
+                                            <button type="button" class="groupTaskEditBtn edit-btn" data-task-id="@task.Group_Task_ID"><img src="@ViewData["editIcon"]" alt="Edit" class="editIcon" /></button>
+                                        }
+                                        <form method="post" asp-action="MarkGroupTaskComplete" asp-controller="Groups">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="taskId" value="@task.Group_Task_ID" />
+                                            @if (task.Status == 1)
+                                            {
+                                                <input type="checkbox" class="task-checkbox" checked title="Mark Incomplete" aria-label="Complete Checkbox" />
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" class="task-checkbox" title="Mark Complete" aria-label="Incomplete Checkbox" />
+                                            }
+                                        </form>
+                                    </div>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+                @* Admin controls — Edit/Delete list goes here (Day 7) *@
+            </div>
+        }
+    </div>
+
+</div>
+
+@if (Model.UserRole == "Admin")
+{
+    <div id="deleteGroupTaskOverlay" class="overlay hidden">
+        <div id="deleteGroupTaskContent" class="popup-content">
+            <p class="confirm-msg">Are you sure you want to delete this task?</p>
+            <div class="button-group-horizontal">
+                <button id="deleteGroupTaskConfirmBtn" class="danger-btn">Delete</button>
+                <button id="deleteGroupTaskCancelBtn" class="cancel-btn">Cancel</button>
+            </div>
         </div>
     </div>
 
-    @foreach (var list in Model.GroupLists)
-    {
-        <div class="card group-list-card">
-            <div class="card-header">
-                <h5>@list.Title</h5>
+    <div id="deleteGroupListOverlay" class="overlay hidden">
+        <div class="popup-content">
+            <p class="confirm-msg">Are you sure you want to delete this list and all its tasks?</p>
+            <div class="button-group-horizontal">
+                <button id="deleteGroupListConfirmBtn" class="danger-btn">Delete</button>
+                <button id="deleteGroupListCancelBtn" class="cancel-btn">Cancel</button>
             </div>
-
-            <div class="card-body">
-                <ul class="cardObjectList">
-                    @if (Model.TasksByList.ContainsKey(list.Group_List_ID))
-                    {
-                        @foreach (var task in Model.TasksByList[list.Group_List_ID])
-                        {
-                            <li class="taskObject"
-                                data-task-id="@task.Group_Task_ID"
-                                data-task-title="@task.Title"
-                                data-task-description="@task.Description"
-                                data-task-due-date="@task.Due_Date.ToString("yyyy-MM-dd")"
-                                data-task-status="@task.Status"
-                                data-task-list-id="@task.Group_List_ID">
-                                <div class="taskObject-content">
-                                    <h6>@task.Title</h6>
-                                    <p><strong>Due Date:</strong> @task.Due_Date.ToString("yyyy-MM-dd")</p>
-                                </div>
-                                <div class="button-group-horizontal">
-                                    <button type="button" class="taskDeleteBtn danger-btn"><img src="@ViewData["trashIcon"]" alt="Delete" class="deleteIcon" /></button>
-                                    <button type="button" class="taskEditBtn edit-btn" data-task-id="@task.Group_Task_ID"><img src="@ViewData["editIcon"]" alt="Edit" class="editIcon" /></button>
-                                </div>
-                            </li>
-                        }
-                    }
-                </ul>
-            </div>
-            @* Admin controls — Edit/Delete list goes here (Day 7) *@
         </div>
-    }
+    </div>
 
-</div>
+}
+
+
 
 
 @* Admin controls — Edit/Delete task goes here (Day 7) *@
 
 @* Add member form goes here (Day 6) *@
 @await Html.PartialAsync("~/Views/Groups/Popups/_MemberPopup.cshtml")
+@await Html.PartialAsync("~/Views/Groups/Popups/_GroupListPopup.cshtml")
+@await Html.PartialAsync("~/Views/Groups/Popups/_GroupTaskPopup.cshtml")
 
 @section Scripts {
     <script src="~/js/groups.js" asp-append-version="true"></script>

@@ -63,15 +63,15 @@ function taskCardSize() {
 function openPanel() {
     const sidePanel = document.getElementById('taskDetailsPanel');
     const content = document.querySelector('.content');
-        if (window.innerWidth <= 805) {
-            sidePanel.classList.add('panel-open');
-            content.classList.remove('panel-visible');
-        }
-        else {
-            content.classList.add('panel-visible');
-            sidePanel.classList.remove('panel-open');
-            sidePanel.classList.remove('hidden');
-        }
+    if (window.innerWidth <= 805) {
+        sidePanel.classList.add('panel-open');
+        content.classList.remove('panel-visible');
+    }
+    else {
+        content.classList.add('panel-visible');
+        sidePanel.classList.remove('panel-open');
+        sidePanel.classList.remove('hidden');
+    }
     panelOpen = true;
 }
 
@@ -104,25 +104,21 @@ function toggleTaskDetailPanel() {
 
         console.log(`Task ID: ${taskId}, Title: ${title}, Status: ${status}`);
 
-        if (status === "0") {
-            card.addEventListener('click', () => {
-
-                document.getElementById('panelTitle').textContent = title;
-                document.getElementById('panelDescription').textContent = description;
-                document.getElementById('panelDueDate').textContent = "Due-Date: " + dueDate;
-                document.getElementById('panelStatus').textContent = "Not Completed";
-                document.getElementById('taskCompletedId').value = taskId;
-
-                selectedTaskId = taskId;
-
-                openPanel();
-            });
-        }
-        else {
-            card.removeEventListener('click', () => { });
+        
+        if (status === "1") {
             card.classList.add('completed');
-            document.getElementById('panelStatus').textContent = "Completed";
         }
+      
+        card.addEventListener('click', () => {
+            document.getElementById('panelTitle').textContent = title;
+            document.getElementById('panelDescription').textContent = description;
+            document.getElementById('panelDueDate').textContent = "Due-Date: " + dueDate;
+            document.getElementById('panelStatus').textContent = status === "1" ? "Completed" : "Not Completed";
+
+
+            selectedTaskId = taskId;
+            openPanel();
+        });
 
     });
 }
@@ -156,27 +152,46 @@ function taskListDropdown() {
     });
 }
 
+function editTask() {
+    const taskEditButtons = document.querySelectorAll('.taskEditBtn');
+    taskEditButtons.forEach(btn => {
+        btn.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            const taskId = btn.dataset.taskId;
+            const overlay = document.getElementById('newTask-overlay');
+            const content = document.getElementById('newTask-content');
+            // Fetch pre-filled edit form from EditTask GET action
+            fetch(`/Tasks/EditTask?taskId=${taskId}`)
+                .then(response => response.text())
+                .then(html => {
+                    console.log(content);
+                    content.innerHTML = html;
+                    overlay.classList.remove('hidden');
+                })
+                .catch(err => console.error("Error loading EditTask form:", err));
+
+
+        });
+    });
+}
 function deleteTask() {
+    let deleteForm = null;
     var taskDeleteBtn = document.querySelectorAll('.taskDeleteBtn');
 
     taskDeleteBtn.forEach(btn => {
         btn.addEventListener('click', (ev) => {
             ev.stopPropagation();
-
+            deleteForm = btn.closest('form');
             console.log("Delete btn clicked");
-            document.getElementById('taskDeleteId').value = selectedTaskId;
-
             document.getElementById('deleteTaskOverlay').classList.remove('hidden');
         });
     });
 
-}
 
-function deleteTaskOverlay() {
     const deleteTaskConfirmBtn = document.getElementById('deleteTaskConfirmBtn');
     if (deleteTaskConfirmBtn) {
         deleteTaskConfirmBtn.addEventListener('click', () => {
-            document.getElementById('deleteTaskForm').submit();
+            deleteForm.submit();
         })
     }
 
@@ -186,28 +201,25 @@ function deleteTaskOverlay() {
             document.getElementById('deleteTaskOverlay').classList.add('hidden');
         })
     }
-}
 
+}
 function deleteList() {
+    let deleteForm = null;
     var listDeleteBtn = document.querySelectorAll('.listDeleteBtn');
 
     listDeleteBtn.forEach(btn => {
         btn.addEventListener('click', () => {
             console.log("Delete list btn clicked");
-            const selectedListId = btn.dataset.listId;
-            const selectedListName = btn.dataset.listName;
-            document.getElementById('listDeleteId').value = selectedListId;
+            deleteForm = btn.closest('form');
 
             document.getElementById('deleteListOverlay').classList.remove('hidden');
         });
     });
-}
 
-function deleteListOverlay() {
     const deleteListConfirmBtn = document.getElementById('deleteListConfirmBtn');
     if (deleteListConfirmBtn) {
         deleteListConfirmBtn.addEventListener('click', () => {
-            document.getElementById('deleteListForm').submit();
+            deleteForm.submit();
         })
     }
 
@@ -258,26 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     }
 
-    const taskEditButtons = document.querySelectorAll('.taskEditBtn');
-    taskEditButtons.forEach(btn => {
-        btn.addEventListener('click', (ev) => {
-            ev.stopPropagation();
-            const taskId = btn.dataset.taskId;
-            const overlay = document.getElementById('newTask-overlay');
-            const content = document.getElementById('newTask-content');
-            // Fetch pre-filled edit form from EditTask GET action
-            fetch(`/Tasks/EditTask?taskId=${taskId}`)
-                .then(response => response.text())
-                .then(html => {
-                    console.log(content);
-                    content.innerHTML = html;
-                    overlay.classList.remove('hidden');
-                })
-                .catch(err => console.error("Error loading EditTask form:", err));
 
-
-        });
-    });
 
     const listCloseBtn = document.getElementById('newList-close');
     if (listCloseBtn) {
@@ -302,13 +295,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    var taskStatusCheckboxes = document.querySelectorAll('.task-checkbox');
+    taskStatusCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', (ev) => {
+            ev.stopPropagation();
+            checkbox.closest('form').submit();
+        });
+    });
 
     taskCardSize();
     toggleTaskDetailPanel();
     deleteTask();
     deleteList();
-    deleteTaskOverlay();
-    deleteListOverlay();
+    editTask();
 })
 
 

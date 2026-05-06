@@ -28,14 +28,16 @@
 
         @foreach (var usertasks in Model.StructuredUserTasks)
         {
-            <div class="card mb-3 task-card" style="--bg-col: @usertasks.UserTask.BckGr_Col;">
-                <div class="card-header border-bottom-0">
+            <div class="task-card" style="--bg-col: @usertasks.UserTask.BckGr_Col;">
+                <div class="card-header">
                     <h5 class="card-title">@usertasks.UserTask.Title</h5>
                     @if (usertasks.UserTask.Title != "To-do")
                     {
-                        <button type="button" class="listDeleteBtn danger-btn" data-list-id="@usertasks.UserTask.User_List_ID" data-list-title="@usertasks.UserTask.Title">
-                            Delete
-                        </button>
+                        <form class="deleteListForm" method="post" asp-action="DeleteList" asp-controller="Tasks">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="listId" value="@usertasks.UserTask.User_List_ID" />
+                            <button type="button" class="listDeleteBtn danger-btn" aria-label="Delete List">Delete</button>
+                        </form>
                     }
                     
                 </div>
@@ -56,8 +58,24 @@
                                     <p><strong>Due Date:</strong> @task.Due_Date.ToString("yyyy-MM-dd")</p>
                                 </div>
                                 <div class="button-group-horizontal">
-                                    <button type="button" class="taskDeleteBtn danger-btn"><img src="@ViewData["trashIcon"]" alt="Delete" class="deleteIcon" /></button>
+                                    <form class="deleteTaskForm" method="post" asp-action="DeleteTask" asp-controller="Tasks">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="taskId" value="@task.Task_ID" />
+                                        <button type="button" class="taskDeleteBtn danger-btn" aria-label="Delete Task"><img src="@ViewData["trashIcon"]" alt="Delete" class="deleteIcon" /></button>
+                                    </form>
+
                                     <button type="button" class="taskEditBtn edit-btn" data-task-id="@task.Task_ID"><img src="@ViewData["editIcon"]" alt="Edit" class="editIcon" /></button>
+                                    <form method="post" asp-action="TaskCompletion" asp-controller="Tasks">
+                                        <input type="hidden" name="taskId" value="@task.Task_ID" />
+                                        @if (task.Status == 1)
+                                        {
+                                            <input type="checkbox" class="task-checkbox" checked title="Mark Incomplete" aria-label="Complete Checkbox" />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" class="task-checkbox" title="Mark Complete" aria-label="Incomplete Checkbox" />
+                                        }
+                                    </form>
                                 </div>
                             </li>
                         }
@@ -73,16 +91,6 @@
     <p id="panelDescription"></p>
     <p id="panelDueDate"></p>
     <p id="panelStatus"></p>
-
-    <div class="button-group-vertical">
-        <form method="post"
-              asp-action="TaskCompletion"
-              asp-controller="Tasks">
-            @Html.AntiForgeryToken()
-            <input type="hidden" id="taskCompletedId" name="taskId" value="" />
-            <button class="completeBtn" type="submit">Complete</button>
-        </form>
-    </div>
 </div>
 
 <div id="deleteTaskOverlay" class="overlay hidden">
@@ -105,22 +113,14 @@
     </div>
 </div>
 
-<form id="deleteTaskForm" class="hidden" asp-action="DeleteTask" asp-controller="Tasks" method="post">
-    @Html.AntiForgeryToken()
-    <input type="hidden" id="taskDeleteId" name="taskId" value="" />
-</form>
 
-<form id="deleteListForm" class="hidden" asp-action="DeleteList" asp-controller="Tasks" method="post">
-    @Html.AntiForgeryToken()
-    <input type="hidden" id="listDeleteId" name="listId" value="" />
-</form>
+
+
 
 @await Html.PartialAsync("~/Views/Shared/Popups/_NewTaskPopUp.cshtml")
 @await Html.PartialAsync("~/Views/Shared/Popups/_NewTaskListPopUp.cshtml")
 
 @section Scripts {
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/tasks.js" asp-append-version="true"></script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");

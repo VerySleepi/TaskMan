@@ -147,11 +147,20 @@ namespace TaskMan.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int groupId)
         {
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            ViewData["userName"] = user.UserName;
+            ViewData["profilePic"] = Url.Content($"~/images/{user.Profile_Pic}");
+            ViewData["trashIcon"] = Url.Content("~/images/trash-can-solid.png");
+            ViewData["editIcon"] = Url.Content("~/images/pencil-solid.png");
             var model = await BuildGroupDetailViewModel(groupId);
 
             return View("GroupDetail", model);
         }
-
 
         // GET: GroupsController/Create
         [HttpGet]
@@ -177,7 +186,7 @@ namespace TaskMan.Controllers
 
                 if (model.Description == null)
                 {
-                    model.Description = "";
+                    model.Description = "No Description";
                 }
 
                 var group = new Group
@@ -297,7 +306,7 @@ namespace TaskMan.Controllers
             return PartialView("Popups/_RemoveMembers", model);
         }
 
-        // POST: GroupsController/RemoveMembers/5
+        // POST: GroupsController/RemoveMembers/5/userIds
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveMembers(int groupId, List<string> userIds)
@@ -345,24 +354,362 @@ namespace TaskMan.Controllers
             }
         }
 
-        // GET: GroupsController/Edit/5
-        public ActionResult Edit(int id)
+        // GET: GroupsController/CreateGroupTask/5
+        [HttpGet]
+        public async Task<IActionResult> CreateGroupTask(int groupId)
         {
-            return View();
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            // List that is being added to by using its Group_ID
+            var groupLists = await _context.GroupList
+                .Where(gl => gl.Group_ID == groupId)
+                .ToListAsync();
+
+            if (groupLists.Count == 0)
+            {
+                return RedirectToAction("Details", new { groupId });
+            }
+
+            var groupList = groupLists.FirstOrDefault()?.Group_List_ID ?? 0;
+
+
+            var memberOf = await _context.GroupUsers
+                .FirstOrDefaultAsync(m => m.User_ID == currentUser.Id && m.Group_ID == groupId);
+
+            if (memberOf == null)
+            {
+                return RedirectToAction("Details", new { groupId });
+            }
+
+            var model = new NewGroupTaskViewModel
+            {
+                Group_List_ID = groupList,
+                Group_ID = groupId,
+                Due_Date = DateOnly.FromDateTime(DateTime.Now),
+                Status = 0,
+                GroupLists = groupLists
+            };
+
+            ViewData["Context"] = "Create";
+
+            return PartialView("_CreateGroupTask", model);
+        }
+
+        // POST: GroupsController/CreateGroupTask/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateGroupTask(NewGroupTaskViewModel model)
+        {
+            Debug.WriteLine($"Group_ID: {model.Group_ID}, Group_List_ID: {model.Group_List_ID}, Title: {model.Title}");
+            // Fetch Tasks that match the extracted User_List_IDs
+            var tasksList = await _context.GroupTask
+                .Where(t => t.Group_List_ID == model.Group_List_ID && t.Title.StartsWith("New Task"))
+                .ToListAsync();
+            try
+            {
+                if (model.Title == null || model.Title == string.Empty)
+                {
+                    if (tasksList.Count > 0)
+                    {
+                        model.Title = $"New Task ({tasksList.Count})";
+                    }
+                    else
+                    {
+                        model.Title = "New Task";
+                    }
+                }
+                if (model.Description == null)
+                {
+                    model.Description = "No Description";
+                }
+
+                var currentUser = await _userManager.GetUserAsync(User);
+
+                var groupList = await _context.GroupList
+                    .FirstOrDefaultAsync(gl => gl.Group_List_ID == model.Group_List_ID);
+
+                if (groupList == null)
+                {
+                    Debug.WriteLine($"Group list with ID {model.Group_List_ID} not found");
+                    return RedirectToAction("Details", new { groupId = model.Group_ID });
+                }
+
+                var memberOf = await _context.GroupUsers
+                    .FirstOrDefaultAsync(m => m.User_ID == currentUser.Id && m.Group_ID == model.Group_ID);
+
+                if (memberOf == null)
+                {
+                    Debug.WriteLine("Current user is not a member of the group");
+                    return RedirectToAction("GroupDashboard");
+                }
+                else if (memberOf.Role != "Admin")
+                {
+                    Debug.WriteLine("Current user is not an admin of the group");
+                    return RedirectToAction("Details", new { groupId = model.Group_ID });
+                }
+
+                var newTask = new GroupTask
+                {
+                    Group_List_ID = model.Group_List_ID,
+                    Title = model.Title,
+                    Description = model.Description,
+                    Due_Date = model.Due_Date,
+                    Status = 0
+                };
+
+                _context.GroupTask.Add(newTask);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Details", new { groupId = groupList.Group_ID });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return RedirectToAction("GroupDashboard");
+            }
+        }
+
+        // POST: GroupsController/MarkGroupTaskComplete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MarkGroupTaskComplete(int taskId)
+        {
+            try
+            {
+                var userId = _userManager.GetUserId(HttpContext.User);
+
+                // Fetch task by taskId
+                var task = await _context.GroupTask.FindAsync(taskId);
+                if (task == null)
+                {
+                    Debug.WriteLine($"Task with ID {taskId} not found.");
+                    return NotFound();
+                }
+
+                // Fetch task parent GroupList by task.Group_List_ID
+                var taskList = await _context.GroupList.FindAsync(task.Group_List_ID);
+                if (taskList == null)
+                {
+                    Debug.WriteLine($"GroupList with ID {task.Group_List_ID} not found.");
+                    return NotFound();
+                }
+
+                // Member check - ensure user is a member of the group that the task belongs to
+                var memberOf = await _context.GroupUsers
+                    .FirstOrDefaultAsync(m => m.User_ID == userId && m.Group_ID == taskList.Group_ID);
+
+                if (memberOf == null)
+                {
+                    Debug.WriteLine($"Unauthorized attempt to change completion status of task with ID {taskId} by user {userId}.");
+                    return RedirectToAction("GroupDashboard");
+                }
+
+                // Toggle task completion status => Update list progress if task is being marked as completed
+                task.Status = task.Status == 0 ? 1 : 0;
+
+                // Count total number of tasks for this task list
+                var totalTasks = Convert.ToDouble(await _context.GroupTask.Where(t => t.Group_List_ID == task.Group_List_ID).CountAsync());
+                // Count number of completed tasks for this task list
+                var completedTasks = Convert.ToDouble(await _context.GroupTask.Where(t => t.Group_List_ID == task.Group_List_ID && t.Status == 1).CountAsync());
+                // Update task list progress based on the number of completed tasks
+                taskList.Progress = totalTasks > 0 ? Convert.ToInt32(Math.Round(100.0 * (completedTasks / totalTasks))) : 0;
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Details", new { groupId = taskList.Group_ID });
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return RedirectToAction("GroupDashboard");
+            }
+        }
+
+        // GET: GroupsController/DeleteGroupTask/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteGroupTask(int taskId)
+        {
+            Debug.WriteLine($"DeleteGroupTask called with taskId: {taskId}");
+            try
+            {
+                var currentUser = await _userManager.GetUserAsync(User);
+
+                if (currentUser == null)
+                {
+                    Debug.WriteLine("Current user not found");
+                    return RedirectToAction("Login", "Account");
+                }
+
+                var task = await _context.GroupTask
+                    .FirstOrDefaultAsync(t => t.Group_Task_ID == taskId);
+
+                if (task == null)
+                {
+                    Debug.WriteLine($"Task with ID {taskId} not found");
+                    return NotFound();
+                }
+
+                var groupList = await _context.GroupList
+                    .FirstOrDefaultAsync(gl => gl.Group_List_ID == task.Group_List_ID);
+
+                if (groupList == null)
+                {
+                    Debug.WriteLine($"Group list with ID {task.Group_List_ID} not found");
+                    return NotFound();
+                }
+
+                var memberOf = await _context.GroupUsers
+                    .FirstOrDefaultAsync(m => m.User_ID == currentUser.Id && m.Group_ID == groupList.Group_ID);
+
+                if (memberOf == null)
+                {
+                    return RedirectToAction("GroupDashboard");
+                }
+                else if (memberOf.Role != "Admin")
+                {
+                    return RedirectToAction("Details", new { groupId = groupList.Group_ID });
+                }
+
+                _context.GroupTask.Remove(task);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Details", new { groupId = groupList.Group_ID });
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return RedirectToAction("GroupDashboard");
+            }
+        }
+
+        // GET: GroupsController/EditGroupTask/5
+        [HttpGet]
+        public async Task<IActionResult> EditGroupTask(int taskId)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            if (currentUser == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var task = await _context.GroupTask
+                .FirstOrDefaultAsync(t => t.Group_Task_ID == taskId);
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            var groupList = await _context.GroupList
+                    .FirstOrDefaultAsync(gl => gl.Group_List_ID == task.Group_List_ID);
+
+            if (groupList == null)
+            {
+                return NotFound();
+            }
+
+            var memberOf = await _context.GroupUsers
+                .FirstOrDefaultAsync(m => m.User_ID == currentUser.Id && m.Group_ID == groupList.Group_ID);
+
+            if (memberOf == null)
+            {
+                return RedirectToAction("GroupDashboard");
+
+            }
+            else if (memberOf.Role != "Admin")
+            {
+                return RedirectToAction("Details", new { groupId = groupList.Group_ID });
+            }
+
+            var groupLists = await _context.GroupList
+                .Where(gl => gl.Group_ID == groupList.Group_ID)
+                .ToListAsync();
+
+            var model = new NewGroupTaskViewModel
+            {
+                Group_Task_ID = task.Group_Task_ID,
+                Title = task.Title,
+                Description = task.Description,
+                Due_Date = task.Due_Date,
+                Status = task.Status,
+                Group_List_ID = task.Group_List_ID,
+                Group_ID = groupList.Group_ID,
+                GroupLists = groupLists
+            };
+
+            ViewData["Context"] = "Edit";
+            return PartialView("_CreateGroupTask", model);
         }
 
         // POST: GroupsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<IActionResult> EditGroupTask(int taskId, NewGroupTaskViewModel model)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var currentUser = await _userManager.GetUserAsync(User);
+                if (currentUser == null)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+
+                var task = await _context.GroupTask
+                    .FirstOrDefaultAsync(t => t.Group_Task_ID == taskId);
+
+                if (task == null)
+                {
+                    Debug.WriteLine($"Task with ID {taskId} not found");
+                    return NotFound();
+                }
+
+                var groupList = await _context.GroupList
+                    .FirstOrDefaultAsync(gl => gl.Group_List_ID == task.Group_List_ID);
+
+                if (groupList == null)
+                {
+                    Debug.WriteLine($"Group list with ID {task.Group_List_ID} not found");
+                    return NotFound();
+                }
+
+                var memberOf = await _context.GroupUsers
+                    .FirstOrDefaultAsync(m => m.User_ID == currentUser.Id && m.Group_ID == groupList.Group_ID);
+
+                if (memberOf == null)
+                {
+                    Debug.WriteLine("Current user is not a member of the group");
+                    return RedirectToAction("GroupDashboard");
+                }
+                else if (memberOf.Role != "Admin")
+                {
+                    Debug.WriteLine("Current user is not an admin of the group");
+                    return RedirectToAction("Details", new { groupId = groupList.Group_ID });
+                }
+
+                task.Title = model.Title;
+                task.Description = model.Description;
+                task.Due_Date = model.Due_Date;
+                var changedTaskList = await _context.GroupList.FirstOrDefaultAsync(gl => gl.Group_List_ID == model.Group_List_ID && gl.Group_ID == groupList.Group_ID);
+                if (changedTaskList == null)
+                {
+                    Debug.WriteLine($"Group list with ID {model.Group_List_ID} not found.");
+                    return NotFound();
+                }
+                else
+                {
+                    Debug.WriteLine($"User {currentUser.Id} is authorized to change task list to ID {model.Group_List_ID} for task with ID {taskId}.");
+                    task.Group_List_ID = model.Group_List_ID;
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Details", new { groupId = groupList.Group_ID });
             }
-            catch
+            catch (Exception ex) 
             {
-                return View();
+                Debug.WriteLine(ex.Message);
+                return RedirectToAction("Details", new { groupId = model.Group_ID });
             }
         }
 
@@ -385,6 +732,140 @@ namespace TaskMan.Controllers
             catch
             {
                 return View();
+            }
+        }
+
+        // GroupList CRUD operations
+
+        // GET: GroupsController/CreateGroupList/5
+        [HttpGet]
+        public async Task<IActionResult> CreateGroupList(int groupId)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var memberOf = await _context.GroupUsers
+                .FirstOrDefaultAsync(m => m.User_ID == currentUser.Id && m.Group_ID == groupId);
+
+            if (memberOf == null)
+            {
+                return RedirectToAction("GroupDashboard");
+            }
+
+            var model = new NewGroupListViewModel
+            {
+                Group_ID = groupId,
+                BckGr_Col = "#E67E75", // Default to red, can be changed by user in the view
+                BackgroundColors = new List<string>
+                {
+                    "#E67E75", // Red
+                    "#8CDE8F", // Green
+                    "#59DAE6", // Blue
+                    "#F0EE7A", // Yellow
+                    "#DEB4F0" // Purple
+                }
+            };
+
+            return PartialView("_CreateGroupList", model);
+        }
+
+        // POST: GroupsController/CreateGroupList/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateGroupList(NewGroupListViewModel model)
+        {
+            try
+            {
+                var currentUser = await _userManager.GetUserAsync(User);
+
+                var memberOf = await _context.GroupUsers
+                    .FirstOrDefaultAsync(m => m.User_ID == currentUser.Id && m.Group_ID == model.Group_ID);
+
+                if (memberOf == null)
+                {
+                    return RedirectToAction("GroupDashboard");
+                }
+                else if (memberOf.Role != "Admin")
+                {
+                    return RedirectToAction("Details", new { groupId = model.Group_ID });
+                }
+
+                if (model.Title == null)
+                {
+                    model.Title = "Task List";
+                }
+
+                if (model.Description == null)
+                {
+                    model.Description = "No Description";
+                }
+
+                var newList = new GroupList
+                {
+                    Group_ID = model.Group_ID,
+                    Title = model.Title,
+                    Description = model.Description,
+                    BckGr_Col = model.BckGr_Col,
+                    Progress = 0
+                };
+
+                _context.GroupList.Add(newList);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Details", new { groupId = model.Group_ID });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Error creating group list: " + ex.Message);
+                return RedirectToAction("Details", new { groupId = model.Group_ID });
+            }
+        }
+
+        // GET: GroupsController/DeleteGroupList/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteGroupList(int groupListId)
+        {
+            try
+            {
+                var currentUser = await _userManager.GetUserAsync(User);
+
+                var groupList = await _context.GroupList
+                    .FirstOrDefaultAsync(gl => gl.Group_List_ID == groupListId);
+
+                if (groupList == null)
+                {
+                    Debug.WriteLine($"Group list with ID {groupListId} not found");
+                    return NotFound();
+                }
+
+                var memberOf = await _context.GroupUsers
+                    .FirstOrDefaultAsync(m => m.User_ID == currentUser.Id && m.Group_ID == groupList.Group_ID);
+
+                if (memberOf == null)
+                {
+                    return RedirectToAction("Details", new { groupId = groupList.Group_ID });
+                }
+                else if (memberOf.Role != "Admin")
+                {
+                    return RedirectToAction("Details", new { groupId = groupList.Group_ID });
+                }
+
+                // All tasks that belong to the group list being deleted.
+                var tasks = await _context.GroupTask
+                    .Where(gt => gt.Group_List_ID == groupListId)
+                    .ToListAsync();
+
+                _context.GroupTask.RemoveRange(tasks);
+                _context.GroupList.Remove(groupList);
+
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Details", new { groupId = groupList.Group_ID });
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return RedirectToAction("Details", new { groupId = groupListId });
             }
         }
     }
