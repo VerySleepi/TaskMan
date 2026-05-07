@@ -506,6 +506,7 @@ namespace TaskMan.Controllers
 
                 // Toggle task completion status => Update list progress if task is being marked as completed
                 task.Status = task.Status == 0 ? 1 : 0;
+                await _context.SaveChangesAsync();
 
                 // Count total number of tasks for this task list
                 var totalTasks = Convert.ToDouble(await _context.GroupTask.Where(t => t.Group_List_ID == task.Group_List_ID).CountAsync());
