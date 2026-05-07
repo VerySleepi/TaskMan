@@ -211,7 +211,6 @@ namespace TaskMan.Controllers
                 _context.GroupUsers.Add(groupAdmin);
                 await _context.SaveChangesAsync();
 
-                // Temporary redirect to tasks dashboard, should be to group dashboard once implemented
                 return RedirectToAction("GroupDashboard");
             }
             catch (Exception ex)

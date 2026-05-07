@@ -12,8 +12,8 @@ using TaskMan.Data;
 namespace TaskMan.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260217190334_ImplementIdentity")]
-    partial class ImplementIdentity
+    [Migration("20260507163117_Initial-Create")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -206,20 +206,9 @@ namespace TaskMan.Migrations
 
                     b.HasKey("Group_List_ID");
 
+                    b.HasIndex("Group_ID");
+
                     b.ToTable("GroupList");
-                });
-
-            modelBuilder.Entity("TaskMan.Models.GroupListTeam", b =>
-                {
-                    b.Property<string>("User_ID")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<int>("Group_List_ID")
-                        .HasColumnType("int");
-
-                    b.HasKey("User_ID", "Group_List_ID");
-
-                    b.ToTable("GroupListTeam");
                 });
 
             modelBuilder.Entity("TaskMan.Models.GroupTask", b =>
@@ -249,6 +238,8 @@ namespace TaskMan.Migrations
 
                     b.HasKey("Group_Task_ID");
 
+                    b.HasIndex("Group_List_ID");
+
                     b.ToTable("GroupTask");
                 });
 
@@ -268,6 +259,8 @@ namespace TaskMan.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("User_ID", "Group_ID");
+
+                    b.HasIndex("Group_ID");
 
                     b.ToTable("GroupUsers");
                 });
@@ -298,6 +291,8 @@ namespace TaskMan.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Task_ID");
+
+                    b.HasIndex("User_List_ID");
 
                     b.ToTable("Task");
                 });
@@ -354,6 +349,9 @@ namespace TaskMan.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<bool>("Remembered")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("longtext");
 
@@ -401,9 +399,11 @@ namespace TaskMan.Migrations
 
                     b.Property<string>("User_ID")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("User_List_ID");
+
+                    b.HasIndex("User_ID");
 
                     b.ToTable("UserTasks");
                 });
@@ -457,6 +457,69 @@ namespace TaskMan.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("TaskMan.Models.GroupList", b =>
+                {
+                    b.HasOne("TaskMan.Models.Group", "Group")
+                        .WithMany()
+                        .HasForeignKey("Group_ID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Group");
+                });
+
+            modelBuilder.Entity("TaskMan.Models.GroupTask", b =>
+                {
+                    b.HasOne("TaskMan.Models.GroupList", "GroupList")
+                        .WithMany()
+                        .HasForeignKey("Group_List_ID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GroupList");
+                });
+
+            modelBuilder.Entity("TaskMan.Models.GroupUsers", b =>
+                {
+                    b.HasOne("TaskMan.Models.Group", "Group")
+                        .WithMany()
+                        .HasForeignKey("Group_ID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TaskMan.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("User_ID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Group");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TaskMan.Models.Task", b =>
+                {
+                    b.HasOne("TaskMan.Models.UserTasks", "UserTasks")
+                        .WithMany()
+                        .HasForeignKey("User_List_ID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserTasks");
+                });
+
+            modelBuilder.Entity("TaskMan.Models.UserTasks", b =>
+                {
+                    b.HasOne("TaskMan.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("User_ID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

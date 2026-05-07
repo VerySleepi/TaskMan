@@ -235,6 +235,8 @@ namespace TaskMan.Migrations
 
                     b.HasKey("Group_Task_ID");
 
+                    b.HasIndex("Group_List_ID");
+
                     b.ToTable("GroupTask");
                 });
 
@@ -286,6 +288,8 @@ namespace TaskMan.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Task_ID");
+
+                    b.HasIndex("User_List_ID");
 
                     b.ToTable("Task");
                 });
@@ -463,6 +467,17 @@ namespace TaskMan.Migrations
                     b.Navigation("Group");
                 });
 
+            modelBuilder.Entity("TaskMan.Models.GroupTask", b =>
+                {
+                    b.HasOne("TaskMan.Models.GroupList", "GroupList")
+                        .WithMany()
+                        .HasForeignKey("Group_List_ID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GroupList");
+                });
+
             modelBuilder.Entity("TaskMan.Models.GroupUsers", b =>
                 {
                     b.HasOne("TaskMan.Models.Group", "Group")
@@ -480,6 +495,17 @@ namespace TaskMan.Migrations
                     b.Navigation("Group");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TaskMan.Models.Task", b =>
+                {
+                    b.HasOne("TaskMan.Models.UserTasks", "UserTasks")
+                        .WithMany()
+                        .HasForeignKey("User_List_ID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserTasks");
                 });
 
             modelBuilder.Entity("TaskMan.Models.UserTasks", b =>
