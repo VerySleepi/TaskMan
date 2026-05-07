@@ -41,7 +41,7 @@ namespace TaskMan.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "User_ID",
                 table: "UserTasks",
-                type: "longtext",
+                type: "varchar(255)",
                 nullable: false,
                 oldClrType: typeof(int),
                 oldType: "int")
@@ -360,11 +360,76 @@ namespace TaskMan.Migrations
                 name: "IX_AspNetUserRoles_RoleId",
                 table: "AspNetUserRoles",
                 column: "RoleId");
+
+            migrationBuilder.AddForeignKey(
+                name: "GroupUsers_AspNetUsers_FK",
+                table: "GroupUsers",
+                column: "User_ID",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onUpdate: ReferentialAction.Cascade,
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "UserTasks_AspNetUsers_FK",
+                table: "UserTasks",
+                column: "User_ID",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onUpdate: ReferentialAction.Cascade,
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "GroupList_Group_FK",
+                table: "GroupList",
+                column: "Group_ID",
+                principalTable: "Group",
+                principalColumn: "Group_ID",
+                onUpdate: ReferentialAction.Cascade,
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "GroupTask_GroupList_FK",
+                table: "GroupTask",
+                column: "Group_List_ID",
+                principalTable: "GroupList",
+                principalColumn: "Group_List_ID",
+                onUpdate: ReferentialAction.Cascade,
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "Task_UserTasks_FK",
+                table: "Task",
+                column: "User_List_ID",
+                principalTable: "UserTasks",
+                principalColumn: "User_List_ID",
+                onUpdate: ReferentialAction.Cascade,
+                onDelete: ReferentialAction.Cascade);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "GroupUsers_AspNetUsers_FK",
+                table: "GroupUsers");
+
+            migrationBuilder.DropForeignKey(
+                name: "UserTasks_AspNetUsers_FK",
+                table: "UserTasks");
+
+            migrationBuilder.DropForeignKey(
+                name: "GroupList_Group_FK",
+                table: "GroupList");
+
+            migrationBuilder.DropForeignKey(
+                name: "GroupTask_GroupList_FK",
+                table: "GroupTask");
+
+            migrationBuilder.DropForeignKey(
+                name: "Task_UserTasks_FK",
+                table: "Task");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -463,7 +528,7 @@ namespace TaskMan.Migrations
                 type: "int",
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "longtext")
+                oldType: "varchar(255)")
                 .OldAnnotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.AlterColumn<int>(

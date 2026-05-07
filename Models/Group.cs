@@ -9,7 +9,5 @@ namespace TaskMan.Models
         public string Title { get; set; }
         public string Description { get; set; }
 
-        public List<GroupList> GroupList { get; set; }
-        public List<GroupUsers> GroupUsers { get; set; }
     }
 }
