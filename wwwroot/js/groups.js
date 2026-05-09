@@ -7,7 +7,7 @@ function toggleCreateGroupPopup() {
     console.log(overlay)
 
     if (overlay.classList.contains('hidden')) {
-        fetch("/Groups/Create")
+        fetch("/Groups/CreateGroup")
             .then(response => response.text())
             .then(html => {
                 content.innerHTML = html;
@@ -19,6 +19,7 @@ function toggleCreateGroupPopup() {
         content.innerHTML = '';
     }
 }
+
 
 function toggleCreateGroupTaskPopup() {
     const overlay = document.getElementById('groupTaskPopup-overlay');

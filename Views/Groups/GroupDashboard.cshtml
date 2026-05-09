@@ -21,8 +21,8 @@
         @foreach (var group in Model.Groups)
         {
             var membership = Model.Members.FirstOrDefault(m => m.Group_ID == group.Group_ID);
-            <a asp-controller="Groups" asp-action="Details" asp-route-groupId="@group.Group_ID">
-                <div class="group-card" >
+            <div class="group-card">
+                <a asp-controller="Groups" asp-action="Details" asp-route-groupId="@group.Group_ID">
                     <div class="card-header">
                         <h5 class="group-title">@group.Title</h5>
                     </div>
@@ -30,12 +30,30 @@
                         <p>@group.Description</p>
                         <span>Role: @membership?.Role</span>
                     </div>
+                </a>
 
-                    @* Admin controls — Edit/Delete go here (Day 8) *@
-
+                <div class="button-group-horizontal">
+                    <button type="button" class="editBtn" data-group-id="@group.Group_ID">Edit</button>
+                    <form class="deleteGroupForm" method="post" asp-action="DeleteGroup" asp-controller="Groups">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="groupId" value="@group.Group_ID" />
+                        <button type="button" class="deleteBtn">Delete</button>
+                    </form>
                 </div>
-            </a>
+            </div>
+
+
         }
+    </div>
+</div>
+
+<div id="deleteTaskOverlay" class="overlay hidden">
+    <div id="deleteTaskContent" class="popup-content">
+        <p class="confirm-msg">Are you sure you want to delete this task?</p>
+        <div class="button-group-horizontal">
+            <button type="button" id="deleteTaskConfirmBtn" class="danger-btn">Delete</button>
+            <button type="button" id="deleteTaskCancelBtn" class="cancel-btn">Cancel</button>
+        </div>
     </div>
 </div>
 

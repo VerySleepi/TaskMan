@@ -65,12 +65,6 @@ namespace TaskMan.Controllers
             return View(model);
         }
 
-        // GET: TasksController/Details/5
-        public ActionResult Details()
-        {
-            return View();
-        }
-
         // GET: TasksController/CreateTask
         [HttpGet]
         public async Task<IActionResult> CreateTask()
@@ -126,10 +120,6 @@ namespace TaskMan.Controllers
                 {
                     Debug.WriteLine(model.Title);
                     Debug.WriteLine(model.Description);
-                    foreach (var entry in ModelState)
-                    {
-                        Debug.WriteLine($"{entry.Key}: {string.Join(", ", entry.Value.Errors.Select(e => e.ErrorMessage))}");
-                    }
                 }
 
                 var task = new Models.Task
@@ -156,8 +146,6 @@ namespace TaskMan.Controllers
                 return RedirectToAction("Dashboard");
             }
         }
-
-
 
         // GET: TasksController/EditTask/5
         [HttpGet]

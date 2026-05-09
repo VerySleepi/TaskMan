@@ -7,7 +7,7 @@
     <div class="member-panel-grid">
         @foreach (var user in Model.Members)
         {
-            @if (user.Role != "Admin")
+            @if (user.GroupUser.Role != "Admin")
             {
                 <div class="member-panel" data-user-id="@user.User.Id">
                     <p>@user.User.UserName</p>

@@ -60,9 +60,9 @@
 
                 <div class="card-body">
                     <ul class="cardObjectList">
-                        @if (Model.TasksByList.ContainsKey(list.Group_List_ID))
+                        @if (Model.TasksByList.Any(t => t.GroupList.Group_List_ID == list.Group_List_ID))
                         {
-                            @foreach (var task in Model.TasksByList[list.Group_List_ID])
+                            @foreach (var task in Model.TasksByList.First(t => t.GroupList.Group_List_ID == list.Group_List_ID).Tasks)
                             {
                                 <li class="taskObject"
                                     data-task-id="@task.Group_Task_ID"
@@ -103,7 +103,6 @@
                         }
                     </ul>
                 </div>
-                @* Admin controls — Edit/Delete list goes here (Day 7) *@
             </div>
         }
     </div>

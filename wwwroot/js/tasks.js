@@ -240,7 +240,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const sidePanel = document.getElementById('taskDetailsPanel');
 
         if (panelOpen) {
-            closePanel();
             openPanel();
         }
         else {

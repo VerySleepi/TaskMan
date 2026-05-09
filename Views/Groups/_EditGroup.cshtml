@@ -3,7 +3,7 @@
 <form asp-controller="Groups" asp-action="EditGroup" method="post">
     @Html.AntiForgeryToken()
 
-    <input type="hidden" name="groupId" value="@Model.Group_ID" />
+    <input type="hidden" name="groupId" value="@Model.GroupId" />
 
     <div class="form-group">
         <label asp-for="Title">Title</label>
