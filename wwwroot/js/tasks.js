@@ -92,7 +92,6 @@ function closePanel() {
 
 function toggleTaskDetailPanel() {
     const overlay = document.getElementById('newTask-overlay');
-    const content = document.getElementById('newTask-content');
     let sidePanel = document.getElementById('taskDetailsPanel');
 
     document.querySelectorAll('.taskObject').forEach(card => {
@@ -240,10 +239,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const sidePanel = document.getElementById('taskDetailsPanel');
 
         if (panelOpen) {
+            closePanel();
             openPanel();
         }
         else {
-            if (window.innerWidth > 805) {
+            if (window.innerWidth >= 805) {
                 sidePanel.classList.add('hidden');
             }
             else {
@@ -269,8 +269,6 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     }
 
-
-
     const listCloseBtn = document.getElementById('newList-close');
     if (listCloseBtn) {
         listCloseBtn.addEventListener('click', () => {
@@ -287,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const panelCloseBtn = document.getElementById('panelCloseBtn');
+    const panelCloseBtn = document.querySelector('.panelCloseBtn');
     if (panelCloseBtn) {
         panelCloseBtn.addEventListener('click', () => {
             closePanel();

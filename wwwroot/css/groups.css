@@ -3,6 +3,12 @@
     grid-template-areas: "members""description""cards"
 }
 
+.content.panel-visible {
+    grid-template-areas: "members panel"
+        "description panel"
+        "cards panel";
+}
+
 .cardList > a {
     color: #000000 !important;
     text-decoration: none;
@@ -44,9 +50,22 @@
     overflow: hidden;
 }
 
+#groupTaskDetailsPanel {
+    display: flex;
+    flex-direction: column;
+    grid-area: panel;
+    position: sticky;
+    top: 1rem;
+    background-color: #ffffff;
+    border-radius: 6px;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+}
+
 .member-panel-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     grid-auto-rows: min-content;
     grid-column: 1 / -1;
     gap: 10px;
@@ -54,6 +73,20 @@
     min-height: 0;
     max-height: calc(80vh - 90px);
 }
+
+.member-panel {
+    display: flex;
+    flex-direction: column;
+    min-height: 150px;
+    padding: 5px;
+}
+
+    .member-panel > p {
+        width: 100%;
+        overflow-x: clip;
+        text-overflow: ellipsis;
+        text-align: center;
+    }
 
 .member-panel.selected {
     border: 1px solid black;
@@ -88,8 +121,23 @@
     min-width: 300px;
 }
 
-@media (min-width: 805px){
+@media (max-width: 805px){
+    #groupTaskDetailsPanel {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transform: translateX(100%);
+        transition: transform 0.3s ease-in-out;
+        z-index: 100;
+    }
+
+        #groupTaskDetailsPanel.panel-open {
+            transform: translateX(0);
+        }
+
     .member-panel-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }

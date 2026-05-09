@@ -8,6 +8,7 @@
         @foreach (var user in Model.NonMembers)
         {
             <div class="member-panel" data-user-id="@user.Id">
+                <span><img src="#" alt="Alternate Text" /></span>
                 <p>@user.UserName</p>
                 <p>@user.Email</p>
             </div>

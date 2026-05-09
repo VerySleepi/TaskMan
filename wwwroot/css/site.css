@@ -57,7 +57,7 @@ header {
 
 .content.panel-visible {
     grid-template-columns: 1fr minmax(25%, 45%);
-    grid-template-areas: "cards description";
+    grid-template-areas: "cards panel";
 }
 
 .popup-content {

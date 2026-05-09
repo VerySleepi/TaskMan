@@ -16,12 +16,11 @@
 }
 
 
-
 #taskDetailsPanel {
     display: flex;
     height: 100%;
     flex-direction: column;
-    grid-area: description;
+    grid-area: panel;
     position: sticky;
     top: 1rem;
     background-color: #ffffff;

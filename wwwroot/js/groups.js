@@ -1,4 +1,5 @@
 ﻿let selectedGroupTaskId = null;
+let panelOpen = false;
 
 function toggleCreateGroupPopup() {
     const overlay = document.getElementById('newGroup-overlay');
@@ -157,6 +158,60 @@ function toggleCreateGroupListPopup() {
     }
 }
 
+function openGroupPanel() {
+    const sidePanel = document.getElementById('groupTaskDetailsPanel');
+    const content = document.querySelector('.content');
+
+    if (window.innerWidth <= 805) {
+        sidePanel.classList.add('panel-open');
+        content.classList.remove('panel-visible');
+    }
+    else {
+        content.classList.add('panel-visible');
+        sidePanel.classList.remove('panel-open');
+        sidePanel.classList.remove('hidden');
+    }
+
+    panelOpen = true;
+}
+
+function closeGroupPanel() {
+    const sidePanel = document.getElementById('groupTaskDetailsPanel');
+    const content = document.querySelector('.content');
+
+    if (window.innerWidth <= 805) {
+        sidePanel.classList.remove('panel-open');
+    }
+    else {
+        sidePanel.classList.add('hidden');
+        content.classList.remove('panel-visible');
+    }
+
+    panelOpen = false;
+}
+
+function toggleGroupTaskPanel() {
+    document.querySelectorAll('.taskObject').forEach(task => {
+        task.addEventListener('click', (ev) => {
+            const taskId = task.dataset.taskId;
+            const title = task.dataset.taskTitle;
+            const description = task.dataset.taskDescription;
+            const dueDate = task.dataset.taskDueDate;
+            const status = task.dataset.taskStatus;
+
+            document.getElementById('panelGroupTitle').textContent = title;
+            document.getElementById('panelGroupDescription').textContent = description;
+            document.getElementById('panelGroupDueDate').textContent = dueDate;
+            document.getElementById('panelGroupStatus').textContent = status === '1' ? 'Completed' : 'Not Completed';
+            document.getElementById('groupTaskPanelCompleteInput').value = taskId;
+            document.querySelector('.groupTaskPanelEditBtn').dataset.taskId = taskId;
+            selectedGroupTaskId = taskId;
+
+            openGroupPanel();
+        });
+    });
+}
+
 function toggleAddMemberPopup() {
     const overlay = document.getElementById('memberPopup-overlay');
     const content = document.getElementById('memberPopup-content');
@@ -226,7 +281,7 @@ function memberPanelSelection(selectedIdsContainer) {
 }
 
 function editGroupTask() {
-    const taskEditButtons = document.querySelectorAll('.groupTaskEditBtn');
+    const taskEditButtons = document.querySelectorAll('.groupTaskEditBtn, .groupTaskPanelEditBtn');
     taskEditButtons.forEach(btn => {
         btn.addEventListener('click', (ev) => {
             ev.stopPropagation();
@@ -305,6 +360,28 @@ function deleteGroupList() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+
+    if (window.innerWidth <= 805) {
+        document.getElementById('groupTaskDetailsPanel').classList.remove('hidden');
+    }
+
+    window.addEventListener('resize', () => {
+        const sidePanel = document.getElementById('groupTaskDetailsPanel');
+
+        if (panelOpen) {
+            closeGroupPanel();
+            openGroupPanel();
+        }
+        else {
+            if (window.innerWidth >= 805) {
+                sidePanel.classList.add('hidden');
+            }
+            else {
+                sidePanel.classList.remove('hidden');
+            }
+        }
+    });
+
     const createGroupBtn = document.getElementById('createGroupBtn');
     if (createGroupBtn) {
         createGroupBtn.addEventListener('click', (ev) => {
@@ -389,7 +466,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
 
+    const panelCloseBtn = document.querySelector('.panelCloseBtn');
+    if (panelCloseBtn) {
+        panelCloseBtn.addEventListener('click', () => {
+            closeGroupPanel();
+        });
+    }
 
+    toggleGroupTaskPanel();
     toggleEditGroupPopup();
     deleteGroup();
     editGroupTask();

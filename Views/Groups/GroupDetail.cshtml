@@ -109,6 +109,29 @@
 
 </div>
 
+<div id="groupTaskDetailsPanel" class="task-detail-panel hidden">
+
+    <button type="button" class="panelCloseBtn close-btn"><strong>✕</strong></button>
+    <div class="panel-body">
+        <h4 id="panelGroupTitle"></h4>
+        <p id="panelGroupDescription"></p>
+        <p id="panelGroupDueDate"></p>
+        <p id="panelGroupStatus"></p>
+
+
+        <div class="panel-actions">
+            <form id="groupTaskPanelCompleteForm" method="post" asp-action="MarkGroupTaskComplete" asp-controller="Groups">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="taskId" id="groupTaskPanelCompleteInput" value="" />
+                <button type="submit" aria-label="Mark Group Task Complete Button" id="groupTaskPanelCompleteBtn" class="complete-btn">Mark Complete</button>
+            </form>
+
+            <button aria-label="Edit Group Task Button" class="groupTaskPanelEditBtn edit-btn" data-task-id=""></button>
+        </div>
+    </div>
+
+</div>
+
 @if (Model.UserRole == "Admin")
 {
     <div id="deleteGroupTaskOverlay" class="overlay hidden">

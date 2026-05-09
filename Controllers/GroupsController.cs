@@ -749,6 +749,9 @@ namespace TaskMan.Controllers
                 task.Title = model.Title;
                 task.Description = model.Description;
                 task.Due_Date = model.Due_Date;
+
+                task.Status = 0;
+                UpdateGroupListProgress(groupList.Group_List_ID).Wait();
                 var changedTaskList = await _context.GroupList.FirstOrDefaultAsync(gl => gl.Group_List_ID == model.Group_List_ID && gl.Group_ID == groupList.Group_ID);
                 if (changedTaskList == null)
                 {
