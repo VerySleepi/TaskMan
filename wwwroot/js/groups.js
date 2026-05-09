@@ -20,6 +20,62 @@ function toggleCreateGroupPopup() {
     }
 }
 
+function toggleEditGroupPopup() {
+    let editGroupBtns = document.querySelectorAll('.groupEditBtn');
+    const overlay = document.getElementById('editGroup-overlay');
+    const content = document.getElementById('editGroup-content');
+
+    editGroupBtns.forEach(btn => {
+        btn.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            const groupId = btn.dataset.groupId;
+            fetch(`/Groups/EditGroup?groupId=${groupId}`)
+                .then(response => response.text())
+                .then(html => {
+                    content.innerHTML = html;
+                    overlay.classList.remove('hidden');
+                })
+                .catch(err => console.error("Error loading EditGroup form:", err));
+
+        });
+    });
+
+    const editGroupCloseBtn = document.getElementById('editGroup-close');
+    if (editGroupCloseBtn) {
+        editGroupCloseBtn.addEventListener('click', () => {
+            overlay.classList.add('hidden');
+            content.innerHTML = '';
+        });
+    }
+}
+
+function deleteGroup() {
+    let deleteForm = null
+    const deleteBtns = document.querySelectorAll('.deleteGroupBtn');
+
+    deleteBtns.forEach(btn => {
+        btn.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            deleteForm = btn.closest('form');
+            document.getElementById('deleteGroup-overlay').classList.remove('hidden');
+        });
+    });
+
+    const confirmDeleteBtn = document.getElementById('deleteGroupConfirmBtn');
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', () => {
+            deleteForm.submit();
+        });
+    }
+
+    const deleteGroupCancelBtn = document.getElementById('deleteGroupCancelBtn');
+    if (deleteGroupCancelBtn) {
+        deleteGroupCancelBtn.addEventListener('click', () => {
+            document.getElementById('deleteGroup-overlay').classList.add('hidden');
+        });
+    }
+
+}
 
 function toggleCreateGroupTaskPopup() {
     const overlay = document.getElementById('groupTaskPopup-overlay');
@@ -333,6 +389,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
 
+
+    toggleEditGroupPopup();
+    deleteGroup();
     editGroupTask();
     deleteGroupList();
     deleteGroupTask();
