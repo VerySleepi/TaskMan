@@ -119,14 +119,18 @@
         <p id="panelGroupStatus"></p>
 
 
-        <div class="panel-actions">
+        <div class="panel-actions button-group-horizontal">
             <form id="groupTaskPanelCompleteForm" method="post" asp-action="MarkGroupTaskComplete" asp-controller="Groups">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="taskId" id="groupTaskPanelCompleteInput" value="" />
-                <button type="submit" aria-label="Mark Group Task Complete Button" id="groupTaskPanelCompleteBtn" class="complete-btn">Mark Complete</button>
+                <button type="submit" aria-label="Mark Group Task Complete Button" id="groupTaskPanelCompleteBtn" class="complete-btn" data-task-id="">Mark Complete</button>
             </form>
 
-            <button aria-label="Edit Group Task Button" class="groupTaskPanelEditBtn edit-btn" data-task-id=""></button>
+            @if (Model.UserRole == "Admin")
+            {
+                <button aria-label="Edit Group Task Button" class="groupTaskPanelEditBtn edit-btn" data-task-id="">Edit Task</button>
+            }
+
         </div>
     </div>
 

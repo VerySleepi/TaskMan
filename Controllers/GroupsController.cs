@@ -141,6 +141,11 @@ namespace TaskMan.Controllers
                 NonMembers = nonMembers
             };
 
+            ViewData["profilePic"] = Url.Content($"~/images/{currentUser.Profile_Pic}");
+            ViewData["userName"] = currentUser.UserName;
+            ViewData["trashIcon"] = Url.Content("~/images/trash-can-solid.png");
+            ViewData["editIcon"] = Url.Content("~/images/pencil-solid.png");
+
             return model;
         }
 
@@ -154,10 +159,7 @@ namespace TaskMan.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
-            ViewData["userName"] = user.UserName;
-            ViewData["profilePic"] = Url.Content($"~/images/{user.Profile_Pic}");
-            ViewData["trashIcon"] = Url.Content("~/images/trash-can-solid.png");
-            ViewData["editIcon"] = Url.Content("~/images/pencil-solid.png");
+
             var model = await BuildGroupDetailViewModel(groupId);
 
             return View("GroupDetail", model);

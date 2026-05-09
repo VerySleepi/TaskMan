@@ -199,12 +199,35 @@ function toggleGroupTaskPanel() {
             const dueDate = task.dataset.taskDueDate;
             const status = task.dataset.taskStatus;
 
+            var completionBtn = document.getElementById('groupTaskPanelCompleteBtn');
+            var panelStatus = document.getElementById('panelGroupStatus');
+
+            if (status == '1') {
+                if (completionBtn) {
+                    completionBtn.textContent = "Incomplete";
+                    completionBtn.style.backgroundColor = "#d85757";
+                    completionBtn.style.color = "#ffffff"
+                }
+
+                panelStatus.textContent = "Completed";
+            }
+            else {
+                if (completionBtn) {
+                    completionBtn.textContent = "Complete";
+                }
+
+                panelStatus.textContent = "Not Completed"
+            }
+
             document.getElementById('panelGroupTitle').textContent = title;
             document.getElementById('panelGroupDescription').textContent = description;
             document.getElementById('panelGroupDueDate').textContent = dueDate;
-            document.getElementById('panelGroupStatus').textContent = status === '1' ? 'Completed' : 'Not Completed';
             document.getElementById('groupTaskPanelCompleteInput').value = taskId;
-            document.querySelector('.groupTaskPanelEditBtn').dataset.taskId = taskId;
+            var groupTaskEditBtn = document.querySelector('.groupTaskPanelEditBtn')
+            if (groupTaskEditBtn) {
+                groupTaskEditBtn.dataset.taskId = taskId;
+            }
+
             selectedGroupTaskId = taskId;
 
             openGroupPanel();

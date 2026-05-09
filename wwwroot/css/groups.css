@@ -30,6 +30,26 @@
     margin-bottom: 1rem;
 }
 
+    .group-card:hover {
+        transition: all 0.2s;
+        box-shadow: inset 0px 0px 100px 100px #00000012;
+    }
+
+.group-card > a {
+    color: #000000;
+    text-decoration: none;
+}
+
+.group-card > .button-group-horizontal {
+    grid-template-columns: 1fr 1fr;
+    align-self: end;
+    padding: 0 5px 5px 0
+}
+
+    .group-card > .button-group-horizontal button {
+        width: 100%;
+    }
+
 .group-header {
     display: flex;
     justify-content: space-between;
@@ -63,6 +83,10 @@
     margin-bottom: 10px;
 }
 
+.groupTaskPanelEditBtn {
+    width: 100%;
+}
+
 .member-panel-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -79,6 +103,10 @@
     flex-direction: column;
     min-height: 150px;
     padding: 5px;
+    justify-content: space-around;
+    border: #ddd solid 2px;
+    border-radius: 6px;
+    
 }
 
     .member-panel > p {
@@ -88,8 +116,31 @@
         text-align: center;
     }
 
-.member-panel.selected {
-    border: 1px solid black;
+    .member-panel span {
+        display: flex;
+        justify-content:center;
+        width: 100%;
+    }
+
+    .member-panel span .profile_pic {
+        height: 75px;
+        width: 75px;
+    }
+
+    .member-panel:hover {
+        transition: all 0.5s;
+        box-shadow: inset 0px 0px 50px 50px #00000012;
+    }
+
+    .member-panel.selected {
+        border: 1px solid black;
+        background-color: #0000000c;
+    }
+
+
+#deleteGroupConfirmBtn {
+    grid-column: 1;
+    width: 100%;
 }
 
 #deleteGroupListConfirmBtn {

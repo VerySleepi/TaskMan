@@ -30,6 +30,17 @@
     margin-bottom: 10px;
 }
 
+.panel-body {
+    position: relative;
+    height: 100%;
+}
+
+.panel-actions {
+    width: 100%;
+    position: absolute;
+    bottom:0;
+    right: 0;
+}
 
 .task-card {
     background-color: var(--bg-col) !important;
@@ -220,15 +231,26 @@ textarea {
 }
 
 
-form button[type="submit"] {
-    grid-column: 1 / -1;
+form:has(button[type="submit"]) {
     align-self: end;
     justify-self: start;
     height: fit-content;
-    min-width: 90px;
+    min-width: fit-content;
     width: 100%;
-    background-color: #77df88;
     border-radius: 6px;
+
+}
+
+form button[type=submit] {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 120px;
+    background-color: #77df88;
+}
+
+.task-checkbox {
+    grid-column: 1 / -1;
+    width: 25px;
 }
 
 .completeBtn {

@@ -113,6 +113,9 @@ function toggleTaskDetailPanel() {
             document.getElementById('panelDescription').textContent = description;
             document.getElementById('panelDueDate').textContent = "Due-Date: " + dueDate;
             document.getElementById('panelStatus').textContent = status === "1" ? "Completed" : "Not Completed";
+            document.getElementById('taskPanelCompleteInput').value = taskId;
+            document.getElementById('taskPanelCompleteBtn').textContent = status === "1" ? "Mark Incomplete" : "Complete";
+            document.querySelector('.taskPanelEditBtn').dataset.taskId = taskId;
 
 
             selectedTaskId = taskId;
@@ -152,7 +155,7 @@ function taskListDropdown() {
 }
 
 function editTask() {
-    const taskEditButtons = document.querySelectorAll('.taskEditBtn');
+    const taskEditButtons = document.querySelectorAll('.taskEditBtn, .taskPanelEditBtn');
     taskEditButtons.forEach(btn => {
         btn.addEventListener('click', (ev) => {
             ev.stopPropagation();

@@ -87,10 +87,22 @@
 </div>
 <div id="taskDetailsPanel" class="task-detail-panel hidden">
     <button type="button" class="panelCloseBtn close-btn"><strong>✕</strong></button>
-    <h4 id="panelTitle"></h4>
-    <p id="panelDescription"></p>
-    <p id="panelDueDate"></p>
-    <p id="panelStatus"></p>
+    <div class="panel-body">
+        <h4 id="panelTitle"></h4>
+        <p id="panelDescription"></p>
+        <p id="panelDueDate"></p>
+        <p id="panelStatus"></p>
+
+        <div class="panel-actions button-group-horizontal">
+            <form id="taskPanelCompleteForm" method="post" asp-action="TaskCompletion" asp-controller="Tasks">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="taskId" id="taskPanelCompleteInput" value="" />
+                <button type="submit" aria-label="Mark Task Complete Button" id="taskPanelCompleteBtn" class="complete-btn">Mark Complete</button>
+            </form>
+
+            <button aria-label="Edit Task Button" class="taskPanelEditBtn edit-btn" data-task-id="">Edit Task</button>
+        </div>
+    </div>
 </div>
 
 <div id="deleteTaskOverlay" class="overlay hidden">
