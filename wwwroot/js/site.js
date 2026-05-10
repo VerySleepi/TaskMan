@@ -5,30 +5,25 @@
 
 
 // Functions
-function toggleNavbar() {
-    var width = window.innerWidth;
-    const accountNav = document.getElementById('account-nav');
+function toggleUsername() {
+    let currentUsername = document.getElementById("currentUsername");
+    let windowSize = window.innerWidth;
 
-    if (accountNav == null) {
-        return;
-    }
-
-    if (width < 576 && (accountNav.classList.contains("ms-auto" && "align-items-center") == true)) {
-        accountNav.classList.toggle('ms-auto');
-        accountNav.classList.toggle('align-items-center');
-        console.dir(accountNav.classList);
-        console.log(accountNav.classList.contains("ms-auto" && "align-items-center"));
-    }
-    else {
-        if (width >= 576 && (accountNav.classList.contains("ms-auto" && "align-items-center") == false)) {
-            accountNav.classList.toggle('ms-auto');
-            accountNav.classList.toggle('align-items-center');
-            console.log(accountNav.classList);
-            console.log(width);
-            console.log(accountNav.classList.contains("ms-auto" && "align-items-center"));
+    if (currentUsername) {
+        if (windowSize < 805) {
+            currentUsername.style.display = "none";
+        }
+        else {
+            currentUsername.style.display = "inline";
         }
     }
-};
+}
 
-window.addEventListener('resize', toggleNavbar);
-window.addEventListener('DOMContentLoaded', toggleNavbar);
+
+
+window.addEventListener("resize", toggleUsername);
+document.addEventListener("DOMContentLoaded", () => {
+    toggleUsername();
+});
+
+

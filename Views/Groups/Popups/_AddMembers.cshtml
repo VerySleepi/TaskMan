@@ -1,0 +1,20 @@
+﻿@model TaskMan.ViewModels.Group.GroupDetailViewModel
+
+<form asp-controller="Groups" asp-action="AddMembers" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="groupId" value="@Model.Group.Group_ID" />
+
+    <div class="member-panel-grid">
+        @foreach (var user in Model.NonMembers)
+        {
+            <div class="member-panel" data-user-id="@user.Id" tabindex="0" aria-label="Member Panel for User @user.UserName">
+                <span><img src="@ViewData["profilePic"]" alt="Profile picture" class="profile_pic" /></span>
+                <p>@user.UserName</p>
+            </div>
+        }
+    </div>
+
+    <div id="addSelectedIds"></div>
+
+    <button type="submit" class="submissionBtn">Add Members</button>
+</form>

@@ -1,0 +1,13 @@
+﻿<li class="nav-item">
+    <form asp-controller="Tasks" asp-action="Dashboard" method="get" class="nav-link">
+        <button type="submit" class="nav-link">Tasks</button>
+    </form>
+</li>
+
+<li id="projectNav" class="nav-item">
+    <form asp-controller="Groups" asp-action="GroupDashboard" method="get" class="nav-link">
+        <button type="submit" class="nav-link">Projects</button>
+    </form>
+</li>
+
+<partial name="_LoginPartial" />

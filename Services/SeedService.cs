@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using TaskMan.Data;
 using TaskMan.Models;
 
@@ -8,7 +9,9 @@ namespace TaskMan.Services
     {
         public static async System.Threading.Tasks.Task SeedDatabase(IServiceProvider serviceProvider)
         {
+            // Create a scope to get the required services
             using var scope = serviceProvider.CreateScope();
+            // Get the required services from the scope
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
@@ -18,7 +21,7 @@ namespace TaskMan.Services
             {
                 // Ensure database is ready
                 logger.LogInformation("Ensuring database is created...");
-                await context.Database.EnsureCreatedAsync();
+                await context.Database.MigrateAsync();
 
                 // Seed roles
                 logger.LogInformation("Seeding roles...");
@@ -38,7 +41,7 @@ namespace TaskMan.Services
                         NormalizedEmail = adminEmail.ToUpper(),
                         EmailConfirmed = true,
                         SecurityStamp = Guid.NewGuid().ToString(),
-                        TwoFactorEnabled = true
+                        TwoFactorEnabled = true, 
                     };
 
                     var result = await userManager.CreateAsync(adminUser, "Admin123!");

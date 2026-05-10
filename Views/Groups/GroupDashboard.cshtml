@@ -1,0 +1,68 @@
+﻿@model TaskMan.ViewModels.Group.GroupsViewModel
+
+@{
+    ViewData["Title"] = "Groups";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/tasks.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/groups.css" asp-append-version="true" />
+}
+
+<div class="groups-container cardContainer">
+    <div class="addButtons">
+        <button id="createGroupBtn" class="addBtn">Create Group</button>
+    </div>
+
+    <div class="cardList" role="list" aria-label="Your groups">
+
+        @foreach (var group in Model.Groups)
+        {
+            var membership = Model.Members.FirstOrDefault(m => m.Group_ID == group.Group_ID);
+            <div class="group-card">
+                <a asp-controller="Groups" asp-action="Details" asp-route-groupId="@group.Group_ID">
+                    <div class="card-header">
+                        <h5 class="group-title">@group.Title</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>@group.Description</p>
+                        <span>Role: @membership?.Role</span>
+                    </div>
+                </a>
+
+                <div class="button-group-horizontal">
+                    <button type="button" class="groupEditBtn edit-btn" data-group-id="@group.Group_ID" aria-label="Edit @group.Title">Edit</button>
+                    <form class="deleteGroupForm" method="post" asp-action="DeleteGroup" asp-controller="Groups">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="groupId" value="@group.Group_ID" />
+                        <button type="button" class="deleteGroupBtn danger-btn" aria-label="Delete @group.Title">Delete</button>
+                    </form>
+                </div>
+            </div>
+
+
+        }
+    </div>
+</div>
+
+<div id="deleteGroup-overlay" class="overlay hidden" aria-live="polite" role="dialog" aria-label="Delete group confirmation">
+    <div id="deleteGroup-content" class="popup-content">
+        <p class="confirm-msg">Are you sure you want to delete this group?</p>
+        <div class="button-group-horizontal">
+            <button type="button" id="deleteGroupConfirmBtn" class="danger-btn">Delete</button>
+            <button type="button" id="deleteGroupCancelBtn" class="cancel-btn">Cancel</button>
+        </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("~/Views/Groups/Popups/_NewGroupPopup.cshtml")
+@await Html.PartialAsync("~/Views/Groups/Popups/_EditGroupPopup.cshtml")
+
+@section Scripts {
+    <script src="~/js/groups.js" asp-append-version="true"></script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
+}

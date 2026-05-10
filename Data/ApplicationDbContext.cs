@@ -8,6 +8,7 @@ namespace TaskMan.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
+
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -22,6 +23,5 @@ namespace TaskMan.Data
         public DbSet<GroupList> GroupList { get; set; }
         public DbSet<GroupUsers> GroupUsers { get; set; }
         public DbSet<GroupTask> GroupTask { get; set; }
-        public DbSet<GroupListTeam> GroupListTeam { get; set; }
     }
 }

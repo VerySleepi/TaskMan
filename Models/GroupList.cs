@@ -10,6 +10,9 @@ namespace TaskMan.Models
 
         [ForeignKey("Group")]
         public int Group_ID { get; set; }
+
+        public Group Group { get; set; }
+
         public string Title { get; set; }
         public string Description { get; set; }
         public int Progress { get; set; }

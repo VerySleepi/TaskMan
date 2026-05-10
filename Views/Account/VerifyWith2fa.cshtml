@@ -7,22 +7,23 @@
 
 <div class="account-container">
     <div class="account-box">
-        <h2 class="text-center mb-4">Enter 2FA code</h2>
-        <form asp-action="VerifyWith2fa" method="post">
+        <h2 class="account-title">Enter 2FA code</h2>
+        <form asp-action="VerifyWith2fa" asp-controller="Account" method="post">
             @Html.AntiForgeryToken()
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="mb-3">
-                <label asp-for="UserId" class="form-check-label" hidden></label>
-                <input asp-for="UserId" class="form-check-input" hidden/>
+            <div asp-validation-summary="ModelOnly" class="field-error"></div>
+            <div>
+                <label asp-for="UserId" hidden></label>
+                <input asp-for="UserId" hidden/>
             </div>
-            <div class="mb-3">
-                <label asp-for="Code" class="form-label"></label>
-                <input asp-for="Code" class="form-control"/>
-                <span asp-validation-for="Code" class="text-danger"></span>
+            <div>
+                <input asp-for="Code" class="form-input" autocomplete="off" aria-label="Input for 2FA code"/>
+                <span asp-validation-for="Code" class="field-error"></span>
             </div>
-            <input type="submit" value="Submit" class="btn btn-success w-100 p-2" />
-            <div class="text-center mt-2">
-                <a asp-controller="Account" asp-action="Login" class="text-decoration-none mt-3">Back</a>
+            <div class="account-footer">
+                <button type="submit" class="form-submit-btn" aria-label="Verify 2FA code button">Verify</button>
+                <div>
+                    <a asp-controller="Account" asp-action="Login" class="account-link" aria-label="Back to Login page">Back</a>
+                </div>
             </div>
         </form>
     </div>

@@ -12,6 +12,9 @@ namespace TaskMan.Models
 
         [ForeignKey("Group")]
         public int Group_ID { get; set; }
+       
+        public User User { get; set; }
+        public Group Group { get; set; }
         public string Role { get; set; }
         public DateOnly Join_Date { get; set; }
     }

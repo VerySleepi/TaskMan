@@ -13,9 +13,6 @@ builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.Services.AddTransient<TaskMan.Services.IEmailSender, EmailSender>();
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddScoped<ApplicationDbContext>();
-
-
 // MySQL DB Connection
 string _GetConnStringName = builder.Configuration.GetConnectionString("DefaultConnectionMySQL");
 builder.Services.AddDbContext<ApplicationDbContext>(options=>options.UseMySql(_GetConnStringName, ServerVersion.AutoDetect(_GetConnStringName)));
@@ -39,11 +36,11 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 builder.Services.ConfigureApplicationCookie(options =>
 {
     // Cookie settings
-    options.ExpireTimeSpan = TimeSpan.FromSeconds(30);
-
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
     options.LoginPath = "/Account/Login";
     options.SlidingExpiration = true;
 });
+
 
 var app = builder.Build();
 
@@ -52,7 +49,7 @@ await SeedService.SeedDatabase(app.Services);
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/Tasks/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
@@ -68,7 +65,7 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+    pattern: "{controller=Tasks}/{action=Dashboard}/{id?}")
     .WithStaticAssets();
 
 

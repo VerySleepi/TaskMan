@@ -14,5 +14,6 @@ namespace TaskMan.Models
 
         [ForeignKey("UserTasks")]
         public int User_List_ID { get; set; }
+        public UserTasks UserTasks { get; set; }
     }
 }

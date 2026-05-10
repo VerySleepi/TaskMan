@@ -1,38 +1,149 @@
-﻿body {
+﻿@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    height: 100%;
+}
+
+body {
     background-color: #c9ffd3;
+    height: 100%;
+    font-family: "Nunito", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0;
+    font-weight: 400;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.25rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    box-sizing: border-box;
+}
+
+    .form-input[readonly] {
+        background-color: #f5f5f5;
+        cursor: not-allowed;
+    }
+
+.form-submit-btn {
+    width: 100%;
+    padding: 0.5rem;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 4px;
+    color: #ffffff;
+    font-size: 1rem;
+    margin: 0.5rem 0 1rem 0;
+}
+
+    .form-submit-btn:hover {
+        background-color: #45a049;
+    }
+
+.field-error {
+    color: #ff0000;
+    font-size: 0.975rem;
+    text-transform: uppercase;
+    display: block;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
 }
 
 .account-container {
     display: flex;
-    flex-direction: column;  
+    flex-direction: column;
     justify-content: end;
     background-size: cover;
     background-position: center;
     min-height: 100vh;
+    overflow: clip;
+}
+
+.account-title {
+    text-align: center;
+    margin-bottom: 1rem;
 }
 
 .account-box {
     display: flex;
-    background-color: rgba(255, 255, 255);
+    background-color: #FFFFFF;
     padding: 30px;
     border-radius: 8px;
     width: 100%;
     min-width: 340px;
     height: 75vh;
     flex-direction: column;
-    opacity: .9
 }
 
-.account-box > form{
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-}
+    .account-box > form {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+    }
 
-.login-navigation {
+.account-footer {
     margin-top: auto;
+    text-align: center;
+
 }
+
+    .account-footer div {
+        display: flex;
+        width: 50%;
+        justify-self: center;
+    }
+
+    .account-footer div:hover {
+        width: 50%;
+        transition: all 0.5s;
+        box-shadow: inset 0px 0px 50px 50px #8080800d;
+    }
+
+.account-footer > div > .account-link{
+    
+    width: 100%;
+}
+
+
+.account-link {
+    text-decoration: none;
+}
+
+    .account-link:hover {
+        text-decoration: underline;
+    }
+
+.form-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-account-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1rem 0 1rem 0;
+}
+
+    .form-account-link .account-link {
+        text-align: right;
+        width: 100%;
+    }
+
 
 
 
@@ -47,6 +158,4 @@
         max-width: 500px;
         height: fit-content;
     }
-
-
 }

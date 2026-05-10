@@ -1,37 +1,413 @@
-html {
-  font-size: 14px;
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+* {
+    box-sizing: border-box;
 }
 
-
-@media (min-width: 648px) {
-  html {
-    font-size: 16px;
-  }
-
-  .profile_pic {
-    width: 150px;
-    height: 150px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
 
 html {
-  position: relative;
-  min-height: 100%;
+    font-size: 18px;
+    height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    height: 100%;
+    font-family: "Nunito", sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+    min-width: 380px;
+    overflow-x: clip;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+h1 {
+    font-size: 2rem;
+    font-weight: 900;
+}
+
+h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+h5 {
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+h6 {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+#pageTitle {
+    font-size: inherit;
+    font-weight: inherit;
+}
+
+p {
+    margin: 0;
+}
+
+main {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "header"
+        "content";
+    max-width: 100%;
+    min-width: 50%;
+    min-height: 0;
+    height: 100%;
+    max-height: 100%;
+    row-gap: 4px;
+    font-family: "Nunito", sans-serif;
+    grid-auto-flow: row;
+}
+
+header {
+    display: flex;
+    font-size: 26px;
+    font-weight: 600;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+    header > #currentProfile {
+        display: flex;
+        gap: 10px;
+        font-size: 20px;
+        align-items: center;
+    }
+
+#stickyHeader {
+    position: sticky;
+    grid-area: header;
+}
+
+.content {
+    display: grid;
+    min-height: 0;
+    height: 100%;
+    grid-area: content;
+    padding: 10px 10px 15% 10px;
+    grid-template-rows: none;
+    grid-template-columns: 1fr;
+    grid-template-areas: "cards";
+    justify-content: space-evenly;
+    gap: 5px;
+}
+
+.content.panel-visible {
+    grid-template-columns: 1fr minmax(25%, 45%);
+    grid-template-areas: "cards panel";
+}
+
+.popup-content {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    row-gap: 15px;
+    text-align: center;
+    height: fit-content;
+    min-height: 300px;
+    width: fit-content;
+    min-width: 350px;
+    background-color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 6px;
+}
+
+form:has(button[type="submit"]) {
+    align-self: end;
+    justify-self: start;
+    min-height: fit-content;
+    min-width: fit-content;
+    width: 100%;
+    border-radius: 6px;
+}
+
+.nav-item {
+    font-size: 17px;
+    font-weight: 600;
+    width: 100%;
+    text-align: center;
+    list-style: none;
+    background-color: #77df88;
+    border-radius: 6px;
+}
+
+    .nav-item > p {
+        margin-bottom: 0;
+        min-width: fit-content;
+    }
+
+    .nav-item > form {
+        padding: 0px;
+    }
+
+        .nav-item > form > button {
+            width: 100%;
+        }
+
+.nav-link {
+    font-weight: 600;
+    font-size: inherit;
+    padding: 8px 0px 8px 0px;
+    text-decoration: none;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.confirm-msg {
+    align-content: end;
+}
+
+#sidebar {
+    display: none;
+}
+
+#mobileNavBar {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 7.5%;
+    background-color: #c9ffd3;
+    z-index: 100;
+    
+}
+
+
+#mobileMenu {
+    display: grid;
+    grid-template-columns: repeat(3, 33%);
+    justify-content: space-between;
+    padding: 0px;
+    margin: 0px;
+    list-style: none;
+    width: 100%;
+    height: 100%;
+}
+
+.complete-btn {
+    width: 100%;
+    height: 100%;
+}
+
+#mobileMenu > .nav-item > form {
+    height: 100%;
+}
+
+#mobileMenu > .nav-item:first-child > form > button {
+    border-radius: 0 6px 6px 0;
+}
+ #mobileMenu > .nav-item:last-child > form > button {
+    border-radius: 6px 0 0 6px; 
+}
+
+.profile_pic {
+    width: 40px;
+    height: 40px;
+}
+
+.deleteIcon {
+    width: 20px;
+    height: 20px;
+}
+
+.editIcon {
+    width: 20px;
+    height: 20px;
+}
+
+button {
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background-color: #77df88;
+    width: 100%;
+    font-size: 16px;
+}
+
+    button:hover {
+        transition: all 0.5s;
+        box-shadow: inset 0px 0px 50px 50px #00000012;
+    }
+
+    button:active {
+        transition: all 0.1s;
+        box-shadow: inset 0px 0px 50px 50px #ffffff76;
+    }
+
+.button-group-vertical {
+    display: grid;
+    grid-template-rows: repeat(3, min-content);
+    gap: 5px;
+    min-width: 155px;
+}
+
+.button-group-horizontal {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 0px 20px;
+    align-content: space-between;
+}
+
+.button-group-horizontal > .cancel-btn {
+    position: unset;
+    width: 100%;
+}
+
+.form-group > div > button {
+    grid-column: 1 / -1;
+}
+
+
+
+.danger-btn {
+    grid-column: 1 / -1;
+    width: fit-content;
+    color: #000000;
+    background-color: #ff0000;
+    height: fit-content;
+    min-width: 125px;
+    height: 40px;
+}
+
+    .danger-btn:has(.deleteIcon) {
+        height: fit-content;
+        width: fit-content;
+        border: 0.5px outset;
+        border-radius: 25%;
+        min-width: 0px;
+        padding: 2px 4px;
+        background-color: #d88888;
+    }
+
+.edit-btn {
+    width: 100%;
+    height: 40px;
+}
+
+    .edit-btn:has(.editIcon) {
+        height: fit-content;
+        width:fit-content;
+        border: 0.5px outset;
+        border-radius: 25%;
+        padding: 2px 4px;
+        background-color: #dcdcdc;
+    }
+
+
+
+button.close-btn {
+    display: inline-block;
+    align-self: end;
+    width: fit-content;
+    height: fit-content;
+    background-color: #e67e75;
+    padding: 0px 6px;
+    color: #ffffff;
+}
+
+
+
+@media (min-width: 805px) {
+    main {
+        grid-template-columns: minmax(auto, 15%) 1fr;
+        grid-template-areas: "sidebar header"
+            "sidebar content";
+        grid-auto-flow: column dense;
+        overflow: hidden auto;
+    }
+
+    footer {
+        width: 100%;
+        text-align: center;
+        border-top: 1px solid #dee2e6;
+        color: #212529bf;
+    }
+
+    .content {
+        padding: 10px;
+    }
+
+    #sidebar {
+        display: block;
+        grid-area: sidebar;
+        min-width:200px;
+        width: 100%;
+        max-height: 100%;
+        background-color: #c9ffd3;
+        font-family: "Nunito", sans-serif;
+        grid-row-start: 1;
+        grid-row-end: 3;
+        overflow: clip;
+    }
+
+    #mobileNavBar {
+        display: none;
+    }
+
+    #navsidebar {
+        display: flex;
+        width: 100%;
+        flex-direction: column;
+        min-height: 100vh;
+        align-items: flex-start;
+        padding: 8px 8px 0px 8px;
+        color: #212529;
+    }
+
+    .nav-item{
+        margin-bottom: 5px;
+    }
+
+    .nav-link {
+        display: block;
+    }
+
+
+
+    #menu {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        width: 100%;
+        align-items: flex-start;
+        padding-left: 0px;
+        margin-bottom: 0px;
+    }
+
+
+    #appTitle {
+        display: flex;
+        width: 100%;
+        font-weight: 900;
+        text-decoration: none;
+        padding-bottom: 16px;
+        font-size: 32px;
+        color: #212529;
+    }
+
+   
+
+    #projectNav {
+        margin-bottom: auto;
+    }
 }

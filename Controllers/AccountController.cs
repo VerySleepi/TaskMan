@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using TaskMan.Data;
 using TaskMan.Models;
 using TaskMan.Services;
 using TaskMan.ViewModels.Account;
-using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace TaskMan.Controllers
 {
@@ -14,24 +14,26 @@ namespace TaskMan.Controllers
         private readonly UserManager<User> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly IEmailSender emailSender;
+        private readonly ApplicationDbContext _context;
 
-        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IEmailSender emailSender)
+        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IEmailSender emailSender, ApplicationDbContext context)
         {
             this.signInManager = signInManager;
             this.userManager = userManager;
             this.roleManager = roleManager;
             this.emailSender = emailSender;
+            _context = context;
         }
 
         // GET: Login
         [HttpGet]
+        // Attribute to prevent caching the login page so that the data is cleared when navigating to
+        // the login page
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Login()
         {
-            if (User.Identity != null && User.Identity.IsAuthenticated)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            return View();
+            var model = new LoginViewModel();
+            return View(model);
         }
 
         // POST: Account/Login
@@ -51,11 +53,7 @@ namespace TaskMan.Controllers
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                 return View(model);
             }
-
-
-            var result = await signInManager.PasswordSignInAsync(userName: user.UserName, password: model.Password, isPersistent: model.RememberMe, lockoutOnFailure: true);
-
-            Debug.WriteLine(result.ToString(), model.Email, model.Password, model.RememberMe);
+            var result = await signInManager.PasswordSignInAsync(userName: user.UserName, password: model.Password, isPersistent: false, lockoutOnFailure: true);
 
             if (result.RequiresTwoFactor)
             {
@@ -63,17 +61,31 @@ namespace TaskMan.Controllers
             }
             if (result.Succeeded)
             {
-                return RedirectToAction("Index", "Home");
+                if (user.TwoFactorEnabled)
+                {
+                    return RedirectToAction("VerifyWith2fa", "Account", new { id = user.Id });
+                }
+                else
+                {
+                    return RedirectToAction("Dashboard", "Tasks");
+                }
             }
             
-
-            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            Debug.WriteLine($"Login failed for user {model.Email}. Result: {result}");
             return View(model);
         }
 
+        // GET: Account/VerifyWith2fa
         [HttpGet]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<IActionResult> VerifyWith2fa(string id)
         {
+            var twoFactorUser = await signInManager.GetTwoFactorAuthenticationUserAsync();
+            if (twoFactorUser == null)
+            {       
+                return RedirectToAction("Login", "Account");
+            }
+
             var user = await userManager.FindByIdAsync(id);
             if (user == null)
             {
@@ -95,11 +107,13 @@ namespace TaskMan.Controllers
 
         }
 
+        // POST: Account/VerifyWith2fa
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<IActionResult> VerifyWith2fa(TwoFactorAuthenticationViewModel model)
         {
-
+            var user = await userManager.FindByIdAsync(model.UserId);
             //Debug.WriteLine($"Email: {email}, RememberMe: {rememberMe}, TwoFactorCode: {code}");
             if (!ModelState.IsValid)
             {
@@ -109,14 +123,15 @@ namespace TaskMan.Controllers
             try
             {
                 var result = await signInManager.TwoFactorSignInAsync("Email", model.Code, isPersistent: false, rememberClient: false);
+                await userManager.RemoveAuthenticationTokenAsync(user, "Email", "TwoFactorCode");
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Dashboard", "Tasks");
                 }
                 else
                 {
                     ModelState.AddModelError(string.Empty, "Invalid code.");
-                    return View(model);
+                    return RedirectToAction("Login", "Account");
                 }
             }
             catch (Exception ex)
@@ -128,24 +143,15 @@ namespace TaskMan.Controllers
             
         }
 
-        [HttpGet]
-        public async Task<IActionResult> TestEmail(string userEmail)
-        {
-            var senderEmail = "George.O.Stead@student.shu.ac.uk";
-            var subject = "New Login Detected";
-            var message = $"A new login to your account was detected at {DateTime.Now}. If this was you, you can safely ignore this email. If this wasn't you, we recommend changing your password immediately.";
 
-            var emailSender = new EmailSender();
-            await emailSender.SendEmailAsync(senderEmail, userEmail, subject, message);
-            return Content("Email sent! Check your SMTP server.");
-        }
-
+        // GET: Account/Register
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
 
+        // POST: Account/Register
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
@@ -184,7 +190,6 @@ namespace TaskMan.Controllers
 
                 await userManager.AddToRoleAsync(user, "User");
 
-                //await signInManager.SignInAsync(user, isPersistent: false);
                 return RedirectToAction("Login", "Account");
             }
 
@@ -196,6 +201,7 @@ namespace TaskMan.Controllers
             return View(model);
         }
 
+        // GET: Account/VerifyEmail
         [HttpGet]
         public IActionResult VerifyEmail()
         {
@@ -203,6 +209,7 @@ namespace TaskMan.Controllers
 
         }
 
+        // POST: Account/VerifyEmail
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> VerifyEmail(VerifyEmailViewModel model)
@@ -221,13 +228,12 @@ namespace TaskMan.Controllers
             }
             else
             {
-                // TODO: Implement a way to send an email to the user with a code
-                // to verify who they are, and then allow them to change their password after verifying the code.
                 return RedirectToAction("ChangePassword", "Account", new { user.Email });
             }
 
         }
 
+        // GET: Account/ChangePassword
         [HttpGet]
         public IActionResult ChangePassword(string email)
         {
@@ -239,6 +245,7 @@ namespace TaskMan.Controllers
             return View(new ChangePasswordViewModel { Email = email });
         }
 
+        //POST: Account/ChangePassword
         [HttpPost]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
@@ -273,11 +280,11 @@ namespace TaskMan.Controllers
             }
         }
 
-
+        // POST: Account/Logout
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
-        {
+        {        
             await signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
         }

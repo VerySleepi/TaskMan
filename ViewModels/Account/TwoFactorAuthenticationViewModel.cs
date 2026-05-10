@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace TaskMan.ViewModels.Account
 {
@@ -9,5 +10,6 @@ namespace TaskMan.ViewModels.Account
 
         [Required]
         public string Code { get; set; }
+
     }
 }
