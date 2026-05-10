@@ -91,18 +91,20 @@ namespace TaskMan.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
+            else
+            {
+                var token = await userManager.GenerateTwoFactorTokenAsync(user, "Email");
 
-            var model = new TwoFactorAuthenticationViewModel { UserId = id };
-            var token = await userManager.GenerateTwoFactorTokenAsync(user, "Email");
+                var senderEmail = "taskMan@taskman.com";
+                var to = user.Email;
+                var subject = "New Login Detected";
+                var message = $"A new login to your account was detected at {DateTime.Now}. If this was you, please use the following code to complete the login process: {token}. If this wasn't you, we recommend changing your password immediately.";
+                await emailSender.SendEmailAsync(senderEmail, to, subject, message);
+                Debug.WriteLine("Mail Sent!");
+                return View(new TwoFactorAuthenticationViewModel { UserId = id });
 
-            var senderEmail = "taskMan@taskman.com";
-            var to = user.Email;
-            var subject = "New Login Detected";
-            var message = $"A new login to your account was detected at {DateTime.Now}. If this was you, please use the following code to complete the login process: {token}. If this wasn't you, we recommend changing your password immediately.";
-            Debug.WriteLine($"Sending email to {to} with token: {token}");
-            await emailSender.SendEmailAsync(senderEmail, to, subject, message);
+            }
 
-            return View(model);
         }
 
         // POST: Account/VerifyWith2fa
