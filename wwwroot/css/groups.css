@@ -83,6 +83,14 @@
     margin-bottom: 10px;
 }
 
+#groupTaskPanelCompleteForm {
+    height: 100%;
+}
+
+#panelGroupTitle {
+    font-size: 28px;
+}
+
 .groupTaskPanelEditBtn {
     width: 100%;
 }
@@ -106,7 +114,7 @@
     justify-content: space-around;
     border: #ddd solid 2px;
     border-radius: 6px;
-    
+    overflow-x: clip;
 }
 
     .member-panel > p {
@@ -153,9 +161,6 @@
     width: 100%;
 }
 
-#addMemberBtn {
-    width: 145px;
-}
 
 .addButtons:has(#addMemberBtn) {
     grid-area: members;

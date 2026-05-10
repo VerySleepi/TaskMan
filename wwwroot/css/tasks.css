@@ -3,7 +3,6 @@
     display: flex;
     flex-direction: row;
     gap: 1rem;
-    min-width: 315px;
     min-height: 100%;
     overflow-y: scroll;
     scrollbar-width: none;
@@ -32,15 +31,24 @@
 
 .panel-body {
     position: relative;
-    height: 100%;
+    height: 90%;
+}
+
+#panelTitle {
+    font-size: 28px;
+}
+
+.panel-body h4, p {
+    margin-bottom: 10px;
 }
 
 .panel-actions {
     width: 100%;
     position: absolute;
-    bottom:0;
+    bottom: 0;
     right: 0;
 }
+
 
 .task-card {
     background-color: var(--bg-col) !important;
@@ -49,7 +57,6 @@
     display: flex;
     flex-direction: column;
     margin-bottom: 1rem;
-
 }
 
 .taskObject {
@@ -61,41 +68,39 @@
     border-bottom: 1px solid;
 }
 
-.taskObject.completed {
-    position: relative;
-    filter: grayscale(1);
-}
+    .taskObject.completed {
+        position: relative;
+        filter: grayscale(1);
+    }
 
-.taskObject.completed::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: #00000058;
-    pointer-events: none;
-    border-radius: 4px;
-    margin: 2px;
-}
+        .taskObject.completed::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #00000058;
+            pointer-events: none;
+            border-radius: 4px;
+            margin: 2px;
+        }
 
 .taskObject-content {
     display: flex;
     flex-direction: column;
     flex: 1;
-
 }
 
-.taskObject-content p {
-    margin-bottom: 0px;
-
-}
-
-    .taskObject > .button-group-horizontal {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+    .taskObject-content p {
+        margin-bottom: 0px;
     }
+
+.taskObject > .button-group-horizontal {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
 
 .task-card > .card-header {
     background-color: rgba(0, 0, 0, 0.02);
@@ -108,9 +113,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 0.5rem 1rem 0.5rem 0.5rem;
-    height: 50px;
+    height: 60px;
     border-radius: 6px !important;
-    
 }
 
 .card-title {
@@ -129,11 +133,12 @@
     flex: 1 1 auto;
     overflow-y: scroll;
     scrollbar-width: none;
-    padding: 1rem;
+    padding: 0 1rem 1rem 1rem ;
 }
-        .card-body > ul > li {
-            list-style: none;
-        }
+
+    .card-body > ul > li {
+        list-style: none;
+    }
 
 .overlay {
     position: fixed;
@@ -161,8 +166,9 @@
     border-radius: 9px;
     min-height: fit-content;
     width: 70%;
+    min-width: 335px;
     max-width: 600px;
-    position:relative;
+    position: relative;
 }
 
 input,
@@ -177,10 +183,6 @@ form {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
-
-    @media (width < 535px) {
-        grid-template-columns: 1fr;
-    }
 }
 
 .taskDeleteBtn {
@@ -231,20 +233,12 @@ textarea {
 }
 
 
-form:has(button[type="submit"]) {
-    align-self: end;
-    justify-self: start;
-    height: fit-content;
-    min-width: fit-content;
-    width: 100%;
-    border-radius: 6px;
 
-}
 
 form button[type=submit] {
     grid-column: 1 / -1;
     width: 100%;
-    min-width: 120px;
+    min-width: 130px;
     background-color: #77df88;
 }
 
@@ -259,7 +253,12 @@ form button[type=submit] {
 }
 
 .submissionBtn {
+    height: 40px;
     max-width: 30%;
+}
+
+#taskPanelCompleteForm {
+    height: 100%;
 }
 
 #deleteListConfirmBtn {
@@ -274,6 +273,8 @@ form button[type=submit] {
 
 
 .cancel-btn {
+    min-width: fit-content;
+    height: 40px;
     width: 30%;
     position: absolute;
     right: 20px;
@@ -293,8 +294,8 @@ form button[type=submit] {
     }
 
 .addBtn {
-    min-width: 120px;
-    width: 20%;
+    height: 40px;
+    min-width: 125px;
     max-width: 150px;
 }
 
@@ -390,6 +391,16 @@ form button[type=submit] {
     }
 
 @media (max-width: 805px) {
+    form {
+        grid-template-columns: 1fr;
+    }
+
+        form button[type=submit] {
+            grid-column: auto;
+            min-width: fit-content;
+        }
+
+
     #taskDetailsPanel {
         position: fixed;
         top: 0;
@@ -398,10 +409,10 @@ form button[type=submit] {
         height: 100%;
         transform: translateX(100%);
         transition: transform 0.3s ease;
-        z-index: 100;
+        z-index: 1;
     }
 
-    #taskDetailsPanel.panel-open {
-        transform: translateX(0);
-    }
+        #taskDetailsPanel.panel-open {
+            transform: translateX(0);
+        }
 }

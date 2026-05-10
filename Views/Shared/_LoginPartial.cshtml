@@ -2,24 +2,15 @@
 @inject SignInManager<User> signInManager;
 
 
-    @if (signInManager.IsSignedIn(User))
-    {
-        <div id="logoutButton" class="nav-item">       
-            <form asp-controller="Account" asp-action="Logout" method="post" class="nav-link">
-                @Html.AntiForgeryToken()
-               <button type="submit" class="nav-link">Logout</button>
-            </form>
-        </div>
-    }
-    else
-    {
-        <li class="nav-item">
-            <a  class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" asp-controller="Account" asp-action="Register">Register</a>
-        </li>
-    }
+@if (signInManager.IsSignedIn(User))
+{
+    <div id="logoutButton" class="nav-item">
+        <form asp-controller="Account" asp-action="Logout" method="post" class="nav-link">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="nav-link">Logout</button>
+        </form>
+    </div>
+}
 
 
 

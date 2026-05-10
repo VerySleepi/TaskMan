@@ -70,6 +70,7 @@ namespace TaskMan.Controllers
 
             // Ids of the members of the current group.
             var groupMemberIds = groupMembers.Select(m => m.User_ID).ToList();
+
             // All user records of the members of the current group.
             var groupUsers = await _userManager.Users
                 .Where(u => groupMemberIds.Contains(u.Id))
@@ -274,8 +275,8 @@ namespace TaskMan.Controllers
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Error editing group: " + ex.Message);
-                return RedirectToAction("GroupDashboard");
+                ModelState.AddModelError(string.Empty, "An error occurred while editing the group. Please try again.");
+                return View(model);
             }
         }
 
@@ -309,6 +310,7 @@ namespace TaskMan.Controllers
                 return RedirectToAction("GroupDashboard");
             }
         }
+
         // GET: GroupsController/AddMembers/5
         [HttpGet]
         public async Task<IActionResult> AddMembers(int groupId)

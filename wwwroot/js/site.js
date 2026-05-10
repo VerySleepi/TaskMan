@@ -9,11 +9,13 @@ function toggleUsername() {
     let currentUsername = document.getElementById("currentUsername");
     let windowSize = window.innerWidth;
 
-    if (windowSize < 805) {
-        currentUsername.style.display = "none";
-    }
-    else {
-        currentUsername.style.display = "inline";
+    if (currentUsername) {
+        if (windowSize < 805) {
+            currentUsername.style.display = "none";
+        }
+        else {
+            currentUsername.style.display = "inline";
+        }
     }
 }
 

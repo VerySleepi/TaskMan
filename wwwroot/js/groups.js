@@ -383,24 +383,30 @@ function deleteGroupList() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-
+    const sidePanel = document.getElementById('groupTaskDetailsPanel');
     if (window.innerWidth <= 805) {
-        document.getElementById('groupTaskDetailsPanel').classList.remove('hidden');
+        if (sidePanel) {
+            sidePanel.classList.remove('hidden');
+
+        }
     }
 
     window.addEventListener('resize', () => {
-        const sidePanel = document.getElementById('groupTaskDetailsPanel');
 
         if (panelOpen) {
             closeGroupPanel();
             openGroupPanel();
         }
         else {
-            if (window.innerWidth >= 805) {
-                sidePanel.classList.add('hidden');
-            }
-            else {
-                sidePanel.classList.remove('hidden');
+            if (sidePanel) {
+                if (window.innerWidth >= 805) {
+
+                    sidePanel.classList.add('hidden');
+                }
+                else {
+                    sidePanel.classList.remove('hidden');
+                }
+
             }
         }
     });

@@ -160,16 +160,13 @@
 
 }
 
-
-
-
-@* Admin controls — Edit/Delete task goes here (Day 7) *@
-
-@* Add member form goes here (Day 6) *@
 @await Html.PartialAsync("~/Views/Groups/Popups/_MemberPopup.cshtml")
 @await Html.PartialAsync("~/Views/Groups/Popups/_GroupListPopup.cshtml")
 @await Html.PartialAsync("~/Views/Groups/Popups/_GroupTaskPopup.cshtml")
 
 @section Scripts {
     <script src="~/js/groups.js" asp-append-version="true"></script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
 }

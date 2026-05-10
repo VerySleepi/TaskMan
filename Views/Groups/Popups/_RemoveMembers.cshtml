@@ -9,7 +9,8 @@
         {
             @if (user.GroupUser.Role != "Admin")
             {
-                <div class="member-panel" data-user-id="@user.User.Id">
+                <div class="member-panel" data-user-id="@user.User.Id" tabindex="0" aria-label="Member Panel for User @user.User.UserName">
+                    <span><img src="@ViewData["profilePic"]" alt="Profile picture" class="profile_pic" /></span>
                     <p>@user.User.UserName</p>
                     <p>@user.User.Email</p>
                 </div>
@@ -19,5 +20,5 @@
 
     <div id="removeSelectedIds"></div>
 
-    <button type="submit" class="submissionBtn">Remove Members</button>
+    <button type="submit" class="submissionBtn">Remove</button>
 </form>

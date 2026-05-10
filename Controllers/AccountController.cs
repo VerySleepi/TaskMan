@@ -70,7 +70,7 @@ namespace TaskMan.Controllers
                 {
                     await signInManager.SignInAsync(user, isPersistent: model.RememberMe);
                     user.Remembered = model.RememberMe;
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Dashboard", "Tasks");
                 }
                 else if (user.TwoFactorEnabled)
                 {
@@ -78,7 +78,7 @@ namespace TaskMan.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Dashboard", "Tasks");
                 }
             }
             
@@ -136,7 +136,7 @@ namespace TaskMan.Controllers
                 if (result.Succeeded)
                 {
                     user.Remembered = model.RememberMe;
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Dashboard", "Tasks");
                 }
                 else
                 {
@@ -153,17 +153,6 @@ namespace TaskMan.Controllers
             
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> TestEmail(string userEmail)
-        //{
-        //    var senderEmail = "George.O.Stead@student.shu.ac.uk";
-        //    var subject = "New Login Detected";
-        //    var message = $"A new login to your account was detected at {DateTime.Now}. If this was you, you can safely ignore this email. If this wasn't you, we recommend changing your password immediately.";
-
-        //    //var emailSender = new EmailSender();
-        //    //await emailSender.SendEmailAsync(senderEmail, userEmail, subject, message);
-        //    return Content("Email sent! Check your SMTP server.");
-        //}
 
         // GET: Account/Register
         [HttpGet]
@@ -250,8 +239,6 @@ namespace TaskMan.Controllers
             }
             else
             {
-                // TODO: Implement a way to send an email to the user with a code
-                // to verify who they are, and then allow them to change their password after verifying the code.
                 return RedirectToAction("ChangePassword", "Account", new { user.Email });
             }
 
