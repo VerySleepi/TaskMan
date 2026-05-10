@@ -53,102 +53,7 @@ namespace TaskMan.Controllers
             return View("GroupDashboard", model);
         }
 
-        // Helper method to build GroupDetailViewModel for the Details, AddMembers and RemoveMembers actions to avoid code duplication
-        private async Task<GroupDetailViewModel> BuildGroupDetailViewModel(int groupId)
-        {
-            // Current user record
-            var currentUser = await _userManager.GetUserAsync(User);
-            if (currentUser == null)
-            {
-                return null;
-            }
 
-            // All records of the members of the current group from GroupUsers table.
-            var groupMembers = await _context.GroupUsers
-                .Where(m => m.Group_ID == groupId)
-                .ToListAsync();
-
-            // Ids of the members of the current group.
-            var groupMemberIds = groupMembers.Select(m => m.User_ID).ToList();
-
-            // All user records of the members of the current group.
-            var groupUsers = await _userManager.Users
-                .Where(u => groupMemberIds.Contains(u.Id))
-                .ToListAsync();
-
-            // Combined user records and their corresponding role in the current group.
-            var userMembers = new List<MemberDetails>();
-
-            foreach (var member in groupMembers)
-            {
-                var user = groupUsers.FirstOrDefault(u => u.Id == member.User_ID);
-                if (user != null)
-                {
-                    userMembers.Add(new MemberDetails
-                    {
-                        User = user,
-                        GroupUser = member
-                    });
-                    continue;
-                }
-            }
-
-            var nonMembers = await _userManager.Users
-                .Where(u => !groupMemberIds.Contains(u.Id))
-                .ToListAsync();
-
-            //  The record of the current user's membership of the current group from GroupUsers table. Used to check if user is member of the group and to get the user's role in the group
-            var memberOf = groupMembers
-                .FirstOrDefault(m => m.User_ID == currentUser.Id);
-
-            // Check if user member of any group
-            if (memberOf == null)
-            {
-                return null;
-            }
-
-            // All details of the current group
-            var group = await _context.Group
-                .FirstOrDefaultAsync(g => g.Group_ID == groupId);
-
-            // All task lists that belong to the current group
-            var groupLists = await _context.GroupList
-                .Where(gl => gl.Group_ID == groupId)
-                .ToListAsync();
-
-            // Extracted Group_List_IDs from the GroupLists of the current group. Used to fetch tasks that belong to the lists of the current group
-            var listIds = groupLists.Select(gl => gl.Group_List_ID).ToList();
-
-            // Fetch tasks that belong to the lists of the current group
-            var groupTasks = await _context.GroupTask
-                .Where(gt => listIds.Contains(gt.Group_List_ID))
-                .ToListAsync();
-
-
-            var model = new GroupDetailViewModel
-            {
-                Group = group,
-                GroupLists = groupLists,
-                TasksByList = groupTasks.Select(t => new TasksByList
-                {
-                    GroupList = t.GroupList,
-                    Tasks = groupTasks.Where(gt => gt.Group_List_ID == t.GroupList.Group_List_ID)
-                                      .ToList()
-
-                }).ToList(),
-                UserRole = memberOf.Role,
-                User_ID = currentUser.Id,
-                Members = userMembers,
-                NonMembers = nonMembers
-            };
-
-            ViewData["profilePic"] = Url.Content($"~/images/{currentUser.Profile_Pic}");
-            ViewData["userName"] = currentUser.UserName;
-            ViewData["trashIcon"] = Url.Content("~/images/trash-can-solid.png");
-            ViewData["editIcon"] = Url.Content("~/images/pencil-solid.png");
-
-            return model;
-        }
 
         // GET: GroupsController/Details/5
         [HttpGet]
@@ -304,7 +209,7 @@ namespace TaskMan.Controllers
                 return RedirectToAction("GroupDashboard");
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Debug.WriteLine("Error deleting group: " + ex.Message);
                 return RedirectToAction("GroupDashboard");
@@ -796,14 +701,14 @@ namespace TaskMan.Controllers
             var model = new NewGroupListViewModel
             {
                 Group_ID = groupId,
-                BckGr_Col = "#E67E75", // Default to red, can be changed by user in the view
+                BckGr_Col = "#75E67E",
                 BackgroundColors = new List<string>
                 {
-                    "#E67E75", // Red
-                    "#8CDE8F", // Green
-                    "#59DAE6", // Blue
-                    "#F0EE7A", // Yellow
-                    "#DEB4F0" // Purple
+                    "#75E67E", // Green
+                    "#7581E6", // Blue
+                    "#E6E275", // Yellow
+                    "#E675E6", // Pink
+                    "#75E6E6"  // Cyan
                 }
             };
 
@@ -916,7 +821,105 @@ namespace TaskMan.Controllers
                 .FirstOrDefaultAsync(m => m.User_ID == currentUser.Id && m.Group_ID == groupId);
             return memberOf != null && memberOf.Role == "Admin";
         }
-        
+
+        // Helper method to build GroupDetailViewModel for the Details, AddMembers and RemoveMembers actions to avoid code duplication
+        private async Task<GroupDetailViewModel> BuildGroupDetailViewModel(int groupId)
+        {
+            // Current user record
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
+            {
+                return null;
+            }
+
+            // All records of the members of the current group from GroupUsers table.
+            var groupMembers = await _context.GroupUsers
+                .Where(m => m.Group_ID == groupId)
+                .ToListAsync();
+
+            // Ids of the members of the current group.
+            var groupMemberIds = groupMembers.Select(m => m.User_ID).ToList();
+
+            // All user records of the members of the current group.
+            var groupUsers = await _userManager.Users
+                .Where(u => groupMemberIds.Contains(u.Id))
+                .ToListAsync();
+
+            // Combined user records and their corresponding role in the current group.
+            var userMembers = new List<MemberDetails>();
+
+            foreach (var member in groupMembers)
+            {
+                var user = groupUsers.FirstOrDefault(u => u.Id == member.User_ID);
+                if (user != null)
+                {
+                    userMembers.Add(new MemberDetails
+                    {
+                        User = user,
+                        GroupUser = member
+                    });
+                    continue;
+                }
+            }
+
+            var nonMembers = await _userManager.Users
+                .Where(u => !groupMemberIds.Contains(u.Id))
+                .ToListAsync();
+
+            //  The record of the current user's membership of the current group from GroupUsers table. Used to check if user is member of the group and to get the user's role in the group
+            var memberOf = groupMembers
+                .FirstOrDefault(m => m.User_ID == currentUser.Id);
+
+            // Check if user member of any group
+            if (memberOf == null)
+            {
+                return null;
+            }
+
+            // All details of the current group
+            var group = await _context.Group
+                .FirstOrDefaultAsync(g => g.Group_ID == groupId);
+
+            // All task lists that belong to the current group
+            var groupLists = await _context.GroupList
+                .Where(gl => gl.Group_ID == groupId)
+                .ToListAsync();
+
+            // Extracted Group_List_IDs from the GroupLists of the current group. Used to fetch tasks that belong to the lists of the current group
+            var listIds = groupLists.Select(gl => gl.Group_List_ID).ToList();
+
+            // Fetch tasks that belong to the lists of the current group
+            var groupTasks = await _context.GroupTask
+                .Where(gt => listIds.Contains(gt.Group_List_ID))
+                .ToListAsync();
+
+
+            var model = new GroupDetailViewModel
+            {
+                Group = group,
+                GroupLists = groupLists,
+                TasksByList = groupTasks.Select(t => new TasksByList
+                {
+                    GroupList = t.GroupList,
+                    Tasks = groupTasks.Where(gt => gt.Group_List_ID == t.GroupList.Group_List_ID)
+                                       .OrderBy(gt => gt.Status)
+                                       .ToList()
+
+                }).ToList(),
+                UserRole = memberOf.Role,
+                User_ID = currentUser.Id,
+                Members = userMembers,
+                NonMembers = nonMembers
+            };
+
+            ViewData["profilePic"] = Url.Content($"~/images/{currentUser.Profile_Pic}");
+            ViewData["userName"] = currentUser.UserName;
+            ViewData["trashIcon"] = Url.Content("~/images/trash-can-solid.png");
+            ViewData["editIcon"] = Url.Content("~/images/pencil-solid.png");
+
+            return model;
+        }
+
         private async System.Threading.Tasks.Task UpdateGroupListProgress(int groupListId)
         {
             var groupList = await _context.GroupList.FindAsync(groupListId);
@@ -926,7 +929,7 @@ namespace TaskMan.Controllers
                 Debug.WriteLine($"Group list with ID {groupListId} not found");
                 return;
             }
-            
+
             var tasks = await _context.GroupTask
                 .Where(t => t.Group_List_ID == groupListId)
                 .ToListAsync();

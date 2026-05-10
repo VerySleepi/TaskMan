@@ -16,7 +16,7 @@
         <button id="createGroupBtn" class="addBtn">Create Group</button>
     </div>
 
-    <div class="cardList">
+    <div class="cardList" role="list" aria-label="Your groups">
 
         @foreach (var group in Model.Groups)
         {
@@ -33,11 +33,11 @@
                 </a>
 
                 <div class="button-group-horizontal">
-                    <button type="button" class="groupEditBtn edit-btn" data-group-id="@group.Group_ID">Edit</button>
+                    <button type="button" class="groupEditBtn edit-btn" data-group-id="@group.Group_ID" aria-label="Edit @group.Title">Edit</button>
                     <form class="deleteGroupForm" method="post" asp-action="DeleteGroup" asp-controller="Groups">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="groupId" value="@group.Group_ID" />
-                        <button type="button" class="deleteGroupBtn danger-btn">Delete</button>
+                        <button type="button" class="deleteGroupBtn danger-btn" aria-label="Delete @group.Title">Delete</button>
                     </form>
                 </div>
             </div>
@@ -47,7 +47,7 @@
     </div>
 </div>
 
-<div id="deleteGroup-overlay" class="overlay hidden">
+<div id="deleteGroup-overlay" class="overlay hidden" aria-live="polite" role="dialog" aria-label="Delete group confirmation">
     <div id="deleteGroup-content" class="popup-content">
         <p class="confirm-msg">Are you sure you want to delete this group?</p>
         <div class="button-group-horizontal">

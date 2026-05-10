@@ -7,14 +7,14 @@
 
     <div class="form-group">
         <label asp-for="Title">Title</label>
-        <input asp-for="Title" class="list-input" placeholder="Enter Group Title" />
+        <input asp-for="Title" class="list-input" placeholder="Enter Group Title" aria-label="Group Title" />
     </div>
 
     <div class="form-group">
         <label asp-for="Description">Description</label>
-        <textarea asp-for="Description" class="list-input" placeholder="Enter Group Description"></textarea>
+        <textarea asp-for="Description" class="list-input" placeholder="Enter Group Description" aria-label="Group Description"></textarea>
     </div>
 
-    <button type="submit" class="submissionBtn">Apply</button>
+    <button type="submit" class="submissionBtn" aria-label="Apply changes to group @Model.Title">Apply</button>
 
 </form>

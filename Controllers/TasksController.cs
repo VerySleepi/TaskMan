@@ -26,6 +26,10 @@ namespace TaskMan.Controllers
         {
             var userId = userManager.GetUserId(HttpContext.User);
             var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
             // Pass user information to the view using ViewData
             ViewData["userName"] = user.UserName;
             ViewData["profilePic"] = Url.Content($"~/images/{user.Profile_Pic}");
@@ -131,6 +135,7 @@ namespace TaskMan.Controllers
                     User_List_ID = model.User_List_ID
                 };
 
+
                 Debug.WriteLine(task.Title);
                 Debug.WriteLine(task.Description);
                 Debug.WriteLine(task.Due_Date);
@@ -139,6 +144,8 @@ namespace TaskMan.Controllers
 
                 _context.Task.Add(task);
                 await _context.SaveChangesAsync();
+                await UpdateTaskListProgress(model.User_List_ID);
+
                 return RedirectToAction("Dashboard");
             }
             catch
@@ -250,6 +257,9 @@ namespace TaskMan.Controllers
                 }
 
                 await _context.SaveChangesAsync();
+                await UpdateTaskListProgress(taskList.User_List_ID);
+                await UpdateTaskListProgress(model.User_List_ID);
+
                 return RedirectToAction("Dashboard", "Tasks");
             }
             catch
@@ -304,12 +314,7 @@ namespace TaskMan.Controllers
                     user.Complete_Tasks -= 1;
                 }
 
-                // Count total number of tasks for this task list
-                var totalTasks = Convert.ToDouble(await _context.Task.Where(t => t.User_List_ID == task.User_List_ID).CountAsync());
-                // Count number of completed tasks for this task list
-                var completedTasks = Convert.ToDouble(await _context.Task.Where(t => t.User_List_ID == task.User_List_ID && t.Status == 1).CountAsync());
-                // Update task list progress based on the number of completed tasks
-                taskList.Progress = totalTasks > 0 ? Convert.ToInt32(Math.Round(100.0 * (completedTasks / totalTasks))) : 0;
+                await UpdateTaskListProgress(task.User_List_ID);
 
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Dashboard", "Tasks");
@@ -358,6 +363,8 @@ namespace TaskMan.Controllers
                 _context.Task.Remove(task);
                 await _context.SaveChangesAsync();
 
+                await UpdateTaskListProgress(task.User_List_ID);
+
                 return RedirectToAction("Dashboard", "Tasks");
             }
             catch (Exception ex)
@@ -383,11 +390,10 @@ namespace TaskMan.Controllers
 
             var model = new NewListViewModel
             {
-                Progress = 100,
-                BckGr_Col = "#E67E75",
+                Progress = 0,
+                BckGr_Col = "#75E67E",
                 BackgroundColors = new List<string>
                 {
-                    "#E67E75", // Red
                     "#75E67E", // Green
                     "#7581E6", // Blue
                     "#E6E275", // Yellow
@@ -483,6 +489,30 @@ namespace TaskMan.Controllers
             }
         }
 
+        public async System.Threading.Tasks.Task UpdateTaskListProgress(int listId)
+        {
+            var taskList = await _context.UserTasks.FindAsync(listId);
+            if (taskList == null)
+            {
+                Debug.WriteLine($"UserTasks with ID {listId} not found.");
+                return;
+            }
+
+            var tasks = await _context.Task.Where(t => t.User_List_ID == listId).ToListAsync();
+
+            if (tasks.Count == 0)
+            {
+                taskList.Progress = 0;
+            }
+            else
+            {
+                var completedTasks = tasks.Where(t => t.Status == 1).Count();
+                taskList.Progress = Convert.ToInt32(Math.Round(100.0 * (completedTasks / Convert.ToDouble(tasks.Count))));
+            }
+
+            _context.UserTasks.Update(taskList);
+            await _context.SaveChangesAsync();
+        }
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

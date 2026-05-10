@@ -13,10 +13,10 @@
 @if (Model.UserRole == "Admin")
 {
     <div class="addButtons">
-        <button id="addMemberBtn" class="addBtn" data-group-id="@Model.Group.Group_ID">
+        <button id="addMemberBtn" class="addBtn" data-group-id="@Model.Group.Group_ID" aria-label="Add member to @Model.Group.Title">
             Add Member
         </button>
-        <button id="removeMemberBtn" class="danger-btn" data-group-id="@Model.Group.Group_ID">
+        <button id="removeMemberBtn" class="danger-btn" data-group-id="@Model.Group.Group_ID" aria-label="Remove member from @Model.Group.Title">
             Remove Member
         </button>
     </div>
@@ -47,19 +47,22 @@
         {
             <div class="task-card" style="--bg-col: @list.BckGr_Col;">
                 <div class="card-header">
-                    <h5>@list.Title</h5>
+                    <div>
+                        <h5>@list.Title</h5>
+                        <p>@list.Progress%</p>
+                    </div>
                     @if (Model.UserRole == "Admin")
                     {
                         <form class="deleteListForm" method="post" asp-action="DeleteGroupList" asp-controller="Groups">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="groupListId" value="@list.Group_List_ID" />
-                            <button type="button" class="listDeleteBtn danger-btn" aria-label="Delete List">Delete</button>
+                            <button type="button" class="listDeleteBtn danger-btn" aria-label="Delete List @list.Title">Delete</button>
                         </form>
                     }
                 </div>
 
                 <div class="card-body">
-                    <ul class="cardObjectList">
+                    <ul class="cardObjectList" aria-label="Tasks for @list.Title">
                         @if (Model.TasksByList.Any(t => t.GroupList.Group_List_ID == list.Group_List_ID))
                         {
                             @foreach (var task in Model.TasksByList.First(t => t.GroupList.Group_List_ID == list.Group_List_ID).Tasks)
@@ -90,11 +93,11 @@
                                             <input type="hidden" name="taskId" value="@task.Group_Task_ID" />
                                             @if (task.Status == 1)
                                             {
-                                                <input type="checkbox" class="task-checkbox" checked title="Mark Incomplete" aria-label="Complete Checkbox" />
+                                                <input type="checkbox" class="task-checkbox" checked aria-label="Mark @task.Title as incomplete " />
                                             }
                                             else
                                             {
-                                                <input type="checkbox" class="task-checkbox" title="Mark Complete" aria-label="Incomplete Checkbox" />
+                                                <input type="checkbox" class="task-checkbox" aria-label="Mark @task.Title as complete" />
                                             }
                                         </form>
                                     </div>
@@ -109,7 +112,7 @@
 
 </div>
 
-<div id="groupTaskDetailsPanel" class="task-detail-panel hidden">
+<div id="groupTaskDetailsPanel" class="task-detail-panel hidden" aria-live="polite" role="dialog" aria-label="Group Task Details Panel">
 
     <button type="button" class="panelCloseBtn close-btn"><strong>✕</strong></button>
     <div class="panel-body">
@@ -138,7 +141,7 @@
 
 @if (Model.UserRole == "Admin")
 {
-    <div id="deleteGroupTaskOverlay" class="overlay hidden">
+    <div id="deleteGroupTaskOverlay" class="overlay hidden" aria-live="polite" role="dialog" aria-label="Delete task confirmation">
         <div id="deleteGroupTaskContent" class="popup-content">
             <p class="confirm-msg">Are you sure you want to delete this task?</p>
             <div class="button-group-horizontal">
@@ -148,7 +151,7 @@
         </div>
     </div>
 
-    <div id="deleteGroupListOverlay" class="overlay hidden">
+    <div id="deleteGroupListOverlay" class="overlay hidden" aria-live="polite" role="dialog" aria-label="Delete list confirmation">
         <div class="popup-content">
             <p class="confirm-msg">Are you sure you want to delete this list and all its tasks?</p>
             <div class="button-group-horizontal">

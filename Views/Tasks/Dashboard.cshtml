@@ -30,7 +30,10 @@
         {
             <div class="task-card" style="--bg-col: @usertasks.UserTask.BckGr_Col;">
                 <div class="card-header">
-                    <h5 class="card-title">@usertasks.UserTask.Title</h5>
+                    <div>
+                        <h5 class="card-title">@usertasks.UserTask.Title</h5>
+                        <p>@usertasks.UserTask.Progress%</p>
+                    </div>
                     @if (usertasks.UserTask.Title != "To-do")
                     {
                         <form class="deleteListForm" method="post" asp-action="DeleteList" asp-controller="Tasks">
@@ -42,7 +45,7 @@
                     
                 </div>
                 <div class="card-body">
-                    <ul class="cardObjectList">
+                    <ul class="cardObjectList" aria-label="Task List @usertasks.UserTask.Title">
                         @foreach (var task in usertasks.Tasks)
                         {
                             @* Each list item uses data attributes to store tasks information to be used in JavaScript *@
@@ -69,11 +72,11 @@
                                         <input type="hidden" name="taskId" value="@task.Task_ID" />
                                         @if (task.Status == 1)
                                         {
-                                            <input type="checkbox" class="task-checkbox" checked title="Mark Incomplete" aria-label="Complete Checkbox" />
+                                            <input type="checkbox" class="task-checkbox" checked aria-label="Mark @task.Title Incomplete" />
                                         }
                                         else
                                         {
-                                            <input type="checkbox" class="task-checkbox" title="Mark Complete" aria-label="Incomplete Checkbox" />
+                                            <input type="checkbox" class="task-checkbox" aria-label="Mark @task.Title Complete" />
                                         }
                                     </form>
                                 </div>
@@ -85,7 +88,7 @@
         }
     </div>
 </div>
-<div id="taskDetailsPanel" class="task-detail-panel hidden">
+<div id="taskDetailsPanel" class="task-detail-panel hidden" aria-label="Task Details Panel" aria-live="polite">
     <button type="button" class="panelCloseBtn close-btn"><strong>✕</strong></button>
     <div class="panel-body">
         <h4 id="panelTitle"></h4>

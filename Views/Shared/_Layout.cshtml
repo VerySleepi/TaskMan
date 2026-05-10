@@ -15,8 +15,8 @@
 <body>
     <main>
     <header id="stickyHeader">
-        <span>@ViewData["Title"]</span>
-        <div id="currentProfile"><span id="currentUsername">@ViewData["userName"]</span> <img src="@ViewData["profilePic"]" class="profile_pic" /> </div>
+        <h1 id="pageTitle">@ViewData["Title"]</h1>
+        <div id="currentProfile"><span id="currentUsername">@ViewData["userName"]</span> <img src="@ViewData["profilePic"]" class="profile_pic" alt="Profile picture" /> </div>
     </header>
         <div id="sidebar">
 
@@ -26,7 +26,7 @@
                     TaskMan
                 </a>
 
-                <ul id="menu">
+                <ul id="menu" aria-label="Main navigation menu">
                     <partial name="_MenuPartial" />
                 </ul>
                 <footer>
@@ -43,8 +43,8 @@
 
     </main>
 
-    <nav id="mobileNavBar">
-        <ul id="mobileMenu">
+    <nav id="mobileNavBar" aria-label="Mobile navigation">
+        <ul id="mobileMenu" aria-label="Mobile navigation menu">
             <partial name="_MenuPartial" />
         </ul>
     </nav>

@@ -22,12 +22,12 @@
 
     <div class="form-group">
         <label asp-for="Title">Title</label>
-        <input id="groupTaskTitle" asp-for="Title" class="list-input" placeholder="Enter Task Title" />
+        <input id="groupTaskTitle" asp-for="Title" class="list-input" placeholder="Enter Task Title" aria-label="Task title" />
     </div>
 
     <div class="form-group">
         <label asp-for="Description">Description</label>
-        <textarea id="groupTaskDescription" asp-for="Description" class="list-input" placeholder="Enter Task Description"></textarea>
+        <textarea id="groupTaskDescription" asp-for="Description" class="list-input" placeholder="Enter Task Description" aria-label="Task description"></textarea>
     </div>
 
     <div class="form-group">
@@ -37,14 +37,14 @@
                type="date"
                class="task-select"
                min="@DateTime.Now.ToString("yyyy-MM-dd")"
-               max="@DateTime.Now.AddYears(1).ToString("yyyy-MM-dd")" />
+               max="@DateTime.Now.AddYears(1).ToString("yyyy-MM-dd")" aria-label="Task due date" />
     </div>
 
     <div class="form-group">
         <label asp-for="Group_List_ID">Task List</label>
         <div id="groupTaskListDropdown" class="list-dropdown">
 
-            <button type="button" class="list-dropdown-btn" id="groupTaskListToggle">
+            <button type="button" class="list-dropdown-btn" id="groupTaskListToggle" aria-label="Select Task List">
                 <span id="groupTaskListSelected">
                     @(Model.GroupLists.FirstOrDefault(list => list.Group_List_ID == Model.Group_List_ID)?.Title ?? "Select Task List")
                 </span>
@@ -57,10 +57,10 @@
                    value="@Model.Group_List_ID"/>
     
 
-            <ul class="list-dropdown-list hidden">
+            <ul class="list-dropdown-list hidden" aria-label="Task list options">
                 @foreach (var list in Model.GroupLists)
                 {
-                    <li class="list-dropdown-item">
+                    <li class="list-dropdown-item" aria-label="Select @list.Title as Task List">
                         <button type="button" value="@list.Group_List_ID">
                             @list.Title
                         </button>
@@ -71,11 +71,11 @@
     </div>
     @if (ViewData["Context"]?.ToString() == "Edit")
     {
-        <button type="submit" class="submissionBtn">Apply</button>
+        <button type="submit" class="submissionBtn" aria-label="Apply changes to task @Model.Title">Apply</button>
     }
     else
     {
-        <button type="submit" class="submissionBtn">Create Task</button>
+        <button type="submit" class="submissionBtn" aria-label="Create new task @Model.Title">Create Task</button>
     }
 
 </form>

@@ -4,12 +4,12 @@
 
 @if (signInManager.IsSignedIn(User))
 {
-    <div id="logoutButton" class="nav-item">
+    <li id="logoutButton" class="nav-item">
         <form asp-controller="Account" asp-action="Logout" method="post" class="nav-link">
             @Html.AntiForgeryToken()
             <button type="submit" class="nav-link">Logout</button>
         </form>
-    </div>
+    </li>
 }
 
 

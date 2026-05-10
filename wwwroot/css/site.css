@@ -53,6 +53,10 @@ h6 {
     font-weight: 600;
 }
 
+#pageTitle {
+    font-size: inherit;
+    font-weight: inherit;
+}
 
 p {
     margin: 0;
@@ -278,8 +282,8 @@ button {
 .danger-btn {
     grid-column: 1 / -1;
     width: fit-content;
-    color: #ffffff;
-    background-color: #d85757;
+    color: #000000;
+    background-color: #ff0000;
     height: fit-content;
     min-width: 125px;
     height: 40px;
