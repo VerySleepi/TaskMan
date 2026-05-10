@@ -11,7 +11,5 @@ namespace TaskMan.ViewModels.Account
         [Required]
         public string Code { get; set; }
 
-        [Required]
-        public bool RememberMe { get; set; }
     }
 }

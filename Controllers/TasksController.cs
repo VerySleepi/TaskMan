@@ -265,7 +265,12 @@ namespace TaskMan.Controllers
         {
             try
             {
-                var userId = userManager.GetUserId(HttpContext.User);
+                var user = await userManager.GetUserAsync(HttpContext.User);
+                if (user == null)
+                {
+                    Debug.WriteLine("User not found.");
+                    return RedirectToAction("Dashboard", "Tasks");
+                }
 
                 var task = await _context.Task.FindAsync(taskId);
                 if (task == null)
@@ -281,14 +286,23 @@ namespace TaskMan.Controllers
                     return NotFound();
                 }
                 // Ownership check: Ensure the current user owns the task list that the task belongs to
-                if (taskList.User_ID != userId)
+                if (taskList.User_ID != user.Id)
                 {
-                    Debug.WriteLine($"Unauthorized attempt to change completion status of task with ID {taskId} by user {userId}.");
+                    Debug.WriteLine($"Unauthorized attempt to change completion status of task with ID {taskId} by user {user.Id}.");
                     return Forbid();
                 }
                 // Toggle task completion status => Update list progress if task is being marked as completed
                 task.Status = task.Status == 0 ? 1 : 0;
                 await _context.SaveChangesAsync();
+
+                if (task.Status == 1)
+                {
+                    user.Complete_Tasks += 1;
+                }
+                else
+                {
+                    user.Complete_Tasks -= 1;
+                }
 
                 // Count total number of tasks for this task list
                 var totalTasks = Convert.ToDouble(await _context.Task.Where(t => t.User_List_ID == task.User_List_ID).CountAsync());
@@ -393,10 +407,6 @@ namespace TaskMan.Controllers
             var userTaskLists = await _context.UserTasks.Where(t => t.User_ID == userID && t.Title.StartsWith("Task List")).ToListAsync();
             try
             {
-                //if (!ModelState.IsValid)
-                //{
-                //    return PartialView("_CreateList", listViewModel);
-                //}
 
                 if (listViewModel.Title == null)
                 {

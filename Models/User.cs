@@ -8,6 +8,5 @@ namespace TaskMan.Models
         public string Profile_Pic { get; set; } = "user.png";
         public int Complete_Tasks { get; set; } = 0;
         public DateOnly Creation_Date { get; set; }
-        public bool Remembered { get; set; } = false;
     }
 }

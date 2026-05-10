@@ -42,7 +42,6 @@ namespace TaskMan.Services
                         EmailConfirmed = true,
                         SecurityStamp = Guid.NewGuid().ToString(),
                         TwoFactorEnabled = true, 
-                        Remembered = false
                     };
 
                     var result = await userManager.CreateAsync(adminUser, "Admin123!");
