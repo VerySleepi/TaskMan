@@ -14,12 +14,12 @@
             <div asp-validation-summary="ModelOnly" class="field-error"></div>
             <div>
                 <label asp-for="Email" class="form-label"></label>
-                <input asp-for="Email" class="form-input" autocomplete="off" aria-label="Input for email" />
+                <input asp-for="Email" class="form-input" autocomplete="off" aria-label="Input for email"/>
                 <span asp-validation-for="Email" class="field-error"></span>
-            </div>
+                </div>
             <div>
                 <label asp-for="Password" class="form-label"></label>
-                <input asp-for="Password" class="form-input" type="password" role="textbox" aria-label="Input for password" />
+                <input asp-for="Password" class="form-input" type="password" role="textbox" aria-label="Input for password"/>
                 <span asp-validation-for="Password" class="field-error"></span>
             </div>
             <div class="form-account-link">
@@ -38,7 +38,7 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
-    }
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+	}
 }

@@ -377,6 +377,7 @@ form button[type=submit] {
     width: 98%;
     z-index: 100;
     margin-bottom: 0;
+    margin-top: 0;
     padding-left: 0;
     max-height: 4lh;
     overflow-y: scroll;
