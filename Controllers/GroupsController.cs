@@ -411,6 +411,10 @@ namespace TaskMan.Controllers
                         model.Title = "New Task";
                     }
                 }
+                else if (_context.GroupTask.Any(t => t.Group_List_ID == model.Group_List_ID && t.Title == model.Title))
+                {
+                    model.Title = $"{model.Title} ({_context.GroupTask.Where(t => t.Title.StartsWith(model.Title)).Count()})";
+                }
                 if (model.Description == null)
                 {
                     model.Description = "No Description";
@@ -718,15 +722,30 @@ namespace TaskMan.Controllers
 
                 var memberOf = await IsGroupAdmin(model.Group_ID);
 
+                var groupLists = await _context.GroupList
+                    .Where(gl => gl.Group_ID == model.Group_ID && gl.Title.StartsWith("Task List"))
+                    .ToListAsync();
+
                 if (!memberOf)
                 {
                     Debug.WriteLine("Current user is not an admin of the group");
                     return RedirectToAction("Details", new { groupId = model.Group_ID });
                 }
 
-                if (model.Title == null)
+                if (model.Title == null || model.Title == string.Empty)
                 {
-                    model.Title = "Task List";
+                    if (groupLists.Count > 0)
+                    {
+                        model.Title = $"Task List ({groupLists.Count})";
+                    }
+                    else
+                    {
+                        model.Title = "Task List";
+                    }
+                }
+                else if (_context.GroupList.Any(gl => gl.Group_ID == model.Group_ID && gl.Title == model.Title))
+                {
+                    model.Title = $"{model.Title} ({_context.GroupList.Where(gl => gl.Group_ID == model.Group_ID && gl.Title.StartsWith(model.Title)).Count()})";
                 }
 
                 if (model.Description == null)
@@ -771,7 +790,6 @@ namespace TaskMan.Controllers
             try
             {
                 var currentUser = await _userManager.GetUserAsync(User);
-
 
                 var memberOf = await IsGroupAdmin(groupList.Group_ID);
 

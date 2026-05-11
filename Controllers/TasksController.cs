@@ -115,15 +115,14 @@ namespace TaskMan.Controllers
                         model.Title = "New Task";
                     }
                 }
+                else if (_context.Task.Any(t => t.User_List_ID == model.User_List_ID && t.Title == model.Title))
+                {
+                    model.Title = $"{model.Title} {_context.Task.Where(t => t.User_List_ID == model.User_List_ID && t.Title.StartsWith(model.Title)).Count()}";
+                }
+
                 if (model.Description == null)
                 {
                     model.Description = "No Description";
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    Debug.WriteLine(model.Title);
-                    Debug.WriteLine(model.Description);
                 }
 
                 var task = new Models.Task
@@ -421,6 +420,11 @@ namespace TaskMan.Controllers
                         listViewModel.Title = "Task List";
                     }
                 }
+                else if (_context.UserTasks.Any(t => t.User_ID == userID && t.Title == listViewModel.Title))
+                {
+                    listViewModel.Title = $"{listViewModel.Title} {_context.UserTasks.Where(t => t.Title.StartsWith(listViewModel.Title)).Count()}";
+                }
+
                 if (listViewModel.Description == null)
                 {
                     listViewModel.Description = "No Description";
