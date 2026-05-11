@@ -13,7 +13,14 @@ namespace TaskMan.ViewModels.Group
         public string BckGr_Col { get; set; }
 
         // The list of colours for the radio buttons
-        public List<string> BackgroundColors { get; set;  }
+        public List<string> BackgroundColors { get; set; } = new List<string>
+                {
+                    "#75E67E", // Green
+                    "#7581E6", // Blue
+                    "#E6E275", // Yellow
+                    "#E675E6", // Pink
+                    "#75E6E6"  // Cyan
+                };
 
     }
 }

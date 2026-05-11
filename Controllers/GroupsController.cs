@@ -702,14 +702,6 @@ namespace TaskMan.Controllers
             {
                 Group_ID = groupId,
                 BckGr_Col = "#75E67E",
-                BackgroundColors = new List<string>
-                {
-                    "#75E67E", // Green
-                    "#7581E6", // Blue
-                    "#E6E275", // Yellow
-                    "#E675E6", // Pink
-                    "#75E6E6"  // Cyan
-                }
             };
 
             return PartialView("_CreateGroupList", model);

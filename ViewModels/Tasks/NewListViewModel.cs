@@ -1,10 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TaskMan.ViewModels.Tasks
 {
     public class NewListViewModel
     {
         // Fields for new Task List
+        [HiddenInput]
         public string? User_ID { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
@@ -12,6 +14,13 @@ namespace TaskMan.ViewModels.Tasks
         public string BckGr_Col { get; set; }
 
         // The list of colours for the radio buttons
-        public List<string> BackgroundColors { get; set; }
+        public List<string> BackgroundColors { get; set; } = new List<string>
+                {
+                    "#75E67E", // Green
+                    "#7581E6", // Blue
+                    "#E6E275", // Yellow
+                    "#E675E6", // Pink
+                    "#75E6E6"  // Cyan
+                };
     }
 }

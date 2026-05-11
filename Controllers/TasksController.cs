@@ -392,14 +392,6 @@ namespace TaskMan.Controllers
             {
                 Progress = 0,
                 BckGr_Col = "#75E67E",
-                BackgroundColors = new List<string>
-                {
-                    "#75E67E", // Green
-                    "#7581E6", // Blue
-                    "#E6E275", // Yellow
-                    "#E675E6", // Pink
-                    "#75E6E6"  // Cyan
-                }
             };
             return PartialView("_CreateList", model);
         }
@@ -410,6 +402,10 @@ namespace TaskMan.Controllers
         public async Task<IActionResult> CreateList(NewListViewModel listViewModel)
         {
             var userID = userManager.GetUserId(HttpContext.User);
+            if (userID == null)
+            {
+                return RedirectToAction("Dashboard", "Tasks");
+            }
             var userTaskLists = await _context.UserTasks.Where(t => t.User_ID == userID && t.Title.StartsWith("Task List")).ToListAsync();
             try
             {
@@ -429,7 +425,6 @@ namespace TaskMan.Controllers
                 {
                     listViewModel.Description = "No Description";
                 }
-
 
                 var taskList = new Models.UserTasks
                 {

@@ -41,38 +41,47 @@ namespace TaskMan.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return View(model);
-            }
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
 
-            var user = await userManager.FindByEmailAsync(model.Email);
+                var user = await userManager.FindByEmailAsync(model.Email);
 
-            if (user == null)
-            {
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                return View(model);
-            }
-            var result = await signInManager.PasswordSignInAsync(userName: user.UserName, password: model.Password, isPersistent: false, lockoutOnFailure: true);
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return View(model);
+                }
+                var result = await signInManager.PasswordSignInAsync(userName: user.UserName, password: model.Password, isPersistent: false, lockoutOnFailure: true);
 
-            if (result.RequiresTwoFactor)
-            {
-                return RedirectToAction("VerifyWith2fa", "Account", new { id = user.Id });
-            }
-            if (result.Succeeded)
-            {
-                if (user.TwoFactorEnabled)
+                if (result.RequiresTwoFactor)
                 {
                     return RedirectToAction("VerifyWith2fa", "Account", new { id = user.Id });
                 }
-                else
+                if (result.Succeeded)
                 {
-                    return RedirectToAction("Dashboard", "Tasks");
+                    if (user.TwoFactorEnabled)
+                    {
+                        return RedirectToAction("VerifyWith2fa", "Account", new { id = user.Id });
+                    }
+                    else
+                    {
+                        return RedirectToAction("Dashboard", "Tasks");
+                    }
                 }
+
+                Debug.WriteLine($"Login failed for user {model.Email}. Result: {result}");
+                return View(model);
+
             }
-            
-            Debug.WriteLine($"Login failed for user {model.Email}. Result: {result}");
-            return View(model);
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
+                return View(model);
+            }
         }
 
         // GET: Account/VerifyWith2fa
@@ -93,15 +102,17 @@ namespace TaskMan.Controllers
             }
             else
             {
+                var model = new TwoFactorAuthenticationViewModel { UserId = id };
                 var token = await userManager.GenerateTwoFactorTokenAsync(user, "Email");
 
                 var senderEmail = "taskMan@taskman.com";
                 var to = user.Email;
                 var subject = "New Login Detected";
                 var message = $"A new login to your account was detected at {DateTime.Now}. If this was you, please use the following code to complete the login process: {token}. If this wasn't you, we recommend changing your password immediately.";
+                Debug.WriteLine($"Sending email to {to} with token: {token}");
                 await emailSender.SendEmailAsync(senderEmail, to, subject, message);
-                Debug.WriteLine("Mail Sent!");
-                return View(new TwoFactorAuthenticationViewModel { UserId = id });
+
+                return View(model);
 
             }
 
