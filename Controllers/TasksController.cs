@@ -405,24 +405,18 @@ namespace TaskMan.Controllers
             {
                 return RedirectToAction("Dashboard", "Tasks");
             }
-            var userTaskLists = await _context.UserTasks.Where(t => t.User_ID == userID && t.Title.StartsWith("Task List")).ToListAsync();
             try
             {
-
-                if (listViewModel.Title == null)
+                if (listViewModel.Title == null || listViewModel.Title == string.Empty)
                 {
-                    if (userTaskLists.Count > 0)
-                    {
-                        listViewModel.Title = $"Task List {userTaskLists.Count}";
-                    }
-                    else
-                    {
-                        listViewModel.Title = "Task List";
-                    }
+                    listViewModel.Title = "New List";
                 }
-                else if (_context.UserTasks.Any(t => t.User_ID == userID && t.Title == listViewModel.Title))
+
+                var existingListCount = await _context.UserTasks.CountAsync(ut => ut.User_ID == userID && ut.Title == listViewModel.Title);
+
+                if (existingListCount > 0)
                 {
-                    listViewModel.Title = $"{listViewModel.Title} {_context.UserTasks.Where(t => t.Title.StartsWith(listViewModel.Title)).Count()}";
+                    listViewModel.Title = $"{listViewModel.Title} ({existingListCount})";
                 }
 
                 if (listViewModel.Description == null)
@@ -466,7 +460,8 @@ namespace TaskMan.Controllers
                     return NotFound();
                 }
 
-                // Ownership check: Ensure the current user owns the task list
+                // Ownership check: Ensure the current user owns the task list so someon
+                // can't delete other users lists by manipulating the URL
                 if (taskList.User_ID != userId)
                 {
                     Debug.WriteLine($"Unauthorized attempt to delete task list with ID {listId} by user {userId}.");
