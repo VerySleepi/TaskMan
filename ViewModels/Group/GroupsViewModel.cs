@@ -4,7 +4,12 @@ namespace TaskMan.ViewModels.Group
 {
     public class GroupsViewModel
     {
-        public List<Models.Group> Groups { get; set; }
-        public List<GroupUsers> Members { get; set; }
+        public List<GroupCard> GroupCards { get; set; }
+    }
+
+    public class GroupCard
+    {
+        public Models.Group Group { get; set; }
+        public GroupUsers? Member { get; set; }
     }
 }

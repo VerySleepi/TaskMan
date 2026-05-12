@@ -73,7 +73,7 @@ namespace TaskMan.Controllers
                     }
                 }
 
-                Debug.WriteLine($"Login failed for user {model.Email}. Result: {result}");
+                ModelState.AddModelError(string.Empty, "Invalid Login Attempt. Please try again.");
                 return View(model);
 
             }
@@ -110,7 +110,7 @@ namespace TaskMan.Controllers
                 var subject = "New Login Detected";
                 var message = $"A new login to your account was detected at {DateTime.Now}. If this was you, please use the following code to complete the login process: {token}. If this wasn't you, we recommend changing your password immediately.";
                 await emailSender.SendEmailAsync(senderEmail, to, subject, message);
-                Debug.WriteLine($"Sending email to {to} with token: {token}");
+                Console.WriteLine($"Sending email to {to} with token: {token}");
 
                 return View(model);
 

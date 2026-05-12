@@ -18,26 +18,25 @@
 
     <div class="cardList" role="list" aria-label="Your groups">
 
-        @foreach (var group in Model.Groups)
+        @foreach (var group in Model.GroupCards)
         {
-            var membership = Model.Members.FirstOrDefault(m => m.Group_ID == group.Group_ID);
             <div class="group-card">
-                <a asp-controller="Groups" asp-action="Details" asp-route-groupId="@group.Group_ID">
+                <a asp-controller="Groups" asp-action="Details" asp-route-groupId="@group.Group.Group_ID">
                     <div class="card-header">
-                        <h5 class="group-title">@group.Title</h5>
+                        <h5 class="group-title">@group.Group.Title</h5>
                     </div>
                     <div class="card-body">
-                        <p>@group.Description</p>
-                        <span>Role: @membership?.Role</span>
+                        <p>@group.Group.Description</p>
+                        <span>Role: @group.Member?.Role</span>
                     </div>
                 </a>
 
                 <div class="button-group-horizontal">
-                    <button type="button" class="groupEditBtn edit-btn" data-group-id="@group.Group_ID" aria-label="Edit @group.Title">Edit</button>
+                    <button type="button" class="groupEditBtn edit-btn" data-group-id="@group.Group.Group_ID" aria-label="Edit @group.Group.Title">Edit</button>
                     <form class="deleteGroupForm" method="post" asp-action="DeleteGroup" asp-controller="Groups">
                         @Html.AntiForgeryToken()
-                        <input type="hidden" name="groupId" value="@group.Group_ID" />
-                        <button type="button" class="deleteGroupBtn danger-btn" aria-label="Delete @group.Title">Delete</button>
+                        <input type="hidden" name="groupId" value="@group.Group.Group_ID" />
+                        <button type="button" class="deleteGroupBtn danger-btn" aria-label="Delete @group.Group.Title">Delete</button>
                     </form>
                 </div>
             </div>

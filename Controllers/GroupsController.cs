@@ -39,11 +39,16 @@ namespace TaskMan.Controllers
                 .Where(g => groupIds.Contains(g.Group_ID))
                 .ToListAsync();
 
+            var groupCards = groups.Select(group => new GroupCard
+            {
+                Group = group,
+                Member = memberOf.FirstOrDefault(m => m.Group_ID == group.Group_ID)
+            }).ToList();
+
             var model = new GroupsViewModel
             {
-                Groups = groups,
-                Members = memberOf
-            };
+                GroupCards = groupCards
+            };  
 
             ViewData["userName"] = currentUser.UserName;
             ViewData["profilePic"] = Url.Content($"~/images/{currentUser.Profile_Pic}");
