@@ -103,17 +103,18 @@ namespace TaskMan.Controllers
             else
             {
                 var model = new TwoFactorAuthenticationViewModel { UserId = id };
+                // 101010 as default to use in development. If proper email flow has been set up, use token sent to email.
                 var token = await userManager.GenerateTwoFactorTokenAsync(user, "Email");
-                token = "101010"; // For testing purposes, use a static token, but in actual application, use the generated token above
-
-
+                // For testing purposes, use a static token, but in actual application, use the generated token above
+                token = "101010";
+                await userManager.SetAuthenticationTokenAsync(user, "Email", "TwoFactorCode", token);
 
                 var senderEmail = "taskMan@taskman.com";
                 var to = user.Email;
                 var subject = "New Login Detected";
                 var message = $"A new login to your account was detected at {DateTime.Now}. If this was you, please use the following code to complete the login process: {token}. If this wasn't you, we recommend changing your password immediately.";
-                Debug.WriteLine($"Sending email to {to} with token: {token}");
                 await emailSender.SendEmailAsync(senderEmail, to, subject, message);
+                Debug.WriteLine($"Sending email to {to} with token: {token}");
 
                 return View(model);
 
@@ -137,15 +138,15 @@ namespace TaskMan.Controllers
             try
             {
                 var result = await signInManager.TwoFactorSignInAsync("Email", model.Code, isPersistent: false, rememberClient: false);
-                await userManager.RemoveAuthenticationTokenAsync(user, "Email", "TwoFactorCode");
                 if (result.Succeeded)
                 {
+                    await userManager.RemoveAuthenticationTokenAsync(user, "Email", "TwoFactorCode");
                     return RedirectToAction("Dashboard", "Tasks");
                 }
                 else
                 {
                     ModelState.AddModelError(string.Empty, "Invalid code.");
-                    return RedirectToAction("Login", "Account");
+                    return View(model);
                 }
             }
             catch (Exception ex)
@@ -182,11 +183,11 @@ namespace TaskMan.Controllers
                 NormalizedUserName = model.Username.ToUpper(),
                 Email = model.Email,
                 NormalizedEmail = model.Email.ToUpper(),
-                // Needed to set this to true for now, as we don't have a way to send a verification email to the user,
+                // Needed to set this to true for now, as I haven't set up a way to send an actual verification email to the user,
                 // but it would be set to false in a real application, and then set to true after the user verifies their email address.
                 EmailConfirmed = true,
                 Creation_Date = DateOnly.FromDateTime(DateTime.Now),
-                // Will be set to a default image for now, but the user can change it in their profile settings
+                // Given more time, would have been able to set this in profile settings, set default to true for now
                 TwoFactorEnabled = true
             };
 
