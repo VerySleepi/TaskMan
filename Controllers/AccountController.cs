@@ -63,9 +63,14 @@ namespace TaskMan.Controllers
                 }
                 if (result.Succeeded)
                 {
-
-                    return RedirectToAction("Dashboard", "Tasks");
-
+                    if (user.TwoFactorEnabled)
+                    {
+                        return RedirectToAction("VerifyWith2fa", "Account", new { id = user.Id });
+                    }
+                    else
+                    {
+                        return RedirectToAction("Dashboard", "Tasks");
+                    }
                 }
 
                 Debug.WriteLine($"Login failed for user {model.Email}. Result: {result}");
@@ -86,7 +91,7 @@ namespace TaskMan.Controllers
         {
             var twoFactorUser = await signInManager.GetTwoFactorAuthenticationUserAsync();
             if (twoFactorUser == null)
-            {
+            {       
                 return RedirectToAction("Login", "Account");
             }
 
@@ -98,11 +103,7 @@ namespace TaskMan.Controllers
             else
             {
                 var model = new TwoFactorAuthenticationViewModel { UserId = id };
-                // 101010 as default to use in development. If proper email flow has been set up, use token sent to email.
                 var token = await userManager.GenerateTwoFactorTokenAsync(user, "Email");
-                // For testing purposes, use a static token, but in actual application, use the generated token above
-                token = "101010";
-                await userManager.SetAuthenticationTokenAsync(user, "Email", "TwoFactorCode", token);
 
                 var senderEmail = "taskMan@taskman.com";
                 var to = user.Email;
@@ -141,7 +142,7 @@ namespace TaskMan.Controllers
                 else
                 {
                     ModelState.AddModelError(string.Empty, "Invalid code.");
-                    return View(model);
+                    return RedirectToAction("Login", "Account");
                 }
             }
             catch (Exception ex)
@@ -150,7 +151,7 @@ namespace TaskMan.Controllers
                 return View(model);
             }
 
-
+            
         }
 
 
@@ -294,7 +295,7 @@ namespace TaskMan.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
-        {
+        {        
             await signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
         }
