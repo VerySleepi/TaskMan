@@ -63,14 +63,9 @@ namespace TaskMan.Controllers
                 }
                 if (result.Succeeded)
                 {
-                    if (user.TwoFactorEnabled)
-                    {
-                        return RedirectToAction("VerifyWith2fa", "Account", new { id = user.Id });
-                    }
-                    else
-                    {
-                        return RedirectToAction("Dashboard", "Tasks");
-                    }
+
+                    return RedirectToAction("Dashboard", "Tasks");
+
                 }
 
                 Debug.WriteLine($"Login failed for user {model.Email}. Result: {result}");
@@ -91,7 +86,7 @@ namespace TaskMan.Controllers
         {
             var twoFactorUser = await signInManager.GetTwoFactorAuthenticationUserAsync();
             if (twoFactorUser == null)
-            {       
+            {
                 return RedirectToAction("Login", "Account");
             }
 
@@ -155,7 +150,7 @@ namespace TaskMan.Controllers
                 return View(model);
             }
 
-            
+
         }
 
 
@@ -299,7 +294,7 @@ namespace TaskMan.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
-        {        
+        {
             await signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
         }
