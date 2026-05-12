@@ -104,6 +104,9 @@ namespace TaskMan.Controllers
             {
                 var model = new TwoFactorAuthenticationViewModel { UserId = id };
                 var token = await userManager.GenerateTwoFactorTokenAsync(user, "Email");
+                token = "101010"; // For testing purposes, use a static token, but in actual application, use the generated token above
+
+
 
                 var senderEmail = "taskMan@taskman.com";
                 var to = user.Email;
