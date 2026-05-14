@@ -63,14 +63,7 @@ namespace TaskMan.Controllers
                 }
                 if (result.Succeeded)
                 {
-                    if (user.TwoFactorEnabled)
-                    {
-                        return RedirectToAction("VerifyWith2fa", "Account", new { id = user.Id });
-                    }
-                    else
-                    {
-                        return RedirectToAction("Dashboard", "Tasks");
-                    }
+                    return RedirectToAction("Dashboard", "Tasks");
                 }
 
                 ModelState.AddModelError(string.Empty, "Invalid Login Attempt. Please try again.");
