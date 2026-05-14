@@ -111,13 +111,20 @@ namespace TaskMan.Controllers
                     model.Title = "New Task";
                 }
 
-                var existingListCount = await _context.UserTasks.CountAsync(ut => ut.User_ID == userID && ut.Title == model.Title);
+                var existingTaskCount = await _context.UserTasks.CountAsync(ut => ut.User_ID == userID && ut.Title == model.Title);
 
-                if (existingListCount > 0)
+                if (existingTaskCount > 0)
                 {
                     // Add number of tasks with same title as what was entered after task title
-                    model.Title = $"{model.Title} ({existingListCount})";
+                    model.Title = $"{model.Title} ({existingTaskCount})";
+
+                    if (_context.UserTasks.Any(ut => ut.User_ID == userID && ut.Title == model.Title))
+                    {
+                        model.Title = $"{model.Title} ({existingTaskCount + 1})";
+                    }
                 }
+
+
 
                 // Set default description if none provided
                 if (model.Description == null)
@@ -408,6 +415,12 @@ namespace TaskMan.Controllers
                 {
                     // Add number of lists with same title as what was entered after list title
                     listViewModel.Title = $"{listViewModel.Title} ({existingListCount})";
+
+                    // If there is already a list with the same title and number, add 1 to the number and update the title again
+                    if (_context.UserTasks.Any(ut => ut.User_ID == userID && ut.Title == listViewModel.Title))
+                    {
+                        listViewModel.Title = $"{listViewModel.Title} ({existingListCount + 1})";
+                    }
                 }
 
                 // Set default description if none provided

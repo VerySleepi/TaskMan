@@ -407,18 +407,22 @@ namespace TaskMan.Controllers
             {
                 if (model.Title == null || model.Title == string.Empty)
                 {
-                    if (tasksList.Count > 0)
-                    {
-                        model.Title = $"New Task ({tasksList.Count})";
-                    }
-                    else
-                    {
-                        model.Title = "New Task";
-                    }
+
+                    model.Title = "Task List";
                 }
-                else if (_context.GroupTask.Any(t => t.Group_List_ID == model.Group_List_ID && t.Title == model.Title))
+
+                var existingListCount = await _context.GroupTask.CountAsync(ut => ut.Group_List_ID == model.Group_List_ID && ut.Title == model.Title);
+
+                if (existingListCount > 0)
                 {
-                    model.Title = $"{model.Title} ({_context.GroupTask.Where(t => t.Title.StartsWith(model.Title)).Count()})";
+                    // Add number of tasks with same title as what was entered after task title
+                    model.Title = $"{model.Title} ({existingListCount})";
+
+                    // If there is already a task with the same title and number, add 1 to the number and update the title again
+                    if (_context.GroupTask.Any(gl => gl.Group_List_ID == model.Group_List_ID && gl.Title == model.Title))
+                    {
+                        model.Title = $"{model.Title} ({existingListCount + 1})";
+                    }
                 }
                 if (model.Description == null)
                 {
@@ -739,18 +743,22 @@ namespace TaskMan.Controllers
 
                 if (model.Title == null || model.Title == string.Empty)
                 {
-                    if (groupLists.Count > 0)
-                    {
-                        model.Title = $"Task List ({groupLists.Count})";
-                    }
-                    else
-                    {
-                        model.Title = "Task List";
-                    }
+
+                    model.Title = "Task List";
                 }
-                else if (_context.GroupList.Any(gl => gl.Group_ID == model.Group_ID && gl.Title == model.Title))
+
+                var existingListCount = await _context.GroupList.CountAsync(ut => ut.Group_ID == model.Group_ID && ut.Title == model.Title);
+
+                if (existingListCount > 0)
                 {
-                    model.Title = $"{model.Title} ({_context.GroupList.Where(gl => gl.Group_ID == model.Group_ID && gl.Title.StartsWith(model.Title)).Count()})";
+                    // Add number of lists with same title as what was entered after list title
+                    model.Title = $"{model.Title} ({existingListCount})";
+
+                    // If there is already a list with the same title and number, add 1 to the number and update the title again
+                    if (_context.GroupList.Any(gl => gl.Group_ID == model.Group_ID && gl.Title == model.Title))
+                    {
+                        model.Title = $"{model.Title} ({existingListCount + 1})";
+                    }
                 }
 
                 if (model.Description == null)
