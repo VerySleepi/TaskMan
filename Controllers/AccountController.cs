@@ -176,7 +176,7 @@ namespace TaskMan.Controllers
                 // but it would be set to false in a real application, and then set to true after the user verifies their email address.
                 EmailConfirmed = true,
                 Creation_Date = DateOnly.FromDateTime(DateTime.Now),
-                // Given more time, would have been able to set this in profile settings, set default to true for now
+                // Due to poor time management, would have been able to set this in profile settings, set default to true for now
                 TwoFactorEnabled = true
             };
 
@@ -186,6 +186,7 @@ namespace TaskMan.Controllers
             {
                 var roleExist = await roleManager.RoleExistsAsync("User");
 
+                // If the user role doesn't exist, create it
                 if (!roleExist)
                 {
                     var role = new IdentityRole("User");
