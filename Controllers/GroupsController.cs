@@ -39,6 +39,7 @@ namespace TaskMan.Controllers
                 .Where(g => groupIds.Contains(g.Group_ID))
                 .ToListAsync();
 
+            // Combine the groups and users membership details into a list of GroupCards to be used in the view model
             var groupCards = groups.Select(group => new GroupCard
             {
                 Group = group,

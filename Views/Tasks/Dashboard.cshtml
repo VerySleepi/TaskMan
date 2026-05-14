@@ -86,6 +86,8 @@
         }
     </div>
 </div>
+
+@*In hindsight, this panel could be a partial view to keep the dashboard view cleaner, such as with the new task popups *@
 <div id="taskDetailsPanel" class="task-detail-panel hidden" aria-label="Task Details Panel" aria-live="polite">
     <button type="button" class="panelCloseBtn close-btn"><strong>✕</strong></button>
     <div class="panel-body">
@@ -106,6 +108,8 @@
     </div>
 </div>
 
+
+@*The following overlays could have been partial views, similar to the new task popups *@
 <div id="deleteTaskOverlay" class="overlay hidden">
     <div id="deleteTaskContent" class="popup-content">
         <p class="confirm-msg">Are you sure you want to delete this task?</p>
@@ -128,7 +132,7 @@
 
 
 
-
+@*Render the appropriate popup views here*@
 
 @await Html.PartialAsync("~/Views/Tasks/Popups/_NewTaskPopUp.cshtml")
 @await Html.PartialAsync("~/Views/Tasks/Popups/_NewTaskListPopUp.cshtml")

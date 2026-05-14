@@ -19,6 +19,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options=>options.UseMySql(_G
 
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
+    // Configure password requirements
     options.Password.RequireDigit = true;
     options.Password.RequiredLength = 6;
     options.Password.RequireNonAlphanumeric = false;

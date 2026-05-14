@@ -98,28 +98,29 @@ namespace TaskMan.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateTask(NewTaskViewModel model)
         {
+            var userID = userManager.GetUserId(HttpContext.User);
+
             // Fetch Tasks that match the extracted User_List_IDs
             var tasksList = await _context.Task
-                .Where(t => t.User_List_ID == model.User_List_ID && t.Title.StartsWith("New Task"))
+                .Where(t => t.User_List_ID == model.User_List_ID && t.Title == model.Title)
                 .ToListAsync();
             try
             {
+                // Set default title if none provided
                 if (model.Title == null || model.Title == string.Empty)
                 {
-                    if (tasksList.Count > 0)
-                    {
-                        model.Title = $"New Task ({tasksList.Count})";
-                    }
-                    else
-                    {
-                        model.Title = "New Task";
-                    }
-                }
-                else if (_context.Task.Any(t => t.User_List_ID == model.User_List_ID && t.Title == model.Title))
-                {
-                    model.Title = $"{model.Title} {_context.Task.Where(t => t.User_List_ID == model.User_List_ID && t.Title.StartsWith(model.Title)).Count()}";
+                    model.Title = "New List";
                 }
 
+                var existingListCount = await _context.UserTasks.CountAsync(ut => ut.User_ID == userID && ut.Title == model.Title);
+
+                if (existingListCount > 0)
+                {
+                    // Add number of lists with same title as what was entered after list title
+                    model.Title = $"{model.Title} ({existingListCount})";
+                }
+
+                // Set default description if none provided
                 if (model.Description == null)
                 {
                     model.Description = "No Description";
@@ -166,25 +167,9 @@ namespace TaskMan.Controllers
                 return NotFound();
             }
 
-            // Fetch task parent UserTasks by task.User_List_ID
-            var taskList = await _context.UserTasks.FindAsync(task.User_List_ID);
-            if (taskList == null)
-            {
-                Debug.WriteLine($"UserTasks with ID {task.User_List_ID} not found.");
-                return NotFound();
-            }
-            // Ownership check: Ensure the current user owns the task list that the task belongs to
-            if (taskList.User_ID != userId)
-            {
-                Debug.WriteLine($"Unauthorized attempt to edit task with ID {taskId} by user {userId}.");
-                return Forbid();
-            }
-
-
             var userTaskLists = await _context.UserTasks
-                .Where(ut => ut.User_ID == userId && ut.Title != "Completed Tasks")
+                .Where(ut => ut.User_ID == userId)
                 .ToListAsync();
-
 
             var model = new NewTaskViewModel
             {
@@ -216,6 +201,7 @@ namespace TaskMan.Controllers
                 if (task == null)
                 {
                     Debug.WriteLine($"Task with ID {taskId} not found.");
+                    // If the task is not found, return a 404 Not Found response
                     return NotFound();
                 }
 
@@ -238,14 +224,17 @@ namespace TaskMan.Controllers
                 task.Description = model.Description;
                 task.Due_Date = model.Due_Date;
                 task.Status = model.Status;
+
                 var changedTaskList = await _context.UserTasks.FindAsync(model.User_List_ID);
                 if (changedTaskList == null)
                 {
+                    // Case for if the list doesn't exist, but should be caught by catch block, but added here just in case
                     Debug.WriteLine($"UserTasks with ID {model.User_List_ID} not found.");
                     return NotFound();
                 }
                 if (changedTaskList.User_ID != userId)
                 {
+                    // If user somehow tries to change the task list to one that they don't own, return a 403 Forbidden response
                     Debug.WriteLine($"Unauthorized attempt to change task list to ID {model.User_List_ID} for task with ID {taskId} by user {userId}.");
                     return Forbid();
                 }
@@ -278,7 +267,7 @@ namespace TaskMan.Controllers
                 if (user == null)
                 {
                     Debug.WriteLine("User not found.");
-                    return RedirectToAction("Dashboard", "Tasks");
+                    return RedirectToAction("Login", "Account");
                 }
 
                 var task = await _context.Task.FindAsync(taskId);
@@ -300,7 +289,7 @@ namespace TaskMan.Controllers
                     Debug.WriteLine($"Unauthorized attempt to change completion status of task with ID {taskId} by user {user.Id}.");
                     return Forbid();
                 }
-                // Toggle task completion status => Update list progress if task is being marked as completed
+                // Toggle task completion status => Update list progress if task is being marked as completed or incompleted
                 task.Status = task.Status == 0 ? 1 : 0;
                 await _context.SaveChangesAsync();
 
@@ -400,6 +389,7 @@ namespace TaskMan.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateList(NewListViewModel listViewModel)
         {
+            // Check if user is authenticated and get user ID
             var userID = userManager.GetUserId(HttpContext.User);
             if (userID == null)
             {
@@ -407,6 +397,7 @@ namespace TaskMan.Controllers
             }
             try
             {
+                // Set default title if none provided
                 if (listViewModel.Title == null || listViewModel.Title == string.Empty)
                 {
                     listViewModel.Title = "New List";
@@ -416,9 +407,11 @@ namespace TaskMan.Controllers
 
                 if (existingListCount > 0)
                 {
+                    // Add number of lists with same title as what was entered after list title
                     listViewModel.Title = $"{listViewModel.Title} ({existingListCount})";
                 }
 
+                // Set default description if none provided
                 if (listViewModel.Description == null)
                 {
                     listViewModel.Description = "No Description";
@@ -443,7 +436,6 @@ namespace TaskMan.Controllers
             }
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteList(int listId)
@@ -460,7 +452,7 @@ namespace TaskMan.Controllers
                     return NotFound();
                 }
 
-                // Ownership check: Ensure the current user owns the task list so someon
+                // Ownership check: Ensure the current user owns the task list so someone
                 // can't delete other users lists by manipulating the URL
                 if (taskList.User_ID != userId)
                 {
@@ -483,6 +475,7 @@ namespace TaskMan.Controllers
             }
         }
 
+        // Helper method to update task list progress based on the completion status of its tasks
         public async System.Threading.Tasks.Task UpdateTaskListProgress(int listId)
         {
             var taskList = await _context.UserTasks.FindAsync(listId);
@@ -500,6 +493,7 @@ namespace TaskMan.Controllers
             }
             else
             {
+                // Calculate number of completed tasks and update the progress percentage of the task list
                 var completedTasks = tasks.Where(t => t.Status == 1).Count();
                 taskList.Progress = Convert.ToInt32(Math.Round(100.0 * (completedTasks / Convert.ToDouble(tasks.Count))));
             }
@@ -508,7 +502,7 @@ namespace TaskMan.Controllers
             await _context.SaveChangesAsync();
         }
 
-
+        // Moved Error action here due to removing HomeController
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

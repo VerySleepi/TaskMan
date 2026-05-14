@@ -45,7 +45,7 @@ function toggleCreateListPopup() {
 function taskCardSize() {
     let cardObjects = document.getElementsByClassName("cardObjectList");
 
-    // Set max heigh of card objects to the sum of the heights of the title and description elements of the tasks
+    // Set max height of card objects to the sum of the heights of the title and description elements of the tasks
     if (cardObjects) {
         console.log("Card objects found: " + cardObjects.length);
         for (let i = 0; i < cardObjects.length; i++) {
@@ -63,6 +63,7 @@ function taskCardSize() {
 function openPanel() {
     const sidePanel = document.getElementById('taskDetailsPanel');
     const content = document.querySelector('.content');
+    // Adjust panel behavior based on screen width
     if (window.innerWidth <= 805) {
         sidePanel.classList.add('panel-open');
         content.classList.remove('panel-visible');
@@ -79,6 +80,7 @@ function closePanel() {
     const sidePanel = document.getElementById('taskDetailsPanel');
     const content = document.querySelector('.content');
 
+    // Close panel and adjust visibility based on screen width
     if (window.innerWidth <= 805) {
         sidePanel.classList.remove('panel-open');
     }
@@ -95,6 +97,7 @@ function toggleTaskDetailPanel() {
     let sidePanel = document.getElementById('taskDetailsPanel');
 
     document.querySelectorAll('.taskObject').forEach(card => {
+        // Using data attributes to store task details for easy access when a card is clicked
         const taskId = card.dataset.taskId;
         const title = card.dataset.taskTitle;
         const description = card.dataset.taskDescription;
@@ -126,6 +129,7 @@ function toggleTaskDetailPanel() {
 }
 
 function taskListDropdown() {
+    // Dropdown for selecting task list when creating a new task
     const dropdown = document.getElementById("taskListDropdown");
     const toggle = document.getElementById("taskListToggle");
     const dropdownList = document.querySelector(".list-dropdown-list");
@@ -183,6 +187,7 @@ function deleteTask() {
     taskDeleteBtn.forEach(btn => {
         btn.addEventListener('click', (ev) => {
             ev.stopPropagation();
+            // Get form closest to the clicked delete button to later be submitted
             deleteForm = btn.closest('form');
             console.log("Delete btn clicked");
             document.getElementById('deleteTaskOverlay').classList.remove('hidden');
@@ -190,6 +195,7 @@ function deleteTask() {
     });
 
 
+    // Confirm delete button submits the form to delete the task
     const deleteTaskConfirmBtn = document.getElementById('deleteTaskConfirmBtn');
     if (deleteTaskConfirmBtn) {
         deleteTaskConfirmBtn.addEventListener('click', () => {
@@ -197,6 +203,7 @@ function deleteTask() {
         })
     }
 
+    // Cancel delete button hides the confirmation overlay without deleting
     const deleteTaskCancelBtn = document.getElementById('deleteTaskCancelBtn');
     if (deleteTaskCancelBtn) {
         deleteTaskCancelBtn.addEventListener('click', () => {
@@ -213,7 +220,6 @@ function deleteList() {
         btn.addEventListener('click', () => {
             console.log("Delete list btn clicked");
             deleteForm = btn.closest('form');
-
             document.getElementById('deleteListOverlay').classList.remove('hidden');
         });
     });
@@ -234,14 +240,17 @@ function deleteList() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Side panel is moved off of the screen on smaller screens, allowing for smooth sliding animation. Needs to be visible for this to happen.
     if (window.innerWidth <= 805) {
         document.getElementById('taskDetailsPanel').classList.remove('hidden');
     }
 
+    // Adjust panel visibility and behavior on window resize
     window.addEventListener('resize', () => {
         const sidePanel = document.getElementById('taskDetailsPanel');
 
         if (panelOpen) {
+            // Need to close and reopen panel to adjust classes based on new screen size
             closePanel();
             openPanel();
         }
