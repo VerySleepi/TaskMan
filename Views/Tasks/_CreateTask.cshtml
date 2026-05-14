@@ -19,12 +19,12 @@
 
     <div class="form-group">
         <label asp-for="Title">Title</label>
-        <input id="taskTitle" asp-for="Title" class="list-input" placeholder="Enter Task Title"/>
+        <input id="taskTitle" asp-for="Title" class="list-input" placeholder="Enter Task Title" aria-label="Task Title" />
     </div>
 
     <div class="form-group">
         <label asp-for="Description">Description</label>
-        <textarea id="taskDescription" asp-for="Description" class="list-input" placeholder="Enter Task Description"></textarea>
+        <textarea id="taskDescription" asp-for="Description" class="list-input" placeholder="Enter Task Description" aria-label="Task Description"></textarea>
     </div>
 
     <div class="form-group">
@@ -34,14 +34,15 @@
                type="date"
                class="task-select"
                min="@DateTime.Now.ToString("yyyy-MM-dd")"
-               max="@DateTime.Now.AddYears(1).ToString("yyyy-MM-dd")" />
+               max="@DateTime.Now.AddYears(1).ToString("yyyy-MM-dd")" 
+               aria-label="Due Date Selector" />
     </div>
 
     <div class="form-group">
         <label asp-for="User_List_ID">Task List</label>
         <div id="taskListDropdown" class="list-dropdown">
 
-            <button type="button" class="list-dropdown-btn" id="taskListToggle">
+            <button type="button" class="list-dropdown-btn" id="taskListToggle" aria-label="Task List Selector">
                 <span id="taskListSelected">
                     @(Model.UserTaskLists.FirstOrDefault(list => list.User_List_ID == Model.User_List_ID).Title ?? "Select Task List")
                 </span>
@@ -67,7 +68,7 @@
             <ul class="list-dropdown-list hidden">
                 @foreach (var list in Model.UserTaskLists)
                 {
-                    <li class="list-dropdown-item">
+                    <li class="list-dropdown-item" aria-label="@list.Title">
                         <button type="button" value="@list.User_List_ID">
                             @list.Title
                         </button>
@@ -78,11 +79,11 @@
     </div>
     @if (ViewData["Context"]?.ToString() == "Edit")
     {
-        <button type="submit" class="submissionBtn">Apply</button>
+        <button type="submit" class="submissionBtn" aria-label="Apply changes">Apply</button>
     }
     else
     {
-        <button type="submit" class="submissionBtn">Create Task</button>
+        <button type="submit" class="submissionBtn" aria-label="Create Task">Create Task</button>
     }
 
 </form>

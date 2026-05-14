@@ -9,7 +9,6 @@ using TaskMan.ViewModels.Tasks;
 
 namespace TaskMan.Controllers
 {
-    [Authorize]
     public class TasksController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -109,14 +108,14 @@ namespace TaskMan.Controllers
                 // Set default title if none provided
                 if (model.Title == null || model.Title == string.Empty)
                 {
-                    model.Title = "New List";
+                    model.Title = "New Task";
                 }
 
                 var existingListCount = await _context.UserTasks.CountAsync(ut => ut.User_ID == userID && ut.Title == model.Title);
 
                 if (existingListCount > 0)
                 {
-                    // Add number of lists with same title as what was entered after list title
+                    // Add number of tasks with same title as what was entered after task title
                     model.Title = $"{model.Title} ({existingListCount})";
                 }
 

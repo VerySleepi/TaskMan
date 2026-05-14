@@ -101,7 +101,8 @@ namespace TaskMan.Controllers
                 var senderEmail = "taskMan@taskman.com";
                 var to = user.Email;
                 var subject = "New Login Detected";
-                var message = $"A new login to your account was detected at {DateTime.Now}. If this was you, please use the following code to complete the login process: {token}. If this wasn't you, we recommend changing your password immediately.";
+                var message = $"A new login to your account was detected at {DateTime.Now}. If this was you, please use the following code to complete the login process: {token}." +
+                    $" If this wasn't you, we recommend changing your password immediately.";
                 await emailSender.SendEmailAsync(senderEmail, to, subject, message);
                 Console.WriteLine($"Sending email to {to} with token: {token}");
 

@@ -314,7 +314,6 @@ namespace TaskMan.Controllers
         {
             try
             {
-                ViewData["Context"] = "RemoveMembers";
                 var currentUser = await _userManager.GetUserAsync(User);
                 if (currentUser == null)
                 {
