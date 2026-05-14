@@ -186,6 +186,7 @@ namespace TaskMan.Controllers
             {
                 var roleExist = await roleManager.RoleExistsAsync("User");
 
+                // If the user role doesn't exist, create it
                 if (!roleExist)
                 {
                     var role = new IdentityRole("User");
