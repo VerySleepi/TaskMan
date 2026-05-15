@@ -111,7 +111,7 @@ namespace TaskMan.Controllers
                     model.Title = "New Task";
                 }
 
-                var existingTaskCount = await _context.Task.CountAsync(t => t.User_List_ID == model.User_List_ID && t.Title == model.Title);
+                var existingTaskCount = await _context.Task.CountAsync(t => t.User_List_ID == model.User_List_ID && t.Title == model.Title || t.Title.StartsWith($"{model.Title} ("));
 
                 if (existingTaskCount > 0)
                 {
@@ -227,16 +227,16 @@ namespace TaskMan.Controllers
                     return Forbid();
                 }
 
-                var existingTaskCount = await _context.Task.CountAsync(t => t.User_List_ID == model.User_List_ID && t.Title == model.Title);
+                var taskNameExists = await _context.Task.AnyAsync(t => t.User_List_ID == model.User_List_ID && t.Title == model.Title);
+                var existingTaskCount = await _context.Task.CountAsync(t => t.User_List_ID == model.User_List_ID && t.Title == model.Title || t.Title.StartsWith($"{model.Title} ("));
 
-                if (existingTaskCount > 0)
+
+                if (taskNameExists)
                 {
-                    // Add number of tasks with same title as what was entered after task title
-                    model.Title = $"{model.Title} ({existingTaskCount})";
-
-                    if (_context.Task.Any(t => t.User_List_ID == model.User_List_ID && t.Title == model.Title))
+                    // If the task title already exists and it's not the current task being edited, add number of tasks with same title as what was entered after task title
+                    if (model.Title != task.Title)
                     {
-                        model.Title = $"{model.Title} ({existingTaskCount + 1})";
+                        model.Title = $"{model.Title} ({existingTaskCount})";
                     }
                 }
 
@@ -418,18 +418,14 @@ namespace TaskMan.Controllers
                     listViewModel.Title = "New List";
                 }
 
-                var existingListCount = await _context.UserTasks.CountAsync(ut => ut.User_ID == userID && ut.Title == listViewModel.Title);
+                var existingListCount = await _context.UserTasks.CountAsync(ut => ut.User_ID == userID && ut.Title == listViewModel.Title || ut.Title.StartsWith($"{listViewModel.Title} ("));
 
                 if (existingListCount > 0)
                 {
+
                     // Add number of lists with same title as what was entered after list title
                     listViewModel.Title = $"{listViewModel.Title} ({existingListCount})";
 
-                    // If there is already a list with the same title and number, add 1 to the number and update the title again
-                    if (_context.UserTasks.Any(ut => ut.User_ID == userID && ut.Title == listViewModel.Title))
-                    {
-                        listViewModel.Title = $"{listViewModel.Title} ({existingListCount + 1})";
-                    }
                 }
 
                 // Set default description if none provided

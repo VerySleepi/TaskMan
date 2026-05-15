@@ -420,18 +420,13 @@ namespace TaskMan.Controllers
                     model.Title = "New Task";
                 }
 
-                var existingTaskCount = await _context.GroupTask.CountAsync(gt => gt.Group_List_ID == model.Group_List_ID && gt.Title == model.Title);
+                var existingTaskCount = await _context.GroupTask.CountAsync(gt => gt.Group_List_ID == model.Group_List_ID && gt.Title == model.Title || gt.Title.StartsWith($"{model.Title} ("));
 
                 if (existingTaskCount > 0)
                 {
                     // Add number of tasks with same title as what was entered after task title
                     model.Title = $"{model.Title} ({existingTaskCount})";
 
-                    // If there is already a task with the same title and number, add 1 to the number and update the title again
-                    if (_context.GroupTask.Any(gt => gt.Group_List_ID == model.Group_List_ID && gt.Title == model.Title))
-                    {
-                        model.Title = $"{model.Title} ({existingTaskCount + 1})";
-                    }
                 }
                 if (model.Description == null)
                 {
@@ -682,23 +677,23 @@ namespace TaskMan.Controllers
 
                 if (model.Title == null || model.Title == string.Empty)
                 {
-
                     model.Title = "New Task";
                 }
 
-                var existingTaskCount = await _context.GroupTask.CountAsync(gt => gt.Group_List_ID == model.Group_List_ID && gt.Title == model.Title);
+                
+                var existingTaskCount = await _context.GroupTask.CountAsync(gt => gt.Group_List_ID == model.Group_List_ID && gt.Title == model.Title || gt.Title.StartsWith($"{model.Title} ("));
+                var taskNameExists = await _context.GroupTask.AnyAsync(t => t.Group_List_ID == model.Group_List_ID && t.Title == model.Title);
 
-                if (existingTaskCount > 0)
+                // If task name already exists and is being changed to the same name, do not add number of existing tasks with same name after task title.
+                if (taskNameExists)
                 {
-                    // Add number of tasks with same title as what was entered after task title
-                    model.Title = $"{model.Title} ({existingTaskCount})";
-
-                    // If there is already a task with the same title and number, add 1 to the number and update the title again
-                    if (_context.GroupTask.Any(gt => gt.Group_List_ID == model.Group_List_ID && gt.Title == model.Title))
+                    if (model.Title != task.Title)
                     {
-                        model.Title = $"{model.Title} ({existingTaskCount + 1})";
+                        // Add number of tasks with same title as what was entered after task title
+                        model.Title = $"{model.Title} ({existingTaskCount})";
                     }
                 }
+
                 if (model.Description == null)
                 {
                     model.Description = "No Description";
@@ -783,18 +778,13 @@ namespace TaskMan.Controllers
                     model.Title = "Task List";
                 }
 
-                var existingListCount = await _context.GroupList.CountAsync(gl => gl.Group_ID == model.Group_ID && gl.Title == model.Title);
+                var existingListCount = await _context.GroupList.CountAsync(gl => gl.Group_ID == model.Group_ID && gl.Title == model.Title || gl.Title.StartsWith($"{model.Title} ("));
 
                 if (existingListCount > 0)
                 {
                     // Add number of lists with same title as what was entered after list title
                     model.Title = $"{model.Title} ({existingListCount})";
 
-                    // If there is already a list with the same title and number, add 1 to the number and update the title again
-                    if (_context.GroupList.Any(gl => gl.Group_ID == model.Group_ID && gl.Title == model.Title))
-                    {
-                        model.Title = $"{model.Title} ({existingListCount + 1})";
-                    }
                 }
 
                 if (model.Description == null)
