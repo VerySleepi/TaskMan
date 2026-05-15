@@ -412,29 +412,25 @@ namespace TaskMan.Controllers
         public async Task<IActionResult> CreateGroupTask(NewGroupTaskViewModel model)
         {
             Debug.WriteLine($"Group_ID: {model.Group_ID}, Group_List_ID: {model.Group_List_ID}, Title: {model.Title}");
-            // Fetch Tasks that match the extracted User_List_IDs
-            var tasksList = await _context.GroupTask
-                .Where(t => t.Group_List_ID == model.Group_List_ID && t.Title.StartsWith("New Task"))
-                .ToListAsync();
             try
             {
                 if (model.Title == null || model.Title == string.Empty)
                 {
 
-                    model.Title = "Task List";
+                    model.Title = "New Task";
                 }
 
-                var existingListCount = await _context.GroupTask.CountAsync(ut => ut.Group_List_ID == model.Group_List_ID && ut.Title == model.Title);
+                var existingTaskCount = await _context.GroupTask.CountAsync(gt => gt.Group_List_ID == model.Group_List_ID && gt.Title == model.Title);
 
-                if (existingListCount > 0)
+                if (existingTaskCount > 0)
                 {
                     // Add number of tasks with same title as what was entered after task title
-                    model.Title = $"{model.Title} ({existingListCount})";
+                    model.Title = $"{model.Title} ({existingTaskCount})";
 
                     // If there is already a task with the same title and number, add 1 to the number and update the title again
-                    if (_context.GroupTask.Any(gl => gl.Group_List_ID == model.Group_List_ID && gl.Title == model.Title))
+                    if (_context.GroupTask.Any(gt => gt.Group_List_ID == model.Group_List_ID && gt.Title == model.Title))
                     {
-                        model.Title = $"{model.Title} ({existingListCount + 1})";
+                        model.Title = $"{model.Title} ({existingTaskCount + 1})";
                     }
                 }
                 if (model.Description == null)
@@ -654,6 +650,7 @@ namespace TaskMan.Controllers
                 var currentUser = await _userManager.GetUserAsync(User);
                 if (currentUser == null)
                 {
+                    Debug.WriteLine($"User with ID {currentUser.Id} not found");
                     return RedirectToAction("Login", "Account");
                 }
 
@@ -686,20 +683,20 @@ namespace TaskMan.Controllers
                 if (model.Title == null || model.Title == string.Empty)
                 {
 
-                    model.Title = "Task List";
+                    model.Title = "New Task";
                 }
 
-                var existingListCount = await _context.GroupTask.CountAsync(ut => ut.Group_List_ID == model.Group_List_ID && ut.Title == model.Title);
+                var existingTaskCount = await _context.GroupTask.CountAsync(gt => gt.Group_List_ID == model.Group_List_ID && gt.Title == model.Title);
 
-                if (existingListCount > 0)
+                if (existingTaskCount > 0)
                 {
                     // Add number of tasks with same title as what was entered after task title
-                    model.Title = $"{model.Title} ({existingListCount})";
+                    model.Title = $"{model.Title} ({existingTaskCount})";
 
                     // If there is already a task with the same title and number, add 1 to the number and update the title again
-                    if (_context.GroupTask.Any(gl => gl.Group_List_ID == model.Group_List_ID && gl.Title == model.Title))
+                    if (_context.GroupTask.Any(gt => gt.Group_List_ID == model.Group_List_ID && gt.Title == model.Title))
                     {
-                        model.Title = $"{model.Title} ({existingListCount + 1})";
+                        model.Title = $"{model.Title} ({existingTaskCount + 1})";
                     }
                 }
                 if (model.Description == null)
@@ -786,7 +783,7 @@ namespace TaskMan.Controllers
                     model.Title = "Task List";
                 }
 
-                var existingListCount = await _context.GroupList.CountAsync(ut => ut.Group_ID == model.Group_ID && ut.Title == model.Title);
+                var existingListCount = await _context.GroupList.CountAsync(gl => gl.Group_ID == model.Group_ID && gl.Title == model.Title);
 
                 if (existingListCount > 0)
                 {

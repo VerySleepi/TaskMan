@@ -111,7 +111,7 @@ namespace TaskMan.Controllers
                     model.Title = "New Task";
                 }
 
-                var existingTaskCount = await _context.UserTasks.CountAsync(ut => ut.User_ID == userID && ut.Title == model.Title);
+                var existingTaskCount = await _context.Task.CountAsync(t => t.User_List_ID == model.User_List_ID && t.Title == model.Title);
 
                 if (existingTaskCount > 0)
                 {
@@ -227,14 +227,14 @@ namespace TaskMan.Controllers
                     return Forbid();
                 }
 
-                var existingTaskCount = await _context.UserTasks.CountAsync(ut => ut.User_ID == userId && ut.Title == model.Title);
+                var existingTaskCount = await _context.Task.CountAsync(t => t.User_List_ID == model.User_List_ID && t.Title == model.Title);
 
                 if (existingTaskCount > 0)
                 {
                     // Add number of tasks with same title as what was entered after task title
                     model.Title = $"{model.Title} ({existingTaskCount})";
 
-                    if (_context.UserTasks.Any(ut => ut.User_ID == userId && ut.Title == model.Title))
+                    if (_context.Task.Any(t => t.User_List_ID == model.User_List_ID && t.Title == model.Title))
                     {
                         model.Title = $"{model.Title} ({existingTaskCount + 1})";
                     }
