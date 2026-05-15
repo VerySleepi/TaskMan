@@ -170,7 +170,6 @@ namespace TaskMan.Controllers
             if (task == null)
             {
                 Debug.WriteLine($"Task with ID {taskId} not found.");
-                return NotFound();
             }
 
             var userTaskLists = await _context.UserTasks
@@ -207,8 +206,11 @@ namespace TaskMan.Controllers
                 if (task == null)
                 {
                     Debug.WriteLine($"Task with ID {taskId} not found.");
-                    // If the task is not found, return a 404 Not Found response
-                    return NotFound();
+                }
+
+                if (model.Title == null || model.Title == string.Empty)
+                {
+                    model.Title = "New Task";
                 }
 
                 // Fetch parent UserTasks by task.User_List_ID
@@ -217,13 +219,25 @@ namespace TaskMan.Controllers
                 if (taskList == null)
                 {
                     Debug.WriteLine($"UserTasks with ID {task.User_List_ID} not found.");
-                    return NotFound();
                 }
                 // Ownership check: Ensure the current user owns the task list that the task belongs to
                 if (taskList.User_ID != userId)
                 {
                     Debug.WriteLine($"Unauthorized attempt to delete task with ID {taskId} by user {userId}.");
                     return Forbid();
+                }
+
+                var existingTaskCount = await _context.UserTasks.CountAsync(ut => ut.User_ID == userId && ut.Title == model.Title);
+
+                if (existingTaskCount > 0)
+                {
+                    // Add number of tasks with same title as what was entered after task title
+                    model.Title = $"{model.Title} ({existingTaskCount})";
+
+                    if (_context.UserTasks.Any(ut => ut.User_ID == userId && ut.Title == model.Title))
+                    {
+                        model.Title = $"{model.Title} ({existingTaskCount + 1})";
+                    }
                 }
 
                 task.Title = model.Title;
@@ -236,7 +250,6 @@ namespace TaskMan.Controllers
                 {
                     // Case for if the list doesn't exist, but should be caught by catch block, but added here just in case
                     Debug.WriteLine($"UserTasks with ID {model.User_List_ID} not found.");
-                    return NotFound();
                 }
                 if (changedTaskList.User_ID != userId)
                 {
@@ -280,14 +293,12 @@ namespace TaskMan.Controllers
                 if (task == null)
                 {
                     Debug.WriteLine($"Task with ID {taskId} not found.");
-                    return NotFound();
                 }
                 // Fetch task parent UserTasks by task.User_List_ID
                 var taskList = await _context.UserTasks.FindAsync(task.User_List_ID);
                 if (taskList == null)
                 {
                     Debug.WriteLine($"UserTasks with ID {task.User_List_ID} not found.");
-                    return NotFound();
                 }
                 // Ownership check: Ensure the current user owns the task list that the task belongs to
                 if (taskList.User_ID != user.Id)
@@ -335,7 +346,6 @@ namespace TaskMan.Controllers
                 if (task == null)
                 {
                     Debug.WriteLine($"Task with ID {taskId} not found.");
-                    return NotFound();
                 }
 
                 // Fetch parent UserTasks by task.User_List_ID
@@ -344,7 +354,6 @@ namespace TaskMan.Controllers
                 if (taskList == null)
                 {
                     Debug.WriteLine($"UserTasks with ID {task.User_List_ID} not found.");
-                    return NotFound();
                 }
                 // Ownership check: Ensure the current user owns the task list that the task belongs to
                 if (taskList.User_ID != userId)
@@ -461,7 +470,7 @@ namespace TaskMan.Controllers
                 if (taskList == null)
                 {
                     Debug.WriteLine($"UserTasks with ID {listId} not found.");
-                    return NotFound();
+                    return RedirectToAction("Dashboard");
                 }
 
                 // Ownership check: Ensure the current user owns the task list so someone

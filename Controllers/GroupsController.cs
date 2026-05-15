@@ -141,6 +141,7 @@ namespace TaskMan.Controllers
             var group = await _context.Group.FindAsync(groupId);
             if (group == null)
             {
+                Debug.WriteLine($"Group with ID {groupId} not found");
                 return RedirectToAction("GroupDashboard");
             }
 
@@ -167,7 +168,8 @@ namespace TaskMan.Controllers
                 var group = await _context.Group.FindAsync(model.GroupId);
                 if (group == null)
                 {
-                    return NotFound();
+                    Debug.WriteLine($"Group with ID {model.GroupId} not found");
+                    return RedirectToAction("GroupDashboard");
                 }
 
                 var memberOf = await IsGroupAdmin(model.GroupId);
@@ -175,6 +177,16 @@ namespace TaskMan.Controllers
                 if (!memberOf)
                 {
                     return RedirectToAction("GroupDashboard");
+                }
+
+                if (model.Title == null || model.Title == string.Empty)
+                {
+                    model.Title = "New Group";
+                }
+                
+                if (model.Description == null)
+                {
+                    model.Description = "No Description";
                 }
 
                 group.Title = model.Title;
@@ -206,7 +218,8 @@ namespace TaskMan.Controllers
                 var group = await _context.Group.FindAsync(groupId);
                 if (group == null)
                 {
-                    return NotFound();
+                    Debug.WriteLine($"Group with ID {groupId} not found");
+                    return RedirectToAction("GroupDashboard");
                 }
 
                 _context.Group.Remove(group);
@@ -483,7 +496,7 @@ namespace TaskMan.Controllers
                 if (task == null)
                 {
                     Debug.WriteLine($"Task with ID {taskId} not found.");
-                    return NotFound();
+                    return RedirectToAction("Details", new { groupId = task.GroupList.Group_ID });
                 }
 
                 // Fetch task parent GroupList by task.Group_List_ID
@@ -491,7 +504,7 @@ namespace TaskMan.Controllers
                 if (taskList == null)
                 {
                     Debug.WriteLine($"GroupList with ID {task.Group_List_ID} not found.");
-                    return NotFound();
+                    return RedirectToAction("Details", new { groupId = taskList.Group_ID });
                 }
 
                 // Member check - ensure user is a member of the group that the task belongs to
@@ -541,7 +554,7 @@ namespace TaskMan.Controllers
                 if (task == null)
                 {
                     Debug.WriteLine($"Task with ID {taskId} not found");
-                    return NotFound();
+                    return RedirectToAction("Details", new { groupId = task.GroupList.Group_ID });
                 }
 
                 var groupList = await _context.GroupList
@@ -550,7 +563,7 @@ namespace TaskMan.Controllers
                 if (groupList == null)
                 {
                     Debug.WriteLine($"Group list with ID {task.Group_List_ID} not found");
-                    return NotFound();
+                    return RedirectToAction("Details", new { groupId = task.GroupList.Group_ID });
                 }
 
                 var memberOf = await IsGroupAdmin(groupList.Group_ID);
@@ -590,7 +603,8 @@ namespace TaskMan.Controllers
                 .FirstOrDefaultAsync(t => t.Group_Task_ID == taskId);
             if (task == null)
             {
-                return NotFound();
+                Debug.WriteLine($"Task with ID {taskId} not found");
+                return RedirectToAction("Details", new { groupId = task.GroupList.Group_ID });
             }
 
             var groupList = await _context.GroupList
@@ -598,7 +612,8 @@ namespace TaskMan.Controllers
 
             if (groupList == null)
             {
-                return NotFound();
+                Debug.WriteLine($"Group list with ID {task.Group_List_ID} not found");
+                return RedirectToAction("Details", new { groupId = task.GroupList.Group_ID });
             }
 
             var memberOf = await IsGroupAdmin(groupList.Group_ID);
@@ -648,7 +663,7 @@ namespace TaskMan.Controllers
                 if (task == null)
                 {
                     Debug.WriteLine($"Task with ID {taskId} not found");
-                    return NotFound();
+                    return RedirectToAction("Details", new { groupId = task.GroupList.Group_ID });
                 }
 
                 var groupList = await _context.GroupList
@@ -657,7 +672,7 @@ namespace TaskMan.Controllers
                 if (groupList == null)
                 {
                     Debug.WriteLine($"Group list with ID {task.Group_List_ID} not found");
-                    return NotFound();
+                    return RedirectToAction("Details", new { groupId = task.GroupList.Group_ID });
                 }
 
                 var memberOf = await IsGroupAdmin(groupList.Group_ID);
@@ -666,6 +681,30 @@ namespace TaskMan.Controllers
                 {
                     Debug.WriteLine("Current user is not an admin of the group");
                     return RedirectToAction("Details", new { groupId = groupList.Group_ID });
+                }
+
+                if (model.Title == null || model.Title == string.Empty)
+                {
+
+                    model.Title = "Task List";
+                }
+
+                var existingListCount = await _context.GroupTask.CountAsync(ut => ut.Group_List_ID == model.Group_List_ID && ut.Title == model.Title);
+
+                if (existingListCount > 0)
+                {
+                    // Add number of tasks with same title as what was entered after task title
+                    model.Title = $"{model.Title} ({existingListCount})";
+
+                    // If there is already a task with the same title and number, add 1 to the number and update the title again
+                    if (_context.GroupTask.Any(gl => gl.Group_List_ID == model.Group_List_ID && gl.Title == model.Title))
+                    {
+                        model.Title = $"{model.Title} ({existingListCount + 1})";
+                    }
+                }
+                if (model.Description == null)
+                {
+                    model.Description = "No Description";
                 }
 
                 task.Title = model.Title;
@@ -678,7 +717,7 @@ namespace TaskMan.Controllers
                 if (changedTaskList == null)
                 {
                     Debug.WriteLine($"Group list with ID {model.Group_List_ID} not found.");
-                    return NotFound();
+                    return RedirectToAction("Details", new { groupId = groupList.Group_ID });
                 }
                 else
                 {
@@ -798,7 +837,7 @@ namespace TaskMan.Controllers
             if (groupList == null)
             {
                 Debug.WriteLine($"Group list with ID {groupListId} not found");
-                return NotFound();
+                return RedirectToAction("Details", new { groupId = groupList.Group_ID });
             }
             try
             {
@@ -828,7 +867,7 @@ namespace TaskMan.Controllers
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                return RedirectToAction("Details", new { groupId = groupList });
+                return RedirectToAction("Details", new { groupId = groupList.Group_ID });
             }
         }
 
